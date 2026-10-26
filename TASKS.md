@@ -2,28 +2,33 @@
 
 ## Active
 
-- [ ] Run the app on a device: `flutter run`
-- [ ] Add an integration test for the full add, edit, and delete flow
-- [ ] Add due date reminders through local notifications
+- [ ] Build and install the debug APK on a phone, then add the widget
+- [ ] Check the widget toggle loop on the device: chip tap, red state, app state
+- [ ] Add a screenshot of the widget to the README
+- [ ] Pick the launcher size: 5 rows now, or a scrollable list
 
 ## Waiting On
 
-- Android SDK on the build host, so `flutter build apk` can run
+- Android SDK install on this host (running)
+- A physical Android device for the widget test
 
 ## Someday
 
-- Repeating tasks
-- Task lists or projects
-- Search
-- Dark and light theme toggle in settings
-- Cloud sync behind a second `TaskRepository`
+- iOS widget with App Intents
+- Notes on a block
+- Drag an item to another hour
+- Week view
+- Reminders before an hour starts
 
 ## Done
 
-- [x] Flutter project scaffolded with `flutter create` (2026-10-26)
-- [x] Domain layer: `Task`, `TaskRepository`, `TaskStorageException` (2026-10-26)
-- [x] Local storage: JSON list in `SharedPreferences` (2026-10-26)
-- [x] Presentation: `TaskCubit`, task list, editor sheet, filters, undo delete (2026-10-26)
-- [x] Tests: 22 unit and widget tests pass (2026-10-26)
-- [x] `flutter analyze` reports no issues (2026-10-26)
-- [x] Web release build succeeds (2026-10-26)
+- [x] Swap raised to 8 GB for the Gradle build (2026-10-26)
+- [x] Hourly day model: 24 blocks, one item each (2026-10-26)
+- [x] Green in place, red done, with switch toggle (2026-10-26)
+- [x] Day arrows with history per date (2026-10-26)
+- [x] Local store: one JSON document per day (2026-10-26)
+- [x] Widget payload and `home_widget` bridge (2026-10-26)
+- [x] Android `HourlyWidgetProvider` with RemoteViews (2026-10-26)
+- [x] Background toggle callback from the widget (2026-10-26)
+- [x] 29 unit and widget tests pass (2026-10-26)
+- [x] `flutter analyze` no issues, web release build ok (2026-10-26)

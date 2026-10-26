@@ -2,30 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/tasks/domain/repositories/task_repository.dart';
-import 'features/tasks/presentation/cubit/task_cubit.dart';
-import 'features/tasks/presentation/screens/tasks_screen.dart';
+import 'features/schedule/data/widget/home_widget_bridge.dart';
+import 'features/schedule/domain/repositories/schedule_repository.dart';
+import 'features/schedule/presentation/cubit/day_schedule_cubit.dart';
+import 'features/schedule/presentation/screens/day_screen.dart';
 
 /// Composition root of the widget tree.
 ///
-/// The repository is injected, so the local store can be swapped for any other
-/// `TaskRepository` without touching the feature code.
-class TodoApp extends StatelessWidget {
-  const TodoApp({super.key, required this.taskRepository});
+/// The repository and the widget bridge are injected. A different store, or a
+/// widget-free build, needs one change in `main.dart` only.
+class HourlyApp extends StatelessWidget {
+  const HourlyApp({
+    super.key,
+    required this.repository,
+    required this.widgetBridge,
+    this.clock,
+  });
 
-  final TaskRepository taskRepository;
+  final ScheduleRepository repository;
+  final WidgetBridge widgetBridge;
+  final DateTime Function()? clock;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<TaskCubit>(
-      create: (BuildContext context) => TaskCubit(taskRepository)..load(),
+    return BlocProvider<DayScheduleCubit>(
+      create: (BuildContext context) => DayScheduleCubit(
+        repository,
+        widgetBridge,
+        clock: clock,
+      )..load(),
       child: MaterialApp(
-        title: 'Tasks',
+        title: 'Hourly',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.system,
-        home: const TasksScreen(),
+        home: const DayScreen(),
       ),
     );
   }

@@ -1,20 +1,42 @@
-# todo-app
+# Hourly
 
-An offline to-do application for Android, iOS, and web. Flutter 3.47.8.
+A day planner where every hour is one block. Flutter app for Android, iOS, and
+web. The Android home screen widget is the main feature.
 
 All data stays on the device. The app makes no network call.
 
-## Features
+## Concept
 
-- Add, edit, and delete tasks
-- Optional notes and due date per task
-- Mark a task done with one tap
-- Filter by All, Active, or Done
-- Progress bar with a done count
-- Swipe to delete, with an Undo action
-- Clear all completed tasks
-- Overdue marker on open tasks
-- Light and dark theme
+The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
+
+| State | Look | Meaning |
+|---|---|---|
+| Empty | Outline and "Add task" | No item in this hour |
+| In place | Green card, switch on | The item is set for this hour |
+| Done | Small red struck text, switch off | The item is complete |
+
+Green means in place. Red means done. This mapping is the user's choice.
+
+Tap an empty block to type. Tap an item to edit or remove it. Use the switch to
+move between green and red. The arrows change the day, and every day stays in
+history.
+
+## Android widget
+
+The widget shows the current hour and the next four. Each row has the hour, the
+item, and a state chip:
+
+- `NOW` in green. Tap it to mark the item done.
+- `DONE` in red. Tap it to put the item back in place.
+- `Tap to add` on an empty hour. Tap it to open the app.
+
+A tap on a chip runs a Dart callback in a background isolate. It flips the item,
+saves it, and repaints the widget. The app and the widget share one store, so a
+change in one shows in the other.
+
+`android/app/src/main/kotlin/com/awun/todo_app/HourlyWidgetProvider.kt` builds
+the rows with `RemoteViews`. The app sends JSON through the `home_widget`
+package under the key `hourly_payload`.
 
 ## Stack
 
@@ -22,9 +44,9 @@ All data stays on the device. The app makes no network call.
 |---|---|
 | Framework | Flutter 3.47.8 (Dart 3.13.7) |
 | State | `flutter_bloc` 9, Cubit |
-| Local store | `shared_preferences` 2 (JSON list) |
+| Local store | `shared_preferences` 2 (one JSON document per day) |
+| Widget bridge | `home_widget` 0.10 |
 | Dates | `intl` |
-| Ids | `uuid` v4 |
 | Tests | `flutter_test`, `bloc_test` |
 
 ## Get started
@@ -34,77 +56,85 @@ flutter pub get
 flutter run
 ```
 
-Web build:
+Add the widget from the Android home screen picker, under "Hourly".
 
 ```bash
+flutter build apk --debug
 flutter build web --release
 ```
 
 ## Architecture
 
-The app uses a feature-first clean architecture. The storage sits behind one
-interface, so a different store is one line in `main.dart`.
-
 ```
 lib/
-├── main.dart                  # builds SharedPreferences and the repository
-├── app.dart                   # MaterialApp, BlocProvider, theme
-├── core/theme/app_theme.dart  # Material 3 light and dark themes
-└── features/tasks/
+├── main.dart                     # store, widget callback registration
+├── app.dart                      # MaterialApp, BlocProvider
+├── core/
+│   ├── date/date_key.dart        # yyyy-MM-dd keys and hour labels
+│   └── theme/app_theme.dart      # Material 3 theme, StatusPalette
+└── features/schedule/
     ├── domain/
-    │   ├── entities/task.dart              # immutable Task
-    │   └── repositories/task_repository.dart # interface + exception
+    │   ├── entities/hour_entry.dart
+    │   └── repositories/schedule_repository.dart
     ├── data/
-    │   ├── models/task_mapper.dart         # JSON shape
-    │   └── repositories/task_local_repository.dart
+    │   ├── models/hour_entry_mapper.dart
+    │   ├── repositories/schedule_local_repository.dart
+    │   └── widget/
+    │       ├── widget_payload.dart         # JSON shape for the widget
+    │       ├── home_widget_bridge.dart     # home_widget calls
+    │       └── widget_toggle_callback.dart # background isolate
     └── presentation/
-        ├── cubit/task_cubit.dart, task_state.dart
-        ├── screens/tasks_screen.dart
-        └── widgets/task_tile.dart, task_editor_sheet.dart,
-            tasks_empty_state.dart
+        ├── cubit/day_schedule_cubit.dart, day_schedule_state.dart
+        ├── screens/day_screen.dart
+        └── widgets/hour_block.dart, day_header.dart, hour_editor_sheet.dart
 ```
 
-Data flow: a widget calls `TaskCubit`, the cubit changes `TaskState`, then it
-calls `TaskRepository.persist`. A failed write restores the old state and
-shows a message. There is no use case layer, because each use case would only
-forward one repository call.
+Data flow: a block calls `DayScheduleCubit`, the cubit changes
+`DayScheduleState` and writes through `ScheduleRepository`, then it sends today
+to the widget. A failed write restores the old state and shows a message. A
+failed widget sync does not block the edit.
+
+The store is an interface, so a different backend is one line in `main.dart`.
 
 ## Data format
 
-`SharedPreferences` key `tasks.v1` holds one JSON array:
+`shared_preferences` key `hours.v1.<yyyy-MM-dd>` holds one JSON object per day:
 
 ```json
-[
-  {
-    "id": "8f1c...",
-    "title": "Pay rent",
-    "notes": "Before noon",
-    "isDone": false,
-    "createdAt": "2026-10-26T09:12:00.000Z",
-    "dueDate": "2026-10-30T00:00:00.000"
+{
+  "9": {
+    "text": "Standup",
+    "status": "active",
+    "updatedAt": "2026-10-26T09:12:00.000"
+  },
+  "11": {
+    "text": "Review",
+    "status": "completed",
+    "updatedAt": "2026-10-26T09:40:00.000"
   }
-]
+}
 ```
 
-`TaskMapper` owns this shape. Records with no id or title are skipped. Invalid
-JSON raises `TaskStorageException`, and the UI shows an error.
+A day document holds at most 24 entries. Invalid JSON raises
+`ScheduleStorageException`. Bad hour keys and blank text are skipped.
 
 ## Tests
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 22 tests
+flutter test      # 29 tests
 ```
 
 | Suite | Covers |
 |---|---|
-| `test/.../task_cubit_test.dart` | load, add, update, toggle, delete, undo, clear, filters, ordering, write failure |
-| `test/.../task_local_repository_test.dart` | empty store, round trip, bad records, bad JSON, key format |
-| `test/.../tasks_screen_test.dart` | add task, empty title, toggle and filter, swipe delete and undo |
+| `day_schedule_cubit_test.dart` | load, save, toggle, delete, day change, write failure, widget sync, progress |
+| `schedule_local_repository_test.dart` | day isolation, replace, delete, bad records, bad JSON |
+| `widget_payload_test.dart` | slot window, midnight stop, day counts |
+| `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload |
 
 ## Limits
 
-- There is no sync and no backup. Uninstalling the app removes the tasks.
-- The task list is one document per write. This is fine for personal lists.
-  A large list needs a row-based store behind the same `TaskRepository`.
-- Reminders are not implemented. A due date is display only.
+- The widget is Android only. iOS uses the same store, but it has no widget yet.
+- There is no sync and no backup. Uninstalling the app removes the plan.
+- The widget shows five hours. A full day list needs a taller, scrollable widget.
+- Due dates, notes, and reminders are not implemented. One hour holds one item.

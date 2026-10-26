@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hourly</string>
+    <string name="widget_description">Your hours, one item each. Tap a chip to toggle it.</string>
+    <string name="widget_loading">Loading your day</string>
+    <string name="widget_empty_hint">Open the app to plan today</string>
+    <string name="widget_stale_day">Hourly</string>
+    <string name="widget_stale_hint">Open the app to refresh</string>
+    <string name="widget_no_items">No items yet</string>
+    <string name="widget_progress">%1$d of %2$d done</string>
+    <string name="widget_now">NOW</string>
+    <string name="widget_done">DONE</string>
+    <string name="widget_add">Tap to add</string>
+</resources>

@@ -1,0 +1,52 @@
+import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../core/date/date_key.dart';
+import '../../domain/entities/hour_entry.dart';
+import '../../domain/repositories/schedule_repository.dart';
+import '../repositories/schedule_local_repository.dart';
+import 'home_widget_bridge.dart';
+
+/// Runs in a background isolate when the user taps a toggle on the widget.
+///
+/// The widget sends `hourly://toggle?date=2026-10-26&hour=9`. This function
+/// flips the entry, saves it, and repaints the widget.
+@pragma('vm:entry-point')
+Future<void> handleWidgetToggle(Uri? uri) async {
+  if (uri == null) {
+    return;
+  }
+  final String? dateKey = uri.queryParameters['date'];
+  final int? hour = int.tryParse(uri.queryParameters['hour'] ?? '');
+  if (dateKey == null || hour == null || hour < 0 || hour > 23) {
+    return;
+  }
+
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences preferences = await SharedPreferences.getInstance();
+  final ScheduleRepository repository = ScheduleLocalRepository(preferences);
+  final DateTime now = DateTime.now();
+
+  final List<HourEntry> entries = await repository.fetchDay(dateKey);
+  HourEntry? target;
+  for (final HourEntry entry in entries) {
+    if (entry.hour == hour) {
+      target = entry;
+      break;
+    }
+  }
+  if (target == null) {
+    return;
+  }
+
+  await repository.upsert(
+    target.copyWith(
+      status: target.isCompleted ? HourStatus.active : HourStatus.completed,
+      updatedAt: now,
+    ),
+  );
+  await HomeWidgetBridge().sync(
+    now: now,
+    entries: await repository.fetchDay(DateKey.of(now)),
+  );
+}

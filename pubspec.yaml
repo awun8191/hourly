@@ -1,5 +1,5 @@
 name: todo_app
-description: "An offline to-do app for Android, iOS, and web."
+description: "A day planner with one item per hour, plus an interactive Android widget."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -38,7 +38,7 @@ dependencies:
   equatable: ^3.0.0
   shared_preferences: ^2.5.6
   intl: ^0.20.3
-  uuid: ^4.6.0
+  home_widget: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -50,12 +50,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  bloc_test: ^10.0.0
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
 flutter:
 
   # The following line ensures that the Material Icons font is

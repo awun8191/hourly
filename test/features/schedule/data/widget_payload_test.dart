@@ -1,0 +1,71 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:todo_app/features/schedule/data/widget/widget_payload.dart';
+import 'package:todo_app/features/schedule/domain/entities/hour_entry.dart';
+
+void main() {
+  HourEntry entry(int hour, String text, {HourStatus status = HourStatus.active}) {
+    return HourEntry(
+      dateKey: '2026-10-26',
+      hour: hour,
+      text: text,
+      status: status,
+      updatedAt: DateTime(2026, 10, 26),
+    );
+  }
+
+  test('builds five slots from the current hour', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 9, 30),
+      entries: <HourEntry>[
+        entry(9, 'Standup'),
+        entry(11, 'Review', status: HourStatus.completed),
+      ],
+    );
+
+    expect(payload['date'], '2026-10-26');
+    expect(payload['done'], 1);
+    expect(payload['total'], 2);
+
+    final List<Object?> slots = payload['slots']! as List<Object?>;
+    expect(slots, hasLength(5));
+    final Map<String, Object?> first = slots.first! as Map<String, Object?>;
+    expect(first['hour'], 9);
+    expect(first['label'], '09:00');
+    expect(first['text'], 'Standup');
+    expect(first['status'], 'active');
+
+    final Map<String, Object?> third = slots[2]! as Map<String, Object?>;
+    expect(third['hour'], 11);
+    expect(third['status'], 'completed');
+
+    final Map<String, Object?> empty = slots[1]! as Map<String, Object?>;
+    expect(empty['hour'], 10);
+    expect(empty['status'], 'empty');
+    expect(empty['text'], '');
+  });
+
+  test('stops at midnight instead of wrapping to the next day', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 23, 15),
+      entries: <HourEntry>[entry(23, 'Sleep')],
+    );
+
+    expect(payload['slots'], hasLength(1));
+    expect((payload['slots']! as List<Object?>).single, containsPair('hour', 23));
+  });
+
+  test('counts the whole day, not only the visible slots', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 20),
+      entries: <HourEntry>[
+        entry(7, 'Gym', status: HourStatus.completed),
+        entry(8, 'Work', status: HourStatus.completed),
+        entry(21, 'Read'),
+      ],
+    );
+
+    expect(payload['done'], 2);
+    expect(payload['total'], 3);
+    expect(payload['day'], 'Monday 26');
+  });
+}
