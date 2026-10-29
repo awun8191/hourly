@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- One segment of the widget's day meter. A TextView, because RemoteViews
-     does not accept a plain View. Laid out by HourlyWidgetProvider. -->
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/segment_body"
-    android:layout_width="0dp"
-    android:layout_height="6dp"
-    android:layout_marginStart="2dp"
-    android:background="@drawable/bg_widget_seg_active" />

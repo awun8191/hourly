@@ -16,4 +16,10 @@
     <color name="widget_active_stroke">#C2DDCB</color>
     <color name="widget_done_stroke">#F0D2CD</color>
     <color name="widget_chip_muted_bg">#E8EDE8</color>
+    <!-- Missed: an item still in place in an hour that has already gone by.
+         Muted red, 6.4:1 on the card, so it reads as a warning and never as
+         the green "in place" the item no longer is. -->
+    <color name="widget_missed_text">#9C3B32</color>
+    <color name="widget_missed_bar">#A85C53</color>
+    <color name="widget_missed_stroke">#A85C53</color>
 </resources>

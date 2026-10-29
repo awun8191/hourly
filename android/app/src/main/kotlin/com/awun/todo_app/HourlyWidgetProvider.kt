@@ -89,7 +89,7 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val decision = decisionFor(options)
         val views = RemoteViews(context.packageName, layoutFor(decision.bucket))
         val root = payload?.let { runCatching { JSONObject(it) }.getOrNull() }
-        val scale = scaleFor(decision.bucket)
+        val scale = scaleFor(decision.bucket, decision.heightDp)
         if (root == null) {
             return emptyViews(context, views, decision, scale)
         }
@@ -104,11 +104,9 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val liveHour = root.optInt("nowHour", -1).takeIf { it in 0..23 } ?: currentHour()
         val entries = readEntries(root)
 
-        bindChrome(context, views, decision.bucket, dayLabel, isToday, done, total, scale)
+        bindChrome(context, views, decision, dayLabel, isToday, done, total, scale)
         bindBody(context, views, decision, entries, liveHour, isToday, minutesInto, minutesLeft, scale)
-        if (decision.bucket != WidgetSize.Bucket.compact) {
-            bindMeter(context, views, entries, liveHour, isToday)
-        }
+        bindFooter(context, views, decision, entries, liveHour, isToday)
         return views
     }
 
@@ -120,19 +118,23 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         scale: TypeScale,
     ): RemoteViews {
         val slot = HourSlot(currentHour(), "empty", "")
+        views.setTextViewText(R.id.widget_day, "")
+        views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, scale.day)
         if (decision.bucket == WidgetSize.Bucket.compact) {
-            views.setTextViewText(R.id.widget_day, "")
+            views.setViewVisibility(R.id.widget_progress, View.GONE)
             bindHero(context, views, slot, HeroMode.empty, 0, 60, scale)
             return views
         }
-        views.setTextViewText(R.id.widget_day, "")
         views.setTextViewText(R.id.widget_progress, "")
         views.setTextViewTextSize(R.id.widget_brand, TypedValue.COMPLEX_UNIT_SP, scale.brand)
-        views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, scale.day)
         views.setTextViewTextSize(R.id.widget_progress, TypedValue.COMPLEX_UNIT_SP, scale.footer)
-        views.removeAllViews(R.id.widget_day_meter)
-        views.setViewVisibility(R.id.widget_day_meter, View.GONE)
+        views.setViewVisibility(R.id.widget_body, View.VISIBLE)
         views.removeAllViews(R.id.widget_body)
+        if (decision.bucket == WidgetSize.Bucket.large) {
+            views.setViewVisibility(R.id.widget_nothing_line, View.GONE)
+        }
+        // The strip is still a day at a glance: 24 free hours, no ring.
+        bindDayStrip(context, views, emptyList(), -1, false)
 
         val hero = RemoteViews(context.packageName, R.layout.hourly_widget_hero)
         bindHero(context, hero, slot, HeroMode.empty, 0, 60, scale)
@@ -155,7 +157,7 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
     private fun bindChrome(
         context: Context,
         views: RemoteViews,
-        bucket: WidgetSize.Bucket,
+        decision: WidgetSize.Decision,
         dayLabel: String,
         isToday: Boolean,
         done: Int,
@@ -170,21 +172,29 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         }
         val open = openAppIntent(context, -1)
 
-        if (bucket == WidgetSize.Bucket.compact) {
-            views.setTextViewText(R.id.widget_day, dayText)
-            views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, scale.day)
-            views.setOnClickPendingIntent(R.id.widget_day, open)
+        views.setTextViewText(R.id.widget_day, dayText)
+        views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, scale.day)
+        views.setOnClickPendingIntent(R.id.widget_day, open)
+
+        views.setTextViewText(R.id.widget_progress, footerText(context, isToday, done, total))
+        views.setTextViewTextSize(R.id.widget_progress, TypedValue.COMPLEX_UNIT_SP, scale.footer)
+
+        if (decision.bucket == WidgetSize.Bucket.compact) {
+            // A 2x2 card has no room for the count; it is the first line to go.
+            views.setViewVisibility(
+                R.id.widget_progress,
+                if (decision.heightDp >= WidgetSize.COMPACT_FOOTER_HEIGHT_DP) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                },
+            )
             return
         }
 
         views.setTextViewText(R.id.widget_brand, context.getString(R.string.widget_brand))
-        views.setTextViewText(R.id.widget_day, dayText)
         views.setTextViewTextSize(R.id.widget_brand, TypedValue.COMPLEX_UNIT_SP, scale.brand)
-        views.setTextViewTextSize(R.id.widget_day, TypedValue.COMPLEX_UNIT_SP, scale.day)
-        views.setTextViewTextSize(R.id.widget_progress, TypedValue.COMPLEX_UNIT_SP, scale.footer)
-        views.setTextViewText(R.id.widget_progress, footerText(context, isToday, done, total))
         views.setOnClickPendingIntent(R.id.widget_brand, open)
-        views.setOnClickPendingIntent(R.id.widget_day, open)
     }
 
     /**
@@ -219,8 +229,13 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             cells = decision.cells,
             includePast = decision.bucket == WidgetSize.Bucket.large,
         )
+        val rowLayout = if (decision.bucket == WidgetSize.Bucket.large) {
+            R.layout.hourly_widget_row_tall
+        } else {
+            R.layout.hourly_widget_row
+        }
         plan.forEach { item ->
-            val child = when (item.kind) {
+            val child: RemoteViews? = when (item.kind) {
                 BodyItemKind.hero -> {
                     val hero = RemoteViews(context.packageName, R.layout.hourly_widget_hero)
                     bindHero(
@@ -235,7 +250,9 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                     hero
                 }
 
-                BodyItemKind.row -> buildRow(context, item.slot!!, isToday, liveHour, scale)
+                BodyItemKind.row ->
+                    buildRow(context, item.slot!!, isToday, liveHour, scale, rowLayout)
+
                 BodyItemKind.earlier -> moreLine(
                     context,
                     context.getString(R.string.widget_earlier_hours, item.count),
@@ -248,7 +265,15 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                     scale,
                 )
 
-                BodyItemKind.filler -> {
+                // The large bucket says this once, in the panel under the strip,
+                // and a one cell card is the hero itself: the count line under
+                // the strip already carries the day. So the body stays a plain
+                // list of hours wherever there is a footer to speak for it.
+                BodyItemKind.filler -> if (decision.bucket == WidgetSize.Bucket.large ||
+                    decision.cells <= 1
+                ) {
+                    null
+                } else {
                     val filler = RemoteViews(context.packageName, R.layout.hourly_widget_filler)
                     filler.setTextViewText(
                         R.id.widget_filler_line,
@@ -262,7 +287,9 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                     filler
                 }
             }
-            views.addView(R.id.widget_body, child)
+            if (child != null) {
+                views.addView(R.id.widget_body, child)
+            }
         }
     }
 
@@ -287,9 +314,16 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         views.setTextViewTextSize(R.id.hero_now, TypedValue.COMPLEX_UNIT_SP, scale.chip)
         views.setProgressBar(R.id.hero_progress, 60, minutesInto, false)
         views.setViewVisibility(R.id.hero_chip, View.VISIBLE)
+        // The compact card carries NOW inside its one chip, and hides the bar's
+        // sibling meta so a 4x2 placement cannot show two tiny floating labels.
         views.setViewVisibility(
             R.id.hero_now,
-            if (mode == HeroMode.live) View.VISIBLE else View.GONE,
+            if (mode == HeroMode.live && !scale.compactLayout) View.VISIBLE else View.GONE,
+        )
+        views.setViewVisibility(R.id.hero_progress, View.VISIBLE)
+        views.setViewVisibility(
+            R.id.hero_meta,
+            if (scale.showHeroMeta) View.VISIBLE else View.GONE,
         )
         views.setOnClickPendingIntent(R.id.hero_card, openAppIntent(context, slot.hour))
 
@@ -305,32 +339,33 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             HeroMode.empty -> context.getString(R.string.widget_open_app)
             HeroMode.live -> hourMeta(context, minutesInto, minutesLeft, scale.compactLayout)
         }
+        val chipNow = mode == HeroMode.live && scale.compactLayout
 
         when {
             mode == HeroMode.stale -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_empty)
-                setChip(context, views, R.string.widget_chip_stale, R.color.widget_muted, R.drawable.bg_widget_chip_muted)
+                setChip(context, views, R.string.widget_chip_stale, R.color.widget_muted, R.drawable.bg_widget_chip_muted, chipNow = false)
                 views.setTextViewText(R.id.hero_text, slot.text.ifEmpty { context.getString(R.string.widget_empty_hint) })
                 views.setTextViewText(R.id.hero_meta, meta)
             }
 
             mode == HeroMode.empty || slot.state == "empty" -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_empty)
-                setChip(context, views, R.string.widget_chip_free, R.color.widget_muted, R.drawable.bg_widget_chip_muted)
+                setChip(context, views, R.string.widget_chip_free, R.color.widget_muted, R.drawable.bg_widget_chip_muted, chipNow = false)
                 views.setTextViewText(R.id.hero_text, context.getString(R.string.widget_hero_empty))
                 views.setTextViewText(R.id.hero_meta, meta)
             }
 
             slot.state == "completed" -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_done)
-                setChip(context, views, R.string.widget_done, R.color.widget_done_text, R.drawable.bg_widget_chip_done)
+                setChip(context, views, R.string.widget_done, R.color.widget_done_text, R.drawable.bg_widget_chip_done, chipNow)
                 views.setTextViewText(R.id.hero_text, slot.text)
                 views.setTextViewText(R.id.hero_meta, meta)
             }
 
             else -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_active)
-                setChip(context, views, R.string.widget_chip_in_place, R.color.widget_active_text, R.drawable.bg_widget_chip_active)
+                setChip(context, views, R.string.widget_chip_in_place, R.color.widget_active_text, R.drawable.bg_widget_chip_active, chipNow)
                 views.setTextViewText(R.id.hero_text, slot.text)
                 views.setTextViewText(R.id.hero_meta, meta)
             }
@@ -338,8 +373,10 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
     }
 
     /**
-     * One hour row. Only the hero says NOW; a future row says IN PLACE, DONE, or
-     * FREE, and an hour that has already passed is dimmed.
+     * One hour row. Only the hero says NOW; a row says IN PLACE, DONE, MISSED,
+     * or FREE. A row whose hour has already gone by and that is still in place
+     * reads MISSED, never IN PLACE: the plan did not happen, and the green chip
+     * said it did.
      */
     private fun buildRow(
         context: Context,
@@ -347,9 +384,10 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         isToday: Boolean,
         liveHour: Int,
         scale: TypeScale,
+        layout: Int,
     ): RemoteViews {
-        val row = RemoteViews(context.packageName, R.layout.hourly_widget_row)
-        val passed = isToday && slot.hour < liveHour
+        val row = RemoteViews(context.packageName, layout)
+        val state = WidgetDayPlan.rowStateFor(slot, liveHour, isToday)
 
         row.setTextViewText(R.id.slot_hour, hourLabel(slot.hour))
         row.setTextViewTextSize(R.id.slot_hour, TypedValue.COMPLEX_UNIT_SP, scale.rowHour)
@@ -357,13 +395,10 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         row.setTextViewTextSize(R.id.slot_status, TypedValue.COMPLEX_UNIT_SP, scale.rowChip)
         row.setOnClickPendingIntent(R.id.slot_row, openAppIntent(context, slot.hour))
 
-        when (slot.state) {
-            "active" -> {
+        when (state) {
+            RowState.inPlace -> {
                 row.setTextViewText(R.id.slot_text, slot.text)
-                row.setTextColor(
-                    R.id.slot_text,
-                    context.getColor(if (passed) R.color.widget_muted else R.color.widget_text),
-                )
+                row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_text))
                 row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
                 row.setInt(R.id.slot_bar, "setBackgroundResource", R.drawable.bg_row_bar_active)
                 applyRowChip(
@@ -375,7 +410,7 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                 )
             }
 
-            "completed" -> {
+            RowState.done -> {
                 row.setTextViewText(R.id.slot_text, slot.text)
                 row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_muted))
                 row.setInt(
@@ -393,7 +428,21 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                 )
             }
 
-            else -> {
+            RowState.missed -> {
+                row.setTextViewText(R.id.slot_text, slot.text)
+                row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_muted))
+                row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
+                row.setInt(R.id.slot_bar, "setBackgroundResource", R.drawable.bg_row_bar_missed)
+                applyRowChip(
+                    context,
+                    row,
+                    R.string.widget_chip_missed,
+                    R.color.widget_missed_text,
+                    R.drawable.bg_widget_chip_missed,
+                )
+            }
+
+            RowState.free -> {
                 row.setTextViewText(R.id.slot_text, context.getString(R.string.widget_free_hour))
                 row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_muted))
                 row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
@@ -405,67 +454,81 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                     R.color.widget_muted,
                     R.drawable.bg_widget_chip_muted,
                 )
-                if (isToday) {
-                    row.setOnClickPendingIntent(R.id.slot_status, openAppIntent(context, slot.hour))
-                }
             }
         }
 
         if (isToday && slot.state != "empty") {
+            // A missed hour still toggles: the user can mark it done late.
             row.setOnClickPendingIntent(
                 R.id.slot_status,
                 toggleIntent(context, slot.state, slot.hour),
             )
+        } else if (isToday) {
+            row.setOnClickPendingIntent(R.id.slot_status, openAppIntent(context, slot.hour))
         }
         return row
     }
 
     /**
-     * The day meter: one segment per planned hour, red when the hour is done,
-     * green when the item is in place, with a ring on the live hour.
+     * The footer. The day strip is one tick per hour of the day, 00 to 23, in
+     * hour order: red for done, green for in place, muted red for missed, the
+     * faint track for a free hour, and a ring on the live hour. A tinted week of
+     * planned hours alone (the old meter) had no empty hours to sit against, so
+     * it read as a second progress bar; the whole day does not.
      *
-     * The widget paints planned hours only, not all 24: in a 4x4 cell each of 24
-     * segments would be about 1.5dp wide, too thin to tell green from red. A
-     * full day folds into [MAX_SEGMENTS] buckets, and a bucket is red only when
-     * every hour in it is done.
+     * The large bucket adds the labels, the quiet line, the count, and the
+     * legend; the medium bucket keeps the strip and the count.
      */
-    private fun bindMeter(
+    private fun bindFooter(
+        context: Context,
+        views: RemoteViews,
+        decision: WidgetSize.Decision,
+        entries: List<HourSlot>,
+        liveHour: Int,
+        isToday: Boolean,
+    ) {
+        if (decision.bucket == WidgetSize.Bucket.compact) {
+            return
+        }
+        bindDayStrip(context, views, entries, liveHour, isToday)
+        if (decision.bucket == WidgetSize.Bucket.large) {
+            views.setViewVisibility(
+                R.id.widget_nothing_line,
+                if (isToday && !WidgetDayPlan.hasUpcoming(entries, liveHour)) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                },
+            )
+        }
+    }
+
+    /** 24 ticks, one per hour, added in hour order. */
+    private fun bindDayStrip(
         context: Context,
         views: RemoteViews,
         entries: List<HourSlot>,
         liveHour: Int,
         isToday: Boolean,
     ) {
-        views.removeAllViews(R.id.widget_day_meter)
-        val planned = entries.filter { it.state == "active" || it.state == "completed" }
-        if (planned.isEmpty()) {
-            views.setViewVisibility(R.id.widget_day_meter, View.GONE)
-            return
-        }
-        views.setViewVisibility(R.id.widget_day_meter, View.VISIBLE)
-        meterCells(planned).forEach { cell ->
-            val isLive = isToday && liveHour >= cell.first && liveHour <= cell.last
-            val background = when {
-                cell.done && isLive -> R.drawable.bg_widget_seg_done_live
-                cell.done -> R.drawable.bg_widget_seg_done
-                isLive -> R.drawable.bg_widget_seg_active_live
-                else -> R.drawable.bg_widget_seg_active
+        views.removeAllViews(R.id.widget_day_strip)
+        val byHour = entries.associateBy { it.hour }
+        for (hour in 0 until WidgetDayPlan.HOURS_IN_DAY) {
+            val slot = byHour[hour] ?: HourSlot(hour, "empty", "")
+            val isLive = isToday && hour == liveHour
+            val background = when (WidgetDayPlan.rowStateFor(slot, liveHour, isToday)) {
+                RowState.done ->
+                    if (isLive) R.drawable.bg_widget_seg_done_live else R.drawable.bg_widget_seg_done
+                RowState.inPlace ->
+                    if (isLive) R.drawable.bg_widget_seg_active_live else R.drawable.bg_widget_seg_active
+                RowState.missed ->
+                    if (isLive) R.drawable.bg_widget_seg_missed_live else R.drawable.bg_widget_seg_missed
+                RowState.free ->
+                    if (isLive) R.drawable.bg_widget_seg_free_live else R.drawable.bg_widget_seg_free
             }
-            val segment = RemoteViews(context.packageName, R.layout.widget_day_segment)
-            segment.setInt(R.id.segment_body, "setBackgroundResource", background)
-            views.addView(R.id.widget_day_meter, segment)
-        }
-    }
-
-    private fun meterCells(planned: List<HourSlot>): List<MeterCell> {
-        if (planned.size <= MAX_SEGMENTS) {
-            return planned.map { MeterCell(it.hour, it.hour, it.state == "completed") }
-        }
-        return (0 until MAX_SEGMENTS).map { bucket ->
-            val from = bucket * planned.size / MAX_SEGMENTS
-            val to = ((bucket + 1) * planned.size / MAX_SEGMENTS).coerceAtLeast(from + 1)
-            val slice = planned.subList(from, to.coerceAtMost(planned.size))
-            MeterCell(slice.first().hour, slice.last().hour, slice.all { it.state == "completed" })
+            val tick = RemoteViews(context.packageName, R.layout.widget_day_tick)
+            tick.setInt(R.id.segment_body, "setBackgroundResource", background)
+            views.addView(R.id.widget_day_strip, tick)
         }
     }
 
@@ -509,8 +572,15 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         textRes: Int,
         colorRes: Int,
         backgroundRes: Int,
+        chipNow: Boolean,
     ) {
-        views.setTextViewText(R.id.hero_chip, context.getString(textRes))
+        val label = context.getString(textRes)
+        // One chip instead of a NOW label plus a state label: the compact card
+        // has no room to float two tiny words next to each other.
+        views.setTextViewText(
+            R.id.hero_chip,
+            if (chipNow) "${context.getString(R.string.widget_now)} · $label" else label,
+        )
         views.setTextColor(R.id.hero_chip, context.getColor(colorRes))
         views.setInt(R.id.hero_chip, "setBackgroundResource", backgroundRes)
         views.setViewVisibility(R.id.hero_chip, View.VISIBLE)
@@ -529,7 +599,11 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         row.setViewVisibility(R.id.slot_status, View.VISIBLE)
     }
 
-    /** Every countdown names what ends: the hour, not the item. */
+    /**
+     * Every countdown names what ends: the hour, not the item. The compact card
+     * says "This hour · 26 min left" under its bar, so the bar cannot be read as
+     * the day's progress.
+     */
     private fun hourMeta(
         context: Context,
         minutesInto: Int,
@@ -537,8 +611,11 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         compact: Boolean,
     ): String = when {
         minutesLeft <= 1 -> context.getString(R.string.widget_hour_ending)
-        minutesInto == 0 -> context.getString(R.string.widget_hour_started)
-        compact -> context.getString(R.string.widget_hour_ends_short, minutesLeft)
+        minutesInto == 0 ->
+            context.getString(
+                if (compact) R.string.widget_hour_bar_started else R.string.widget_hour_started,
+            )
+        compact -> context.getString(R.string.widget_hour_bar_label, minutesLeft)
         else -> context.getString(R.string.widget_hour_ends_in, minutesLeft)
     }
 
@@ -583,9 +660,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
     /** Which state the hero card is in. */
     private enum class HeroMode { live, stale, empty }
 
-    /** One painted segment: an hour, or a bucket of adjacent hours. */
-    private data class MeterCell(val first: Int, val last: Int, val done: Boolean)
-
     /** Text sizes per bucket, so a full screen card does not keep 10sp labels. */
     private data class TypeScale(
         val heroTime: Float,
@@ -600,20 +674,25 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val footer: Float,
         val more: Float,
         val compactLayout: Boolean = false,
+        val showHeroMeta: Boolean = true,
     )
 
-    private fun scaleFor(bucket: WidgetSize.Bucket): TypeScale = when (bucket) {
+    private fun scaleFor(bucket: WidgetSize.Bucket, heightDp: Int): TypeScale = when (bucket) {
+        // Nothing the user has to read is under 10sp, in any bucket.
         WidgetSize.Bucket.compact -> TypeScale(
-            heroTime = 24f, heroText = 12f, heroMeta = 11f, chip = 10f,
+            heroTime = 22f, heroText = 12f, heroMeta = 10.5f, chip = 10f,
             rowText = 12f, rowHour = 11f, rowChip = 10f,
-            brand = 10f, day = 10.5f, footer = 11f, more = 11f,
+            brand = 10f, day = 10.5f, footer = 10.5f, more = 10.5f,
             compactLayout = true,
+            // A 2x2 card keeps the item and the bar; the day label under the
+            // bar is the line that has to go, or the card clips its own hero.
+            showHeroMeta = heightDp >= WidgetSize.COMPACT_FOOTER_HEIGHT_DP,
         )
 
         WidgetSize.Bucket.medium -> TypeScale(
             heroTime = 26f, heroText = 14f, heroMeta = 11.5f, chip = 10f,
             rowText = 13f, rowHour = 11.5f, rowChip = 10f,
-            brand = 10.5f, day = 11f, footer = 11f, more = 11f,
+            brand = 11f, day = 11.5f, footer = 11.5f, more = 11f,
         )
 
         WidgetSize.Bucket.large -> TypeScale(
@@ -629,11 +708,5 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         /** Fallback placement when the launcher reports no options. */
         const val DEFAULT_MIN_WIDTH_DP = 250
         const val DEFAULT_MIN_HEIGHT_DP = 180
-
-        /**
-         * Ceiling on painted day-meter segments. It keeps the widget's view
-         * count near 40 in the medium bucket.
-         */
-        const val MAX_SEGMENTS = 10
     }
 }

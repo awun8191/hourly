@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Medium bucket (about 4x3): brand and day, the hour body, the segmented day
-     meter, and the footer count. -->
+<!-- Medium bucket (about 4x3 to 4x4): brand and day, the fixed hour body, then
+     the day strip and the count directly under the last row, with a tail that
+     takes whatever the card has left. The footer used to be pushed to the
+     bottom of the card with a weighted body, which left a blank lower third
+     under a single hero. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,7 +29,7 @@
             android:letterSpacing="0.18"
             android:text="@string/widget_brand"
             android:textColor="@color/widget_accent"
-            android:textSize="10.5sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <TextView
@@ -35,25 +38,24 @@
             android:layout_height="wrap_content"
             android:letterSpacing="0.08"
             android:textColor="@color/widget_muted"
-            android:textSize="11sp"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- The live hour plus the hours around it, built in Kotlin -->
+    <!-- The live hour plus the hours after it, built in Kotlin, top aligned -->
     <LinearLayout
         android:id="@+id/widget_body"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:layout_weight="1"
         android:orientation="vertical" />
 
-    <!-- Segmented day meter: one segment per planned hour -->
+    <!-- The 24 hour day strip: one tick per hour, added by the provider -->
     <LinearLayout
-        android:id="@+id/widget_day_meter"
+        android:id="@+id/widget_day_strip"
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="8dp"
         android:gravity="center_vertical"
         android:orientation="horizontal" />
 
@@ -63,8 +65,16 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:ellipsize="end"
+        android:includeFontPadding="false"
         android:letterSpacing="0.02"
         android:maxLines="1"
         android:textColor="@color/widget_muted"
-        android:textSize="11sp" />
+        android:textSize="11.5sp" />
+
+    <!-- Keeps the content top aligned: nothing here stretches a row -->
+    <TextView
+        android:id="@+id/widget_tail"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 </LinearLayout>

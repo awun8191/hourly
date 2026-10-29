@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One hour row. Weighted so the widget body fills its height instead of
-     leaving a blank band under the last row. -->
+<!-- One hour row in the medium bucket: fixed 40dp, top aligned, never weighted.
+     A weighted row grew to fill the card, which spread four hours over the
+     whole height and read as empty space. The tall bucket has its own copy at
+     44dp (hourly_widget_row_tall), matching WidgetSize.ROW_HEIGHT_*; the
+     numbers are duplicated because RemoteViews cannot resize a row at runtime
+     cheaply. Whatever height is left over is WidgetSize's job, not the row's. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/slot_row"
     android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
+    android:layout_height="40dp"
+    android:layout_marginTop="6dp"
     android:gravity="center_vertical"
-    android:minHeight="30dp"
     android:orientation="horizontal"
     android:paddingStart="2dp"
     android:paddingEnd="0dp">
@@ -16,8 +19,8 @@
         android:id="@+id/slot_bar"
         android:layout_width="3dp"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:background="@drawable/bg_row_bar_empty" />
 
     <TextView
@@ -49,9 +52,9 @@
         android:background="@drawable/bg_widget_chip_active"
         android:letterSpacing="0.06"
         android:paddingStart="8dp"
-        android:paddingTop="2dp"
+        android:paddingTop="3dp"
         android:paddingEnd="8dp"
-        android:paddingBottom="2dp"
+        android:paddingBottom="3dp"
         android:textColor="@color/widget_active_text"
         android:textSize="10sp"
         android:textStyle="bold" />

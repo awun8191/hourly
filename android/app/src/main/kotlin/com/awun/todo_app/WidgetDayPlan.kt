@@ -3,6 +3,28 @@ package com.awun.todo_app
 /** One hour the widget can paint: its hour, its state, and its item. */
 data class HourSlot(val hour: Int, val state: String, val text: String)
 
+/**
+ * How a row paints one hour once the clock is taken into account.
+ *
+ * `inPlace` is the plan, not the clock: an item that was in place at 11:00 has
+ * not happened by 14:00, so it is [missed] and never reads "in place" after its
+ * hour has gone. Nothing here flips the stored state; the widget stays read
+ * only, and a tap still toggles in place and done.
+ */
+enum class RowState {
+    /** Planned for an hour that has not started yet. */
+    inPlace,
+
+    /** Marked done. */
+    done,
+
+    /** Planned for an hour that has already gone by, and not done. */
+    missed,
+
+    /** No item in this hour. */
+    free,
+}
+
 /** What one child of the widget body stands for. */
 enum class BodyItemKind {
     /** The live hour, painted as the hero card. */
@@ -40,6 +62,33 @@ data class BodyItem(
 object WidgetDayPlan {
 
     const val HOURS_IN_DAY = 24
+
+    /**
+     * The state a row paints, which is the stored state except for one rule:
+     * an item that is still `active` in an hour that has already gone by is
+     * [RowState.missed], not "in place". A done item stays done, and a slot
+     * from another day is never missed, because the clock on this widget is
+     * not that day's clock.
+     */
+    fun rowStateFor(slot: HourSlot, liveHour: Int, isToday: Boolean): RowState {
+        val live = liveHour.coerceIn(0, HOURS_IN_DAY - 1)
+        return when {
+            slot.state == "active" && isToday && slot.hour < live -> RowState.missed
+            slot.state == "completed" -> RowState.done
+            slot.state == "active" -> RowState.inPlace
+            else -> RowState.free
+        }
+    }
+
+    /**
+     * True when the day has no planned hour after [liveHour], which is when the
+     * widget says "Nothing else planned today" instead of leaving the space
+     * under the day strip empty.
+     */
+    fun hasUpcoming(entries: List<HourSlot>, liveHour: Int): Boolean {
+        val live = liveHour.coerceIn(0, HOURS_IN_DAY - 1)
+        return entries.any { it.hour > live && it.state != "empty" }
+    }
 
     fun build(
         entries: List<HourSlot>,

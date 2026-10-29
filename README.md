@@ -40,24 +40,44 @@ from the reported width and height (a cell is about 70dp):
 
 | Bucket | Placement | Layout | Shows |
 |---|---|---|---|
-| Compact | under 170dp wide or 200dp tall (2x2, 4x2) | `hourly_widget_compact` | the live hour, its state chip, its item |
-| Medium | 200dp to 319dp tall (4x3, 4x4) | `hourly_widget` | the hero, 1 to 3 rows after it, the meter, the count |
-| Large | 320dp tall or more (4x6, full screen) | `hourly_widget_large` | the day in hour order, the hero in place, up to 6 rows, the meter, the legend |
+| Compact | under 170dp wide or 200dp tall (2x2, 4x2) | `hourly_widget_compact` | the live hour, one state chip, its item, the hour bar with its label, the count |
+| Medium | 200dp to 319dp tall (4x3, 4x4) | `hourly_widget` | the hero, up to 2 rows after it, the day strip, the count |
+| Large | 320dp tall or more (4x6, full screen) | `hourly_widget_large` | the day in hour order, the hero in place, up to 6 rows, then the 24 hour day strip with its labels, the quiet line, the count, and the legend |
 
 - **Hero** for the current hour: the time in large tabular figures, a `NOW` tag,
-  a state chip (`IN PLACE` green, `DONE` red, `FREE` grey), the item, a bar for
-  how much of the hour has run, and a line such as `This hour ends in 18 min`.
+  a state chip (`IN PLACE` green, `DONE` red, `FREE` grey, `MISSED` muted red
+  outline), the item on one ellipsised line, a bar for how much of the hour has
+  run, and a line such as `This hour ends in 18 min`. One line is what keeps the
+  hero a fixed height, so the body fits its box without guesswork. In the
+  compact bucket the chip carries `NOW` itself (`NOW · IN PLACE`) and the line
+  under the bar reads `This hour · 26 min left`, so the bar cannot be read as
+  the day.
 - **The day in hour order** in the large bucket, not only the future: hours that
   have passed are dimmed (done ones struck red), the live hour is the hero card
   in its place, then the hours after it. When the day does not fit, the oldest
   hours fold into `+2 earlier hours planned` and the furthest into
   `+3 more hours planned`.
 - **Rows** for the hours around the hero: a state bar, the hour, the item, and a
-  chip reading `IN PLACE`, `DONE`, or `FREE`. Rows are weighted, so the body
-  fills its box instead of leaving a blank band under the last row.
-- **Day meter** at the bottom: one segment per planned hour, red for done, green
-  for in place, a ring on the live hour, then the count
-  (`3 of 7 planned hours done`).
+  chip reading `IN PLACE`, `DONE`, `MISSED`, or `FREE`. A row is a fixed height
+  (40dp in medium, 44dp in large) with a 6dp gap and it sits at the top of the
+  body. Rows never grow to fill the card: the height they do not use is the day
+  panel's, so a small day reads as a short list, not as four hours spread over
+  the whole card.
+- **A past hour is never in place.** An item whose hour has gone by and that is
+  still active reads `MISSED`: a muted red bar, muted text, and an outline chip.
+  The stored state is untouched, so a tap still toggles in place and done, and
+  marking it done late is one tap. A done hour stays done, a free hour stays
+  free, and a payload from another day is never missed.
+- **The day strip** at the bottom in the medium and large buckets: one tick per
+  hour of the day, 00 to 23, in hour order. Green is in place, red is done,
+  muted red is missed, the faint track is a free hour, and the live hour carries
+  a ring. The large bucket labels it `00 06 12 18` under the ticks and groups it
+  with the count (`3 of 7 planned hours done`), the line
+  `Nothing else planned today` when no hour is left, and the legend.
+- **The leftover height is the day panel**, never padding: in the large bucket
+  the strip block takes whatever the rows do not, so a full screen card shows
+  the day at a glance instead of a blank band. The medium bucket keeps the strip
+  and the count under the last row and puts the slack under them.
 
 Each hour appears once: the next hour is a row, there is no separate NEXT line,
 and only the hero hour says `NOW`.
@@ -190,7 +210,7 @@ A day document holds at most 24 entries. Invalid JSON raises
 ```bash
 flutter analyze   # no issues
 flutter test      # 53 tests
-cd android && ./gradlew :app:testDebugUnitTest   # 18 widget Java/Kotlin tests
+cd android && ./gradlew :app:testDebugUnitTest   # 30 widget Java/Kotlin tests
 ```
 
 | Suite | Covers |
@@ -201,8 +221,8 @@ cd android && ./gradlew :app:testDebugUnitTest   # 18 widget Java/Kotlin tests
 | `day_segments_test.dart` | 24 segments, in place vs done, live hour, out of range hours, meter label |
 | `day_header_test.dart` | segment count, colours, live ring and lift, one semantics node, empty day, dark theme |
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |
-| `WidgetSizeTest` | compact, medium, and large buckets, row counts, resize headroom |
-| `WidgetDayPlanTest` | chronological day, earlier and more lines, free hour fill, one hero per day |
+| `WidgetSizeTest` | compact, medium, and large buckets, row counts, resize headroom, fixed row heights, every fitted body inside its box |
+| `WidgetDayPlanTest` | chronological day, earlier and more lines, free hour fill, one hero per day, the MISSED rule, the nothing-else line |
 
 ## Limits
 

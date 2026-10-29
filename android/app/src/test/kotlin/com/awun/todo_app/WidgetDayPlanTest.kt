@@ -1,6 +1,7 @@
 package com.awun.todo_app
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -120,5 +121,90 @@ class WidgetDayPlanTest {
             assertEquals(1, items.count { it.kind == BodyItemKind.hero })
             assertEquals(11, items.first { it.kind == BodyItemKind.hero }.slot?.hour)
         }
+    }
+
+    // ------------------------------------------------------------ missed rule
+
+    @Test
+    fun `an item still in place in an hour that has gone by is missed`() {
+        // The screenshot case: 22:00 Brush Teeth, still active, at 23:00.
+        val items = WidgetDayPlan.build(
+            entries = listOf(slot(22)),
+            liveHour = 23,
+            cells = 4,
+            includePast = true,
+        )
+
+        val row = items.first { it.kind == BodyItemKind.row }
+        assertEquals(RowState.missed, WidgetDayPlan.rowStateFor(row.slot!!, 23, true))
+    }
+
+    @Test
+    fun `an item in place in the live hour is in place, not missed`() {
+        assertEquals(
+            RowState.inPlace,
+            WidgetDayPlan.rowStateFor(slot(23), liveHour = 23, isToday = true),
+        )
+    }
+
+    @Test
+    fun `an item in place in a future hour is in place`() {
+        assertEquals(
+            RowState.inPlace,
+            WidgetDayPlan.rowStateFor(slot(23), liveHour = 20, isToday = true),
+        )
+    }
+
+    @Test
+    fun `a done hour stays done after its hour has gone by`() {
+        assertEquals(
+            RowState.done,
+            WidgetDayPlan.rowStateFor(slot(13, "completed"), liveHour = 23, isToday = true),
+        )
+    }
+
+    @Test
+    fun `a slot from another day is never missed`() {
+        // The widget is showing a stale payload: this clock is not that day's.
+        assertEquals(
+            RowState.inPlace,
+            WidgetDayPlan.rowStateFor(slot(9), liveHour = 23, isToday = false),
+        )
+    }
+
+    @Test
+    fun `a free hour is free even after it has gone by`() {
+        assertEquals(
+            RowState.free,
+            WidgetDayPlan.rowStateFor(slot(9, "empty"), liveHour = 23, isToday = true),
+        )
+    }
+
+    @Test
+    fun `only an active hour before the live hour is missed`() {
+        for (hour in 0..23) {
+            for (live in listOf(0, 9, 22, 23)) {
+                for (state in listOf("active", "completed", "empty")) {
+                    val row = WidgetDayPlan.rowStateFor(slot(hour, state), live, true)
+                    assertEquals(
+                        "hour $hour at $live, state $state",
+                        state == "active" && hour < live,
+                        row == RowState.missed,
+                    )
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------- upcoming items
+
+    @Test
+    fun `a day says nothing else only when no hour is left`() {
+        assertFalse(WidgetDayPlan.hasUpcoming(listOf(slot(12), slot(22)), liveHour = 23))
+        assertTrue(WidgetDayPlan.hasUpcoming(listOf(slot(12), slot(23)), liveHour = 22))
+        assertFalse(WidgetDayPlan.hasUpcoming(listOf(slot(12)), liveHour = 12))
+        assertFalse(WidgetDayPlan.hasUpcoming(listOf(slot(18, "empty")), liveHour = 12))
+        assertFalse(WidgetDayPlan.hasUpcoming(emptyList(), liveHour = 0))
+        assertFalse(WidgetDayPlan.hasUpcoming(listOf(slot(0, "completed")), liveHour = 23))
     }
 }

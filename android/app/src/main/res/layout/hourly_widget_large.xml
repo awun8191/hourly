@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Large bucket (tall or full width): the whole day in hour order, the live
-     hour as the hero, a taller meter, and a footer with the legend. -->
+<!-- Tall bucket (4x6 or a full screen card): the day in hour order, the live
+     hour as the hero, then one deliberate block that takes the height the rows
+     do not use: the 24 hour day strip (one tick per hour, 00 to 23), the hour
+     labels, the quiet line, the count, and the legend.
+
+     The strip used to sit in the header at 10dp with no children, which is why
+     the screenshot showed a wide grey band under the brand line instead of a
+     meter. It lives here now, where it is next to the count it explains. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -39,65 +45,155 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Segmented day meter: one segment per planned hour -->
-    <LinearLayout
-        android:id="@+id/widget_day_meter"
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal" />
-
-    <!-- The day in hour order, earlier hours included, live hour as the hero -->
+    <!-- The day in hour order, earlier hours included, live hour as the hero.
+         Wrap content: fixed rows do not grow, so the body never spreads. -->
     <LinearLayout
         android:id="@+id/widget_body"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:orientation="vertical" />
 
-    <TextView
-        android:id="@+id/widget_progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:letterSpacing="0.02"
-        android:maxLines="1"
-        android:textColor="@color/widget_muted"
-        android:textSize="12sp" />
-
+    <!-- The height the rows leave over, spent on the day at a glance -->
     <LinearLayout
+        android:id="@+id/widget_day_panel"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="vertical">
+
+        <!-- 24 ticks, one per hour of the day, added by the provider -->
+        <LinearLayout
+            android:id="@+id/widget_day_strip"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+
+        <!-- 00, 06, 12, 18: four six hour buckets, each label under its tick -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:includeFontPadding="false"
+                android:text="@string/widget_axis_00"
+                android:textColor="@color/widget_muted"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:includeFontPadding="false"
+                android:text="@string/widget_axis_06"
+                android:textColor="@color/widget_muted"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:includeFontPadding="false"
+                android:text="@string/widget_axis_12"
+                android:textColor="@color/widget_muted"
+                android:textSize="10sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:includeFontPadding="false"
+                android:text="@string/widget_axis_18"
+                android:textColor="@color/widget_muted"
+                android:textSize="10sp" />
+        </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/widget_nothing_line"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/widget_legend_in_place"
-            android:textColor="@color/widget_active_text"
-            android:textSize="11sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:text="@string/widget_legend_separator"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="@string/widget_nothing_else"
             android:textColor="@color/widget_muted"
-            android:textSize="11sp" />
+            android:textSize="11.5sp"
+            android:visibility="gone" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:id="@+id/widget_progress"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/widget_legend_done"
-            android:textColor="@color/widget_done_text"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.02"
+            android:maxLines="1"
+            android:textColor="@color/widget_muted"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/widget_legend_in_place"
+                android:textColor="@color/widget_active_text"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/widget_legend_separator"
+                android:textColor="@color/widget_muted"
+                android:textSize="11sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/widget_legend_done"
+                android:textColor="@color/widget_done_text"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/widget_legend_separator"
+                android:textColor="@color/widget_muted"
+                android:textSize="11sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="@string/widget_legend_missed"
+                android:textColor="@color/widget_missed_text"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

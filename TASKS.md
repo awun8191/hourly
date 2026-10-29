@@ -25,6 +25,10 @@
 
 ## Done
 
+- [x] Widget layout pass: fixed row heights, leftover height to the 24 hour day
+      strip, no header gap, a visible day meter, MISSED for a past hour that is
+      still in place, a compact card that fills its box (2026-10-30)
+- [x] 30 widget unit tests pass, plus 53 Flutter tests and a debug APK (2026-10-30)
 - [x] Segmented day meter in the header: 24 segments, live hour ring (2026-10-29)
 - [x] Responsive widget: compact, medium, and large layouts picked from the
       launcher size, repainted on resize (2026-10-29)

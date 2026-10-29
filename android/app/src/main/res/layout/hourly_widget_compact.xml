@@ -1,114 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Compact bucket (about 2x2): one hour, its state, its item. -->
+<!-- Compact bucket (2x2, 4x2): one hour, its state, its item, how far the hour
+     has run, and the day count directly under the hero. The hero used to be
+     weighted to fill the card, which pushed the item and the chip apart and
+     left the lower third of a 4x2 placement empty. The card is now sized by its
+     content and a tail takes the slack, so nothing floats. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_widget"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:paddingStart="6dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="6dp">
 
     <LinearLayout
         android:id="@+id/hero_card"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:background="@drawable/bg_widget_hero_active"
-        android:gravity="center_vertical"
         android:orientation="vertical"
         android:paddingStart="10dp"
-        android:paddingTop="8dp"
+        android:paddingTop="6dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="8dp">
-
-        <TextView
-            android:id="@+id/widget_day"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:letterSpacing="0.1"
-            android:maxLines="1"
-            android:textColor="@color/widget_accent"
-            android:textSize="10sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/hero_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFeatureSettings="tnum"
-            android:includeFontPadding="false"
-            android:letterSpacing="-0.02"
-            android:maxLines="1"
-            android:textColor="@color/widget_text"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+        android:paddingBottom="6dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/hero_now"
-                android:layout_width="wrap_content"
+                android:id="@+id/widget_day"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="7dp"
-                android:letterSpacing="0.14"
-                android:text="@string/widget_now"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:letterSpacing="0.1"
+                android:maxLines="1"
                 android:textColor="@color/widget_accent"
-                android:textSize="10sp"
+                android:textSize="10.5sp"
                 android:textStyle="bold" />
 
+            <!-- One chip, no separate NOW: the chip reads "NOW · IN PLACE" -->
             <TextView
                 android:id="@+id/hero_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_widget_chip_active"
-                android:letterSpacing="0.08"
+                android:letterSpacing="0.06"
                 android:paddingStart="8dp"
-                android:paddingTop="3dp"
+                android:paddingTop="2dp"
                 android:paddingEnd="8dp"
-                android:paddingBottom="3dp"
+                android:paddingBottom="2dp"
                 android:textColor="@color/widget_active_text"
                 android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
+            android:id="@+id/hero_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:fontFeatureSettings="tnum"
+            android:includeFontPadding="false"
+            android:letterSpacing="-0.02"
+            android:maxLines="1"
+            android:textColor="@color/widget_text"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/hero_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="1dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:maxLines="2"
+            android:maxLines="1"
             android:textColor="@color/widget_text"
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <!-- Kept for the shared hero binding; it has no room in a 2x2 cell. -->
+        <!-- Kept for the shared hero binding; the chip already says NOW here -->
+        <TextView
+            android:id="@+id/hero_now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_now"
+            android:textSize="10sp"
+            android:visibility="gone" />
+
         <ProgressBar
             android:id="@+id/hero_progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="4dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="4dp"
             android:max="60"
             android:progress="0"
             android:progressBackgroundTint="@color/widget_track"
-            android:progressTint="@color/widget_progress_fill"
-            android:visibility="gone" />
+            android:progressTint="@color/widget_progress_fill" />
 
+        <!-- Names the bar: it is this hour, not the day -->
         <TextView
             android:id="@+id/hero_meta"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:textColor="@color/widget_muted"
-            android:textSize="11sp"
-            android:visibility="gone" />
+            android:textSize="10.5sp" />
     </LinearLayout>
+
+    <!-- The day count sits directly under the hero -->
+    <TextView
+        android:id="@+id/widget_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="@color/widget_muted"
+        android:textSize="10.5sp" />
+
+    <TextView
+        android:id="@+id/widget_tail"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 </LinearLayout>

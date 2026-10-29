@@ -15,6 +15,8 @@
     <string name="widget_chip_free">FREE</string>
     <string name="widget_chip_in_place">IN PLACE</string>
     <string name="widget_chip_stale">STALE</string>
+    <!-- An item still in place in an hour that has already gone by -->
+    <string name="widget_chip_missed">MISSED</string>
     <string name="widget_hero_empty">Nothing planned this hour</string>
     <string name="widget_hero_add">Tap to plan this hour</string>
     <string name="widget_nothing_else">Nothing else planned today</string>
@@ -23,12 +25,20 @@
     <!-- Every countdown names what ends. A bare "36 min left" can be read as
          the end of the task instead of the end of the hour. -->
     <string name="widget_hour_ends_in">This hour ends in %1$d min</string>
-    <string name="widget_hour_ends_short">Ends in %1$d min</string>
+    <!-- Compact only: names the hour bar so it cannot be read as the day -->
+    <string name="widget_hour_bar_label">This hour · %1$d min left</string>
+    <string name="widget_hour_bar_started">This hour just started</string>
     <string name="widget_hour_ending">This hour ends in under a minute</string>
     <string name="widget_hour_started">This hour started less than a minute ago</string>
     <string name="widget_more_hours">+%1$d more hours planned</string>
     <string name="widget_earlier_hours">+%1$d earlier hours planned</string>
     <string name="widget_legend_in_place">In place</string>
     <string name="widget_legend_done">Done</string>
+    <string name="widget_legend_missed">Missed</string>
     <string name="widget_legend_separator">·</string>
+    <!-- The 24 hour day strip: one label per six hour group, under its tick -->
+    <string name="widget_axis_00">00</string>
+    <string name="widget_axis_06">06</string>
+    <string name="widget_axis_12">12</string>
+    <string name="widget_axis_18">18</string>
 </resources>
