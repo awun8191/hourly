@@ -126,6 +126,8 @@ class _DayScreenState extends State<DayScreen>
                   isToday: state.isTodayAt(DateTime.now()),
                   doneCount: state.doneCount,
                   total: state.filledCount,
+                  entries: state.entries.values,
+                  liveHour: currentHour,
                   onPrevious: () => cubit.shiftDay(-1),
                   onNext: () => cubit.shiftDay(1),
                   onToday: cubit.goToToday,

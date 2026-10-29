@@ -46,7 +46,7 @@ void main() {
     await addItem(tester, 9, 'Standup');
 
     expect(find.text('Standup'), findsOneWidget);
-    expect(find.text('0 of 1 done'), findsOneWidget);
+    expect(find.text('0 of 1 planned hours done'), findsOneWidget);
     expect(repository.day('2026-10-26')[9]!.text, 'Standup');
     expect(repository.day('2026-10-26')[9]!.isCompleted, isFalse);
   });
@@ -62,7 +62,7 @@ void main() {
       find.descendant(of: find.byKey(const Key('toggle-9')), matching: find.byType(Switch)),
     );
     expect(toggle.value, isFalse);
-    expect(find.text('1 of 1 done'), findsOneWidget);
+    expect(find.text('1 of 1 planned hours done'), findsOneWidget);
     expect(repository.day('2026-10-26')[9]!.isCompleted, isTrue);
   });
 
@@ -140,7 +140,7 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('Standup'), findsOneWidget);
     expect(find.text('Review'), findsOneWidget);
-    expect(find.text('1 of 2 done'), findsOneWidget);
+    expect(find.text('1 of 2 planned hours done'), findsOneWidget);
   });
 
   testWidgets('the dark theme paints the same day', (WidgetTester tester) async {
@@ -165,6 +165,6 @@ void main() {
     final BuildContext context = tester.element(find.text('Standup'));
     expect(Theme.of(context).brightness, Brightness.dark);
     expect(StatusPalette.of(context).activeSurface, StatusPalette.dark.activeSurface);
-    expect(find.text('1 of 2 done'), findsOneWidget);
+    expect(find.text('1 of 2 planned hours done'), findsOneWidget);
   });
 }

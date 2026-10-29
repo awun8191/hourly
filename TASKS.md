@@ -4,13 +4,14 @@
 
 - [ ] Install `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` on a phone
 - [ ] Add the widget from the home screen picker, on a 4x4 cell
-- [ ] Check the hero, the next line, the three rows, and the footer do not clip
+- [ ] Resize the widget down to 2x2 and up to the full screen: the compact,
+      medium, and large layouts must all fill their box
 - [ ] Check the widget toggle loop on the device: chip tap, red state, app state
 - [ ] Add a screenshot of the widget to the README
 
 ## Waiting On
 
-- A physical Android device for the widget test
+- A physical Android device for the widget resize and toggle checks
 
 ## Someday
 
@@ -20,9 +21,19 @@
 - Drag an item to another hour
 - Week view
 - Reminders before an hour starts
+- Scrolling inside the widget for a full 24 hour day (RemoteViews only)
 
 ## Done
 
+- [x] Segmented day meter in the header: 24 segments, live hour ring (2026-10-29)
+- [x] Responsive widget: compact, medium, and large layouts picked from the
+      launcher size, repainted on resize (2026-10-29)
+- [x] Widget body is the whole day in hour order, hero in place, with
+      earlier/more hour counts instead of blank space (2026-10-29)
+- [x] One representation per hour: no NEXT line, NOW only on the hero (2026-10-29)
+- [x] Legibility: body 12sp or more, labels 10sp or more, stronger muted grey (2026-10-29)
+- [x] Copy: every countdown names the hour it ends, footer says planned hours (2026-10-29)
+- [x] 53 Flutter tests and 18 widget unit tests pass, analyze clean (2026-10-29)
 - [x] Day list grouped by night, morning, afternoon, evening (2026-10-29)
 - [x] Current hour marker: NOW tag, tinted card, soft shadow (2026-10-29)
 - [x] Motion on toggle, day change, and progress; haptic on toggle (2026-10-29)

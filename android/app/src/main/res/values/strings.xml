@@ -5,26 +5,30 @@
     <string name="widget_description">Your hours, one item each. Tap the chip to toggle, tap a row to open the app.</string>
     <string name="widget_loading">Loading your day</string>
     <string name="widget_empty_hint">Open the app to plan today</string>
-    <string name="widget_stale_day">From %1$s</string>
+    <string name="widget_stale_day">Showing %1$s</string>
     <string name="widget_stale_hint">Open the app to refresh this widget</string>
-    <string name="widget_no_items">No items yet</string>
-    <string name="widget_progress">%1$d of %2$d done</string>
-    <string name="widget_now">NOW</string>
+    <string name="widget_no_items">No hours planned yet</string>
+    <string name="widget_progress">%1$d of %2$d planned hours done</string>
+    <string name="widget_day_complete">All planned hours done</string>
     <string name="widget_done">DONE</string>
-    <string name="widget_add">Tap to add</string>
+    <string name="widget_now">NOW</string>
     <string name="widget_chip_free">FREE</string>
     <string name="widget_chip_in_place">IN PLACE</string>
     <string name="widget_chip_stale">STALE</string>
     <string name="widget_hero_empty">Nothing planned this hour</string>
     <string name="widget_hero_add">Tap to plan this hour</string>
-    <string name="widget_next">NEXT %1$s</string>
-    <string name="widget_next_empty_label">LATER</string>
-    <string name="widget_next_empty">Nothing else planned today</string>
-    <string name="widget_next_done">%1$s (done)</string>
-    <string name="widget_minutes_left">%1$d min left in this hour</string>
-    <string name="widget_hour_ending">This hour is almost over</string>
-    <string name="widget_hour_started">This hour just started</string>
-    <string name="widget_day_complete">Day complete</string>
+    <string name="widget_nothing_else">Nothing else planned today</string>
     <string name="widget_free_hour">free</string>
     <string name="widget_open_app">Tap to open the app</string>
+    <!-- Every countdown names what ends. A bare "36 min left" can be read as
+         the end of the task instead of the end of the hour. -->
+    <string name="widget_hour_ends_in">This hour ends in %1$d min</string>
+    <string name="widget_hour_ends_short">Ends in %1$d min</string>
+    <string name="widget_hour_ending">This hour ends in under a minute</string>
+    <string name="widget_hour_started">This hour started less than a minute ago</string>
+    <string name="widget_more_hours">+%1$d more hours planned</string>
+    <string name="widget_earlier_hours">+%1$d earlier hours planned</string>
+    <string name="widget_legend_in_place">In place</string>
+    <string name="widget_legend_done">Done</string>
+    <string name="widget_legend_separator">·</string>
 </resources>

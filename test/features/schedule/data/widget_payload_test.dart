@@ -33,6 +33,8 @@ void main() {
     expect(first['label'], '09:00');
     expect(first['text'], 'Standup');
     expect(first['status'], 'active');
+    expect(first['current'], isTrue);
+    expect(payload['nowHour'], 9);
 
     final Map<String, Object?> third = slots[2]! as Map<String, Object?>;
     expect(third['hour'], 11);
@@ -42,6 +44,8 @@ void main() {
     expect(empty['hour'], 10);
     expect(empty['status'], 'empty');
     expect(empty['text'], '');
+    // Only the live hour is current; a future row must never paint NOW.
+    expect(empty['current'], isFalse);
   });
 
   test('stops at midnight instead of wrapping to the next day', () {
@@ -127,5 +131,32 @@ void main() {
     );
 
     expect(payload['dayPercent'], 67);
+  });
+
+  test('lists every planned hour for the widget day meter, in hour order', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 20),
+      entries: <HourEntry>[
+        entry(21, 'Read'),
+        entry(7, 'Gym', status: HourStatus.completed),
+        entry(8, 'Work', status: HourStatus.completed),
+      ],
+    );
+
+    final List<Object?> segments = payload['segments']! as List<Object?>;
+    expect(segments, hasLength(3));
+    expect(segments.map((Object? item) => (item! as Map<String, Object?>)['hour']),
+        <int>[7, 8, 21]);
+    expect(segments.map((Object? item) => (item! as Map<String, Object?>)['state']),
+        <String>['completed', 'completed', 'active']);
+  });
+
+  test('the widget day meter is empty when the day has no items', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 9),
+      entries: const <HourEntry>[],
+    );
+
+    expect(payload['segments'], isEmpty);
   });
 }

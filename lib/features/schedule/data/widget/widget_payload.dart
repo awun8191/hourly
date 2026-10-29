@@ -27,6 +27,9 @@ abstract final class WidgetPayload {
         'label': DateKey.hourLabel(hour),
         'text': entry?.text ?? '',
         'status': entry?.status.name ?? 'empty',
+        // Only the live hour is current. The widget must never paint NOW on a
+        // future row.
+        'current': hour == now.hour,
       });
     }
     final int done = entries.where((HourEntry entry) => entry.isCompleted).length;
@@ -37,14 +40,36 @@ abstract final class WidgetPayload {
       'day': _dayLabel(now),
       'done': done,
       'total': total,
-      // The live hour, so the widget can draw its progress without a timer.
+      // The live hour, so the widget can draw its progress without a timer and
+      // knows which hour owns the hero card.
+      'nowHour': now.hour,
       'minutesIntoHour': now.minute,
       'minutesLeft': 60 - now.minute,
       'hourPercent': (now.minute * 100 / 60).round(),
       'dayPercent': total == 0 ? 0 : (done * 100 / total).round(),
+      // Every planned hour of the day, in hour order, for the segmented meter
+      // and the chronological widget body.
+      'segments': _segments(entries),
       'next': _nextSlot(slots),
       'slots': slots,
     };
+  }
+
+  /// The planned hours of the whole day, in hour order, so the widget can draw
+  /// one segment per planned hour and a body that covers the day.
+  static List<Map<String, Object?>> _segments(Iterable<HourEntry> entries) {
+    final List<HourEntry> planned = entries
+        .where((HourEntry entry) => entry.hour >= 0 && entry.hour < 24)
+        .toList(growable: false)
+      ..sort((HourEntry a, HourEntry b) => a.hour.compareTo(b.hour));
+    return <Map<String, Object?>>[
+      for (final HourEntry entry in planned)
+        <String, Object?>{
+          'hour': entry.hour,
+          'state': entry.status.name,
+          'text': entry.text,
+        },
+    ];
   }
 
   /// The first planned hour after the live one, or null when the rest of the

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A "+N more hours" or "+N earlier hours" line. -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_more_line"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:letterSpacing="0.02"
+    android:maxLines="1"
+    android:paddingStart="2dp"
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:textColor="@color/widget_muted"
+    android:textSize="11sp" />

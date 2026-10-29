@@ -1,9 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../domain/entities/day_segments.dart';
+import '../../domain/entities/hour_entry.dart';
 
-/// Date, day navigation, done progress, and the color legend.
+/// Date, day navigation, the segmented day meter, and the color legend.
 class DayHeader extends StatelessWidget {
   const DayHeader({
     super.key,
@@ -11,6 +15,8 @@ class DayHeader extends StatelessWidget {
     required this.isToday,
     required this.doneCount,
     required this.total,
+    required this.entries,
+    required this.liveHour,
     required this.onPrevious,
     required this.onNext,
     required this.onToday,
@@ -20,6 +26,13 @@ class DayHeader extends StatelessWidget {
   final bool isToday;
   final int doneCount;
   final int total;
+
+  /// The selected day's items, one per hour.
+  final Iterable<HourEntry> entries;
+
+  /// The hour running now, or null when the selected day is not today.
+  final int? liveHour;
+
   final VoidCallback onPrevious;
   final VoidCallback onNext;
   final VoidCallback onToday;
@@ -30,6 +43,11 @@ class DayHeader extends StatelessWidget {
     final ColorScheme scheme = theme.colorScheme;
     final StatusPalette palette = StatusPalette.of(context);
     final String weekday = DateFormat('EEEE').format(day);
+    final List<DaySegment> segments = DayMeter.forDay(
+      entries: entries,
+      day: day,
+      liveHour: liveHour,
+    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(Insets.sm, Insets.xs, Insets.sm, Insets.sm),
@@ -89,10 +107,10 @@ class DayHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: Insets.sm),
+          const SizedBox(height: Insets.sm + 2),
           if (total == 0)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: Insets.xs),
+              padding: const EdgeInsets.symmetric(vertical: Insets.xs + 2),
               child: Text(
                 'Tap an hour to plan it',
                 textAlign: TextAlign.center,
@@ -102,29 +120,31 @@ class DayHeader extends StatelessWidget {
               ),
             )
           else
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: _DoneBar(
-                    value: total == 0 ? 0 : doneCount / total,
-                    color: palette.completed,
-                    track: scheme.surfaceContainerHighest,
-                  ),
-                ),
-                const SizedBox(width: Insets.md),
-                Text(
-                  '$doneCount of $total done',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
-                  ),
-                ),
-              ],
+            _DayMeter(
+              segments: segments,
+              palette: palette,
+              track: scheme.surfaceContainerHighest,
+              ring: scheme.onSurface,
             ),
           const SizedBox(height: Insets.sm),
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Expanded(
+                child: total > 0
+                    ? Text(
+                        '$doneCount of $total planned hours done',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                          fontFeatures: const <FontFeature>[
+                            FontFeature.tabularFigures(),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              const SizedBox(width: Insets.sm),
               _LegendTag(
                 color: palette.active,
                 label: 'In place',
@@ -238,34 +258,119 @@ class _DayChip extends StatelessWidget {
   }
 }
 
-class _DoneBar extends StatelessWidget {
-  const _DoneBar({
-    required this.value,
-    required this.color,
+/// The segmented day meter: one segment per hour, 24 in all, drawn as four
+/// groups of six to match the night, morning, afternoon, and evening sections
+/// of the list below it.
+///
+/// Red is done, green is in place, the faint track is a free hour, and the live
+/// hour carries a ring and a small lift. The whole meter is one semantics node;
+/// the segments themselves are decorative.
+class _DayMeter extends StatelessWidget {
+  const _DayMeter({
+    required this.segments,
+    required this.palette,
     required this.track,
+    required this.ring,
   });
 
-  final double value;
-  final Color color;
+  final List<DaySegment> segments;
+  final StatusPalette palette;
   final Color track;
+  final Color ring;
+
+  /// Height of a quiet segment.
+  static const double _height = 8;
+
+  /// Height of the live segment. The extra two points are the "lift".
+  static const double _liveHeight = 12;
+
+  static const double _gap = 2;
+  static const double _groupGap = 6;
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: value.clamp(0, 1)),
-      duration: Motion.slow,
-      curve: Motion.enter,
-      builder: (BuildContext context, double animated, Widget? child) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: animated,
-            minHeight: 6,
-            backgroundColor: track,
-            color: color,
+    final int groups = (segments.length / DayMeter.groupSize).ceil();
+    final List<Widget> bars = <Widget>[];
+    for (int group = 0; group < groups; group++) {
+      final int start = group * DayMeter.groupSize;
+      final int end = math.min(start + DayMeter.groupSize, segments.length);
+      if (group > 0) {
+        bars.add(const SizedBox(width: _groupGap));
+      }
+      for (int index = start; index < end; index++) {
+        if (index > start) {
+          bars.add(const SizedBox(width: _gap));
+        }
+        final DaySegment segment = segments[index];
+        bars.add(
+          Expanded(
+            child: _DayMeterBar(
+              segment: segment,
+              fill: switch (segment.state) {
+                DaySegmentState.completed => palette.completed,
+                DaySegmentState.active => palette.active,
+                DaySegmentState.empty => track,
+              },
+              ring: ring,
+              height: segment.isLive ? _liveHeight : _height,
+            ),
           ),
         );
-      },
+      }
+    }
+
+    return Semantics(
+      key: const Key('day-meter'),
+      container: true,
+      label: DayMeter.describe(segments),
+      child: ExcludeSemantics(
+        child: SizedBox(
+          height: _liveHeight,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: bars,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DayMeterBar extends StatelessWidget {
+  const _DayMeterBar({
+    required this.segment,
+    required this.fill,
+    required this.ring,
+    required this.height,
+  });
+
+  final DaySegment segment;
+  final Color fill;
+  final Color ring;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    final BorderRadius radius = BorderRadius.circular(3);
+    return AnimatedContainer(
+      key: Key('day-seg-${segment.hour}'),
+      duration: Motion.fast,
+      curve: Motion.state,
+      height: height,
+      decoration: BoxDecoration(
+        color: fill,
+        borderRadius: radius,
+        border: segment.isLive ? Border.all(color: ring, width: 1.4) : null,
+        boxShadow: segment.isLive
+            ? <BoxShadow>[
+                BoxShadow(
+                  color: fill.withValues(alpha: 0.4),
+                  blurRadius: 5,
+                  spreadRadius: 0.5,
+                ),
+              ]
+            : null,
+      ),
     );
   }
 }
