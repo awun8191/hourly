@@ -6,7 +6,9 @@
     <color name="widget_muted">#46554D</color>
     <color name="widget_active_text">#1F7A4C</color>
     <color name="widget_active_bg">#E3F3E9</color>
-    <color name="widget_done_text">#B3261E</color>
+    <!-- Done: a true red. #D92D20 is 4.56:1 on the card, so the chip and the
+         tick both read as red, not as a rose tint. -->
+    <color name="widget_done_text">#D92D20</color>
     <color name="widget_done_bg">#FCEAE8</color>
     <color name="widget_accent">#2F6B57</color>
     <color name="widget_progress_fill">#4C6F60</color>
@@ -14,12 +16,12 @@
     <color name="widget_hero_neutral">#F1F4F0</color>
     <color name="widget_hero_neutral_stroke">#E4EAE3</color>
     <color name="widget_active_stroke">#C2DDCB</color>
-    <color name="widget_done_stroke">#F0D2CD</color>
+    <color name="widget_done_stroke">#EFC7C0</color>
     <color name="widget_chip_muted_bg">#E8EDE8</color>
     <!-- Missed: an item still in place in an hour that has already gone by.
-         Muted red, 6.4:1 on the card, so it reads as a warning and never as
+         Muted red, 6.3:1 on the card, so it reads as a warning and never as
          the green "in place" the item no longer is. -->
-    <color name="widget_missed_text">#9C3B32</color>
-    <color name="widget_missed_bar">#A85C53</color>
-    <color name="widget_missed_stroke">#A85C53</color>
+    <color name="widget_missed_text">#A03A2E</color>
+    <color name="widget_missed_bar">#B0473A</color>
+    <color name="widget_missed_stroke">#B0473A</color>
 </resources>

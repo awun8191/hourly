@@ -6,18 +6,20 @@
     <color name="widget_muted">#B7C4BA</color>
     <color name="widget_active_text">#7DDBA8</color>
     <color name="widget_active_bg">#112E1E</color>
-    <color name="widget_done_text">#FFB4AB</color>
-    <color name="widget_done_bg">#38140F</color>
+    <!-- Done: a true red on black. #FF453A is 6.2:1 on the card and #E02B20,
+         the fill and the tick, is 4.5:1, so nothing here reads as pink. -->
+    <color name="widget_done_text">#FF453A</color>
+    <color name="widget_done_bg">#2A0B08</color>
     <color name="widget_accent">#9FDCC0</color>
     <color name="widget_progress_fill">#7FA894</color>
     <color name="widget_track">#262626</color>
     <color name="widget_hero_neutral">#0D0D0D</color>
     <color name="widget_hero_neutral_stroke">#262626</color>
     <color name="widget_active_stroke">#2E5B41</color>
-    <color name="widget_done_stroke">#5A2A24</color>
+    <color name="widget_done_stroke">#5C1A13</color>
     <color name="widget_chip_muted_bg">#1C1C1C</color>
-    <!-- Missed: muted red, 6.9:1 on the card, never the green of in place -->
-    <color name="widget_missed_text">#D98F86</color>
-    <color name="widget_missed_bar">#B5716A</color>
-    <color name="widget_missed_stroke">#8E4A42</color>
+    <!-- Missed: muted red, 5.7:1 on the card, never the green of in place -->
+    <color name="widget_missed_text">#E05A4E</color>
+    <color name="widget_missed_bar">#C4463A</color>
+    <color name="widget_missed_stroke">#C4463A</color>
 </resources>

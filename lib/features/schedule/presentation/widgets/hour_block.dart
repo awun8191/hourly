@@ -10,6 +10,11 @@ import 'hour_toggle.dart';
 /// Empty: a quiet outline that opens the editor.
 /// In place: green card, switch on.
 /// Done: muted red card, struck text, switch off.
+///
+/// The live hour is the only row that lifts off the page, and it lifts with a
+/// neutral depth shadow and a tinted surface, never with a coloured halo. A
+/// glow around a card is decoration, and on this screen colour already means
+/// state.
 class HourBlock extends StatelessWidget {
   const HourBlock({
     super.key,
@@ -28,6 +33,12 @@ class HourBlock extends StatelessWidget {
 
   static const BorderRadius _radius = BorderRadius.all(Radius.circular(16));
 
+  /// Depth only, no colour: 8% black. On the black theme it paints nothing, so
+  /// the dark live row lifts with its surface and hairline alone.
+  static const List<BoxShadow> _lift = <BoxShadow>[
+    BoxShadow(color: Color(0x14000000), blurRadius: 14, offset: Offset(0, 4)),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -38,17 +49,17 @@ class HourBlock extends StatelessWidget {
     final bool isEmpty = current == null;
 
     final Color surface = isEmpty
-        ? (isCurrentHour ? scheme.primary.withValues(alpha: 0.06) : Colors.transparent)
+        ? (isCurrentHour ? scheme.primary.withValues(alpha: 0.07) : Colors.transparent)
         : isDone
-            ? palette.completedSurface.withValues(alpha: 0.55)
+            ? palette.completedSurface.withValues(alpha: 0.85)
             : palette.activeSurface;
     final Color border = isEmpty
         ? (isCurrentHour
-            ? scheme.primary.withValues(alpha: 0.6)
-            : scheme.outlineVariant.withValues(alpha: 0.7))
+            ? scheme.primary.withValues(alpha: 0.55)
+            : scheme.outlineVariant.withValues(alpha: 0.55))
         : isDone
-            ? palette.completed.withValues(alpha: 0.22)
-            : palette.active.withValues(alpha: 0.42);
+            ? palette.completed.withValues(alpha: 0.30)
+            : palette.active.withValues(alpha: 0.38);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -66,15 +77,7 @@ class HourBlock extends StatelessWidget {
                 color: surface,
                 borderRadius: _radius,
                 border: Border.all(color: border),
-                boxShadow: isCurrentHour
-                    ? <BoxShadow>[
-                        BoxShadow(
-                          color: scheme.primary.withValues(alpha: 0.12),
-                          blurRadius: 18,
-                          offset: const Offset(0, 6),
-                        ),
-                      ]
-                    : null,
+                boxShadow: isCurrentHour ? _lift : null,
               ),
               child: Row(
                 children: <Widget>[
@@ -152,16 +155,18 @@ class HourBlock extends StatelessWidget {
       final Color tint = isCurrentHour ? scheme.primary : scheme.onSurfaceVariant;
       return Row(
         children: <Widget>[
-          Icon(Icons.add_rounded, size: 18, color: tint),
-          const SizedBox(width: Insets.sm),
+          Icon(Icons.add_rounded, size: 16, color: tint),
+          const SizedBox(width: 10),
           Flexible(
             child: Text(
               isCurrentHour ? 'Plan this hour' : 'Add task',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontSize: 13,
+                height: 1.2,
                 color: tint,
-                fontWeight: isCurrentHour ? FontWeight.w600 : FontWeight.w400,
+                fontWeight: isCurrentHour ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
           ),
@@ -172,15 +177,10 @@ class HourBlock extends StatelessWidget {
     if (current.isCompleted) {
       return Row(
         children: <Widget>[
-          AnimatedContainer(
-            duration: Motion.normal,
-            curve: Motion.state,
-            width: 7,
-            height: 7,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: palette.completed,
-            ),
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(shape: BoxShape.circle, color: palette.completed),
           ),
           const SizedBox(width: Insets.md),
           Expanded(
@@ -190,12 +190,12 @@ class HourBlock extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelLarge?.copyWith(
                 fontSize: 13.5,
-                height: 1.2,
+                height: 1.25,
                 color: palette.completedText,
                 fontWeight: FontWeight.w500,
                 decoration: TextDecoration.lineThrough,
-                decorationColor: palette.completed,
-                decorationThickness: 1.6,
+                decorationColor: palette.completedText,
+                decorationThickness: 1.4,
               ),
             ),
           ),
@@ -209,6 +209,7 @@ class HourBlock extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: theme.textTheme.titleMedium?.copyWith(
         fontSize: 15,
+        height: 1.25,
         color: palette.activeText,
         fontWeight: FontWeight.w600,
       ),
@@ -217,6 +218,10 @@ class HourBlock extends StatelessWidget {
 }
 
 /// The left rail: the hour and, for the live hour, a small NOW tag.
+///
+/// The rail is a fixed column of right aligned tabular figures, so all 24 times
+/// share one optical edge and every card starts on one line. The tag sits under
+/// the hour rather than beside it, which keeps that edge intact.
 class _HourRail extends StatelessWidget {
   const _HourRail({
     required this.hour,
@@ -232,7 +237,7 @@ class _HourRail extends StatelessWidget {
     final ColorScheme scheme = theme.colorScheme;
 
     return SizedBox(
-      width: 58,
+      width: 56,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -244,10 +249,9 @@ class _HourRail extends StatelessWidget {
               fontSize: 12.5,
               height: 1.1,
               fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
-              fontWeight: isCurrentHour ? FontWeight.w800 : FontWeight.w500,
-              color: isCurrentHour
-                  ? scheme.primary
-                  : scheme.onSurfaceVariant,
+              fontWeight: isCurrentHour ? FontWeight.w700 : FontWeight.w500,
+              letterSpacing: 0.1,
+              color: isCurrentHour ? scheme.primary : scheme.onSurfaceVariant,
             ),
             child: Text(DateKey.hourLabel(hour)),
           ),
@@ -256,25 +260,24 @@ class _HourRail extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
               decoration: BoxDecoration(
-                color: scheme.primary.withValues(alpha: 0.14),
+                color: scheme.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Text(
                 'NOW',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  fontSize: 8.5,
-                  height: 1.2,
-                  letterSpacing: 0.8,
-                  fontWeight: FontWeight.w800,
+                  fontSize: 10,
+                  height: 1.15,
+                  letterSpacing: 0.7,
+                  fontWeight: FontWeight.w700,
                   color: scheme.primary,
                 ),
               ),
             )
           else
-            const SizedBox(height: 11),
+            const SizedBox(height: 12),
         ],
       ),
     );
   }
 }
-

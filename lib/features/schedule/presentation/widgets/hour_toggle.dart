@@ -7,6 +7,9 @@ import '../../../../core/theme/app_theme.dart';
 ///
 /// The track is red when the hour is off (empty or done) and green when the
 /// item is in place. The knob is yellow and sits above the track with a shadow.
+///
+/// Both shadows are neutral black: the knob's lift is depth, not light, so the
+/// switch never tints the card around it.
 class HourToggle extends StatelessWidget {
   const HourToggle({
     super.key,
@@ -51,11 +54,11 @@ class HourToggle extends StatelessWidget {
               decoration: BoxDecoration(
                 color: value ? palette.active : palette.completed,
                 borderRadius: BorderRadius.circular(_trackHeight),
-                boxShadow: <BoxShadow>[
+                boxShadow: const <BoxShadow>[
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.30),
+                    color: Color(0x33000000),
                     blurRadius: 6,
-                    offset: const Offset(0, 2),
+                    offset: Offset(0, 2),
                   ),
                 ],
               ),
@@ -73,17 +76,12 @@ class HourToggle extends StatelessWidget {
                       end: Alignment.bottomRight,
                       colors: <Color>[Color(0xFFFFE082), Color(0xFFF2B705)],
                     ),
-                    boxShadow: <BoxShadow>[
+                    boxShadow: const <BoxShadow>[
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.45),
-                        blurRadius: 5,
+                        color: Color(0x59000000),
+                        blurRadius: 6,
                         spreadRadius: 0.5,
-                        offset: const Offset(0, 3),
-                      ),
-                      BoxShadow(
-                        color: Colors.white.withValues(alpha: 0.35),
-                        blurRadius: 1,
-                        offset: const Offset(-1, -1),
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),

@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 /// Colors for the two hour states. Green means the item is in place, red means
 /// the item is done. The values are fixed, not theme derived, so the Android
 /// widget and the app always match.
+///
+/// The red is a true red family, never a pink tint: on black a light red loses
+/// its chroma and reads as rose, so [completed] stays saturated and only moves
+/// in lightness. On the dark surface [completedText] is 6.2:1 on black and
+/// 5.4:1 on [completedSurface], and [completed], the fill, is 4.5:1 on black,
+/// which clears 3:1 for a track and 4.5:1 for the text that rides on it.
 class StatusPalette {
   const StatusPalette({
     required this.active,
@@ -16,6 +22,8 @@ class StatusPalette {
   final Color active;
   final Color activeSurface;
   final Color activeText;
+
+  /// The done red as a fill: the switch track, the row bar, the meter tick.
   final Color completed;
   final Color completedSurface;
   final Color completedText;
@@ -24,18 +32,18 @@ class StatusPalette {
     active: Color(0xFF1F7A4C),
     activeSurface: Color(0xFFE3F3E9),
     activeText: Color(0xFF0B3A22),
-    completed: Color(0xFFB3261E),
-    completedSurface: Color(0xFFFCEDEB),
-    completedText: Color(0xFF8C1D18),
+    completed: Color(0xFFD92D20),
+    completedSurface: Color(0xFFFCEAE8),
+    completedText: Color(0xFFB42318),
   );
 
   static const StatusPalette dark = StatusPalette(
     active: Color(0xFF7DDBA8),
     activeSurface: Color(0xFF112E1E),
     activeText: Color(0xFFBDEFD3),
-    completed: Color(0xFFFFB4AB),
-    completedSurface: Color(0xFF38140F),
-    completedText: Color(0xFFFFDAD6),
+    completed: Color(0xFFE02B20),
+    completedSurface: Color(0xFF2A0B08),
+    completedText: Color(0xFFFF453A),
   );
 
   static StatusPalette of(BuildContext context) =>
@@ -87,6 +95,20 @@ abstract final class AppTheme {
         surfaceContainerHigh: const Color(0xFF151515),
         surfaceContainerHighest: const Color(0xFF1C1C1C),
         outlineVariant: const Color(0xFF2B2B2B),
+        // Material's dark error is a pink tint. The app has one red family, so
+        // the error role borrows it: a destructive action matches the done
+        // state instead of introducing a second, pinker red.
+        error: StatusPalette.dark.completedText,
+        onError: StatusPalette.dark.completedSurface,
+        errorContainer: StatusPalette.dark.completedSurface,
+        onErrorContainer: StatusPalette.dark.completedText,
+      );
+    } else {
+      scheme = scheme.copyWith(
+        error: StatusPalette.light.completedText,
+        onError: Colors.white,
+        errorContainer: StatusPalette.light.completedSurface,
+        onErrorContainer: StatusPalette.light.completedText,
       );
     }
     final ThemeData base = ThemeData(
@@ -117,8 +139,8 @@ abstract final class AppTheme {
         letterSpacing: -0.1,
         height: 1.25,
       ),
-      bodyMedium: base.textTheme.bodyMedium?.copyWith(height: 1.4),
-      bodySmall: base.textTheme.bodySmall?.copyWith(height: 1.35),
+      bodyMedium: base.textTheme.bodyMedium?.copyWith(height: 1.45),
+      bodySmall: base.textTheme.bodySmall?.copyWith(height: 1.45),
       labelLarge: base.textTheme.labelLarge?.copyWith(
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
@@ -128,8 +150,8 @@ abstract final class AppTheme {
         letterSpacing: 0.2,
       ),
       labelSmall: base.textTheme.labelSmall?.copyWith(
-        fontWeight: FontWeight.w600,
-        letterSpacing: 0.7,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.9,
       ),
     );
 

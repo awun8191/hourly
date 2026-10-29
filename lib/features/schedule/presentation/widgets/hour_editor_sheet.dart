@@ -77,8 +77,8 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
     final Color stateColor = !isEditing
         ? scheme.onSurfaceVariant
         : isDone
-            ? palette.completed
-            : palette.active;
+            ? palette.completedText
+            : palette.activeText;
     final Color stateSurface = !isEditing
         ? scheme.surfaceContainerHighest
         : isDone
@@ -92,7 +92,7 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
           Insets.xl,
           Insets.xs,
           Insets.xl,
-          MediaQuery.viewInsetsOf(context).bottom + Insets.lg,
+          MediaQuery.viewInsetsOf(context).bottom + Insets.xl,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -106,10 +106,13 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
                     DateKey.hourRangeLabel(widget.hour),
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
+                      letterSpacing: -0.4,
+                      height: 1.15,
+                      fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
+                const SizedBox(width: Insets.md),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
@@ -120,19 +123,22 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
                     stateLabel,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: stateColor,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 10,
+                      height: 1.2,
+                      fontWeight: FontWeight.w700,
                       letterSpacing: 0.9,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: Insets.xs + 2),
+            const SizedBox(height: 6),
             Text(
               isEditing
                   ? 'Edit the one item in this hour.'
                   : 'One item per hour. Keep it to a single line.',
               style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: 12.5,
                 color: scheme.onSurfaceVariant,
               ),
             ),
@@ -145,27 +151,35 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
               textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.done,
               style: theme.textTheme.bodyLarge?.copyWith(
+                fontSize: 16,
+                height: 1.35,
                 fontWeight: FontWeight.w500,
               ),
               decoration: InputDecoration(
                 hintText: 'What happens in this hour?',
                 counterStyle: theme.textTheme.labelSmall?.copyWith(
+                  fontSize: 10,
                   color: scheme.onSurfaceVariant,
                 ),
               ),
               onSubmitted: (String _) => _save(),
             ),
-            const SizedBox(height: Insets.md),
+            const SizedBox(height: Insets.sm),
+            Divider(
+              color: scheme.outlineVariant.withValues(alpha: 0.5),
+              height: 1,
+            ),
+            const SizedBox(height: Insets.lg),
             Row(
               children: <Widget>[
                 if (isEditing)
                   TextButton.icon(
                     onPressed: _delete,
-                    icon: const Icon(Icons.delete_outline_rounded, size: 19),
+                    icon: const Icon(Icons.delete_outline_rounded, size: 18),
                     label: const Text('Remove'),
                     style: TextButton.styleFrom(
                       foregroundColor: scheme.error,
-                      padding: const EdgeInsets.symmetric(horizontal: Insets.md),
+                      padding: const EdgeInsets.symmetric(horizontal: Insets.sm),
                     ),
                   ),
                 const Spacer(),
@@ -174,9 +188,12 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
                   onPressed: _save,
                   icon: Icon(
                     isEditing ? Icons.check_rounded : Icons.add_rounded,
-                    size: 19,
+                    size: 18,
                   ),
                   label: Text(isEditing ? 'Save' : 'Add'),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(128, Insets.touch),
+                  ),
                 ),
               ],
             ),

@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:fontFeatureSettings="tnum"
+        android:letterSpacing="0.02"
         android:includeFontPadding="false"
         android:textColor="@color/widget_muted"
         android:textSize="11.5sp" />
@@ -50,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:background="@drawable/bg_widget_chip_active"
-        android:letterSpacing="0.06"
+        android:letterSpacing="0.08"
         android:paddingStart="8dp"
         android:paddingTop="3dp"
         android:paddingEnd="8dp"

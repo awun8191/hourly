@@ -8,6 +8,10 @@ import '../../domain/entities/day_segments.dart';
 import '../../domain/entities/hour_entry.dart';
 
 /// Date, day navigation, the segmented day meter, and the color legend.
+///
+/// The hierarchy steps down four times: the chip, the date, the meter, then the
+/// count. Each step changes weight and tracking, not only size, so the header
+/// reads as one block instead of five labels set at the same emphasis.
 class DayHeader extends StatelessWidget {
   const DayHeader({
     super.key,
@@ -50,7 +54,7 @@ class DayHeader extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Insets.sm, Insets.xs, Insets.sm, Insets.sm),
+      padding: const EdgeInsets.fromLTRB(Insets.lg, Insets.sm, Insets.lg, Insets.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -69,7 +73,7 @@ class DayHeader extends StatelessWidget {
                       isLive: isToday,
                       onPressed: isToday ? null : onToday,
                     ),
-                    const SizedBox(height: Insets.xs + 2),
+                    const SizedBox(height: 6),
                     AnimatedSwitcher(
                       duration: Motion.normal,
                       switchInCurve: Motion.enter,
@@ -93,7 +97,8 @@ class DayHeader extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w700,
-                          letterSpacing: -0.6,
+                          letterSpacing: -0.7,
+                          height: 1.1,
                         ),
                       ),
                     ),
@@ -107,14 +112,15 @@ class DayHeader extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: Insets.sm + 2),
+          const SizedBox(height: Insets.lg),
           if (total == 0)
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: Insets.xs + 2),
+              padding: const EdgeInsets.only(bottom: Insets.sm),
               child: Text(
                 'Tap an hour to plan it',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 12.5,
                   color: scheme.onSurfaceVariant,
                 ),
               ),
@@ -126,7 +132,7 @@ class DayHeader extends StatelessWidget {
               track: scheme.surfaceContainerHighest,
               ring: scheme.onSurface,
             ),
-          const SizedBox(height: Insets.sm),
+          const SizedBox(height: Insets.md),
           Row(
             children: <Widget>[
               Expanded(
@@ -136,6 +142,7 @@ class DayHeader extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelMedium?.copyWith(
+                          fontSize: 11.5,
                           color: scheme.onSurfaceVariant,
                           fontFeatures: const <FontFeature>[
                             FontFeature.tabularFigures(),
@@ -148,14 +155,14 @@ class DayHeader extends StatelessWidget {
               _LegendTag(
                 color: palette.active,
                 label: 'In place',
-                background: palette.activeSurface.withValues(alpha: 0.7),
+                background: palette.activeSurface.withValues(alpha: 0.65),
                 foreground: palette.activeText,
               ),
               const SizedBox(width: Insets.sm),
               _LegendTag(
                 color: palette.completed,
                 label: 'Done',
-                background: palette.completedSurface.withValues(alpha: 0.7),
+                background: palette.completedSurface.withValues(alpha: 0.75),
                 foreground: palette.completedText,
               ),
             ],
@@ -183,10 +190,11 @@ class _ArrowButton extends StatelessWidget {
     return IconButton(
       onPressed: onPressed,
       tooltip: tooltip,
-      iconSize: 22,
+      iconSize: 20,
       style: IconButton.styleFrom(
         minimumSize: const Size(Insets.touch, Insets.touch),
-        backgroundColor: scheme.surfaceContainerHighest.withValues(alpha: 0.45),
+        backgroundColor: scheme.surfaceContainerHighest.withValues(alpha: 0.40),
+        foregroundColor: scheme.onSurfaceVariant,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       icon: Icon(icon),
@@ -215,24 +223,26 @@ class _DayChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
       decoration: BoxDecoration(
         color: isLive
-            ? scheme.primary.withValues(alpha: 0.12)
-            : scheme.surfaceContainerHighest.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(7),
+            ? scheme.primary.withValues(alpha: 0.10)
+            : scheme.surfaceContainerHighest.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            width: 5,
-            height: 5,
+            width: 4.5,
+            height: 4.5,
             decoration: BoxDecoration(shape: BoxShape.circle, color: foreground),
           ),
           const SizedBox(width: 6),
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: 10,
+              height: 1.2,
               color: foreground,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w700,
               letterSpacing: 1.1,
             ),
           ),
@@ -250,7 +260,7 @@ class _DayChip extends StatelessWidget {
         message: 'Back to today',
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(7),
+          borderRadius: BorderRadius.circular(8),
           child: chip,
         ),
       ),
@@ -265,6 +275,10 @@ class _DayChip extends StatelessWidget {
 /// Red is done, green is in place, the faint track is a free hour, and the live
 /// hour carries a ring and a small lift. The whole meter is one semantics node;
 /// the segments themselves are decorative.
+///
+/// The lift is height and a hairline ring only. A tick that glowed its own fill
+/// blurred into its neighbours: a status strip has to read as state, not as a
+/// light source.
 class _DayMeter extends StatelessWidget {
   const _DayMeter({
     required this.segments,
@@ -361,15 +375,6 @@ class _DayMeterBar extends StatelessWidget {
         color: fill,
         borderRadius: radius,
         border: segment.isLive ? Border.all(color: ring, width: 1.4) : null,
-        boxShadow: segment.isLive
-            ? <BoxShadow>[
-                BoxShadow(
-                  color: fill.withValues(alpha: 0.4),
-                  blurRadius: 5,
-                  spreadRadius: 0.5,
-                ),
-              ]
-            : null,
       ),
     );
   }
@@ -392,7 +397,7 @@ class _LegendTag extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: background,
         borderRadius: BorderRadius.circular(20),
@@ -401,8 +406,8 @@ class _LegendTag extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
-            width: 6,
-            height: 6,
+            width: 5.5,
+            height: 5.5,
             decoration: BoxDecoration(shape: BoxShape.circle, color: color),
           ),
           const SizedBox(width: 6),
@@ -411,7 +416,8 @@ class _LegendTag extends StatelessWidget {
             style: theme.textTheme.labelSmall?.copyWith(
               color: foreground,
               fontSize: 10.5,
-              letterSpacing: 0.2,
+              height: 1.2,
+              letterSpacing: 0.1,
               fontWeight: FontWeight.w600,
             ),
           ),

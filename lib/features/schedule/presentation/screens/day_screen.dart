@@ -157,7 +157,7 @@ class _DayScreenState extends State<DayScreen>
 
     return ListView.builder(
       controller: _controller,
-      padding: const EdgeInsets.fromLTRB(12, 0, 16, 32),
+      padding: const EdgeInsets.fromLTRB(Insets.lg, 0, Insets.lg, 40),
       itemCount: itemCount,
       itemBuilder: (BuildContext context, int index) {
         if (index % (_hoursPerSection + 1) == 0) {
@@ -224,29 +224,35 @@ class _SectionLabel extends StatelessWidget {
     final Color color = isNow ? scheme.primary : scheme.onSurfaceVariant;
 
     return Padding(
-      padding: const EdgeInsets.only(top: Insets.md, bottom: Insets.sm),
+      padding: const EdgeInsets.only(top: Insets.md, bottom: 6),
       child: Row(
         children: <Widget>[
           Text(
             label.toUpperCase(),
             style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: 10,
+              height: 1.3,
               color: color,
-              fontWeight: isNow ? FontWeight.w800 : FontWeight.w700,
-              letterSpacing: 1.5,
+              fontWeight: isNow ? FontWeight.w700 : FontWeight.w600,
+              letterSpacing: 1.6,
             ),
           ),
           const SizedBox(width: Insets.sm),
           Text(
             '$filled/6',
             style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: 10,
+              height: 1.3,
               color: scheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.2,
               fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(width: Insets.md),
           Expanded(
             child: Divider(
-              color: scheme.outlineVariant.withValues(alpha: isNow ? 0.9 : 0.5),
+              color: scheme.outlineVariant.withValues(alpha: isNow ? 0.9 : 0.45),
             ),
           ),
         ],
