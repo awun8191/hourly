@@ -8,7 +8,7 @@
     android:paddingStart="2dp"
     android:paddingEnd="0dp">
 
-    <View
+    <TextView
         android:id="@+id/slot_bar"
         android:layout_width="3dp"
         android:layout_height="14dp"
