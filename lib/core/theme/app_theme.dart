@@ -74,10 +74,21 @@ abstract final class AppTheme {
   static ThemeData get dark => _build(Brightness.dark);
 
   static ThemeData _build(Brightness brightness) {
-    final ColorScheme scheme = ColorScheme.fromSeed(
+    ColorScheme scheme = ColorScheme.fromSeed(
       seedColor: seed,
       brightness: brightness,
     );
+    if (brightness == Brightness.dark) {
+      scheme = scheme.copyWith(
+        surface: Colors.black,
+        surfaceContainerLowest: Colors.black,
+        surfaceContainerLow: const Color(0xFF0A0A0A),
+        surfaceContainer: const Color(0xFF101010),
+        surfaceContainerHigh: const Color(0xFF151515),
+        surfaceContainerHighest: const Color(0xFF1C1C1C),
+        outlineVariant: const Color(0xFF2B2B2B),
+      );
+    }
     final ThemeData base = ThemeData(
       useMaterial3: true,
       colorScheme: scheme,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../../../core/date/date_key.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/hour_entry.dart';
+import 'hour_toggle.dart';
 
 /// One hour row: the time rail, then the block.
 ///
@@ -106,23 +106,15 @@ class HourBlock extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (!isEmpty)
-                    MergeSemantics(
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 2),
-                        child: Semantics(
-                          label: isDone
-                              ? 'Put "${current.text}" back in place'
-                              : 'Mark "${current.text}" done',
-                          child: _HourSwitch(
-                            key: Key('toggle-$hour'),
-                            value: !isDone,
-                            palette: palette,
-                            onChanged: onToggle,
-                          ),
-                        ),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: HourToggle(
+                      key: Key('toggle-$hour'),
+                      value: current != null && !isDone,
+                      semanticLabel: _toggleLabel(current),
+                      onChanged: isEmpty ? onTap : onToggle,
                     ),
+                  ),
                 ],
               ),
             ),
@@ -130,6 +122,15 @@ class HourBlock extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _toggleLabel(HourEntry? current) {
+    if (current == null) {
+      return 'Plan this hour';
+    }
+    return current.isCompleted
+        ? 'Put "${current.text}" back in place'
+        : 'Mark "${current.text}" done';
   }
 
   String _semanticsLabel(HourEntry? current) {
@@ -277,44 +278,3 @@ class _HourRail extends StatelessWidget {
   }
 }
 
-class _HourSwitch extends StatelessWidget {
-  const _HourSwitch({
-    super.key,
-    required this.value,
-    required this.palette,
-    required this.onChanged,
-  });
-
-  final bool value;
-  final StatusPalette palette;
-  final VoidCallback onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 54,
-      height: Insets.touch,
-      child: Center(
-        child: Transform.scale(
-          scale: 0.9,
-          child: Switch(
-            value: value,
-            onChanged: (bool _) {
-              HapticFeedback.lightImpact();
-              onChanged();
-            },
-            thumbColor: const WidgetStatePropertyAll<Color>(Colors.white),
-            trackColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-              return states.contains(WidgetState.selected)
-                  ? palette.active
-                  : palette.completed;
-            }),
-            trackOutlineColor:
-                const WidgetStatePropertyAll<Color>(Colors.transparent),
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-        ),
-      ),
-    );
-  }
-}

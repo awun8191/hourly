@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="widget_background">#141A16</color>
-    <color name="widget_stroke">#232C26</color>
+    <color name="widget_background">#000000</color>
+    <color name="widget_stroke">#1F1F1F</color>
     <color name="widget_text">#E8EEE9</color>
     <color name="widget_muted">#B7C4BA</color>
     <color name="widget_active_text">#7DDBA8</color>
@@ -10,12 +10,12 @@
     <color name="widget_done_bg">#38140F</color>
     <color name="widget_accent">#9FDCC0</color>
     <color name="widget_progress_fill">#7FA894</color>
-    <color name="widget_track">#2A332C</color>
-    <color name="widget_hero_neutral">#1B221D</color>
-    <color name="widget_hero_neutral_stroke">#2B352D</color>
+    <color name="widget_track">#262626</color>
+    <color name="widget_hero_neutral">#0D0D0D</color>
+    <color name="widget_hero_neutral_stroke">#262626</color>
     <color name="widget_active_stroke">#2E5B41</color>
     <color name="widget_done_stroke">#5A2A24</color>
-    <color name="widget_chip_muted_bg">#26302A</color>
+    <color name="widget_chip_muted_bg">#1C1C1C</color>
     <!-- Missed: muted red, 6.9:1 on the card, never the green of in place -->
     <color name="widget_missed_text">#D98F86</color>
     <color name="widget_missed_bar">#B5716A</color>

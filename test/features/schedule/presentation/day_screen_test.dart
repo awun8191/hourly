@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo_app/app.dart';
+import 'package:todo_app/features/schedule/presentation/widgets/hour_toggle.dart';
 import 'package:todo_app/core/theme/app_theme.dart';
 import 'package:todo_app/features/schedule/domain/entities/hour_entry.dart';
 
@@ -58,12 +59,29 @@ void main() {
     await tester.tap(find.byKey(const Key('toggle-9')));
     await tester.pumpAndSettle();
 
-    final Switch toggle = tester.widget<Switch>(
-      find.descendant(of: find.byKey(const Key('toggle-9')), matching: find.byType(Switch)),
-    );
+    final HourToggle toggle = tester.widget<HourToggle>(find.byKey(const Key('toggle-9')));
     expect(toggle.value, isFalse);
     expect(find.text('1 of 1 planned hours done'), findsOneWidget);
     expect(repository.day('2026-10-26')[9]!.isCompleted, isTrue);
+  });
+
+  testWidgets('an empty hour has an off toggle that opens the planner', (WidgetTester tester) async {
+    await pumpApp(tester);
+
+    final Finder emptyToggle = find.byKey(const Key('toggle-10'));
+    expect(emptyToggle, findsOneWidget);
+    expect(tester.widget<HourToggle>(emptyToggle).value, isFalse);
+
+    await tester.tap(emptyToggle);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('hour-text-field')), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('hour-text-field')), 'Call mum');
+    await tester.tap(find.byKey(const Key('hour-save-button')));
+    await tester.pumpAndSettle();
+
+    expect(repository.day('2026-10-26')[10]!.text, 'Call mum');
+    expect(tester.widget<HourToggle>(emptyToggle).value, isTrue);
   });
 
   testWidgets('day arrows move between days and keep each day apart', (WidgetTester tester) async {

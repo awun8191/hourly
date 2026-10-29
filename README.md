@@ -17,6 +17,11 @@ The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
 
 Green means in place. Red means done. This mapping is the user's choice.
 
+Every hour carries the toggle, empty hours too. The track is red when the hour is
+off and green when the item is in place. The knob is yellow, with a gradient, a
+shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
+a true black background.
+
 Tap an empty block to type. Tap an item to edit or remove it. Use the switch to
 move between green and red. The arrows change the day, and every day stays in
 history.
