@@ -42,6 +42,30 @@ class StatusPalette {
       Theme.of(context).brightness == Brightness.dark ? dark : light;
 }
 
+/// The 4/8 pt spacing scale the layout uses. Every gap is one of these.
+abstract final class Insets {
+  static const double xxs = 2;
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 24;
+  static const double xxl = 32;
+
+  /// Minimum touch target, per the Material accessibility guidance.
+  static const double touch = 48;
+}
+
+/// Durations used by the day list and the editor.
+abstract final class Motion {
+  static const Duration fast = Duration(milliseconds: 140);
+  static const Duration normal = Duration(milliseconds: 220);
+  static const Duration slow = Duration(milliseconds: 320);
+
+  static const Curve enter = Curves.easeOutCubic;
+  static const Curve state = Curves.easeOutCubic;
+}
+
 /// Material 3 theme. Light and dark share one seed color.
 abstract final class AppTheme {
   static const Color seed = Color(0xFF2F6B57);
@@ -59,16 +83,56 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: scheme.surface,
     );
+
+    // Tighter display sizes, calmer label tracking, and airier body copy.
+    final TextTheme text = base.textTheme.copyWith(
+      headlineMedium: base.textTheme.headlineMedium?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.8,
+        height: 1.1,
+      ),
+      headlineSmall: base.textTheme.headlineSmall?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.6,
+        height: 1.15,
+      ),
+      titleLarge: base.textTheme.titleLarge?.copyWith(
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.3,
+        height: 1.2,
+      ),
+      titleMedium: base.textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.1,
+        height: 1.25,
+      ),
+      bodyMedium: base.textTheme.bodyMedium?.copyWith(height: 1.4),
+      bodySmall: base.textTheme.bodySmall?.copyWith(height: 1.35),
+      labelLarge: base.textTheme.labelLarge?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.1,
+      ),
+      labelMedium: base.textTheme.labelMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.2,
+      ),
+      labelSmall: base.textTheme.labelSmall?.copyWith(
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.7,
+      ),
+    );
+
     final BorderRadius fieldRadius = BorderRadius.circular(14);
 
     return base.copyWith(
+      textTheme: text,
       appBarTheme: AppBarTheme(
         backgroundColor: scheme.surface,
         foregroundColor: scheme.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: base.textTheme.headlineSmall?.copyWith(
+        titleTextStyle: text.headlineSmall?.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: -0.5,
           color: scheme.onSurface,
@@ -78,11 +142,16 @@ abstract final class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         color: scheme.surfaceContainerLow,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surfaceContainerHighest.withValues(alpha: 0.45),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: Insets.lg,
+          vertical: Insets.lg,
+        ),
+        hintStyle: text.bodyLarge?.copyWith(color: scheme.onSurfaceVariant),
         border: OutlineInputBorder(
           borderRadius: fieldRadius,
           borderSide: BorderSide.none,
@@ -96,12 +165,43 @@ abstract final class AppTheme {
           borderSide: BorderSide(color: scheme.primary, width: 1.5),
         ),
       ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surfaceContainerLow,
+        surfaceTintColor: Colors.transparent,
+        showDragHandle: true,
+        dragHandleColor: scheme.outlineVariant,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(0, Insets.touch),
+          padding: const EdgeInsets.symmetric(horizontal: Insets.xl),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: text.labelLarge?.copyWith(fontSize: 15),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(0, Insets.touch),
+          textStyle: base.textTheme.labelLarge,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant.withValues(alpha: 0.6),
+        thickness: 1,
+        space: 1,
+      ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(textStyle: base.textTheme.labelLarge),
+      progressIndicatorTheme: ProgressIndicatorThemeData(
+        color: scheme.primary,
+        linearTrackColor: scheme.surfaceContainerHighest,
+        linearMinHeight: 6,
       ),
     );
   }

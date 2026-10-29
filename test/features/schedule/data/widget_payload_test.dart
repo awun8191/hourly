@@ -68,4 +68,64 @@ void main() {
     expect(payload['total'], 3);
     expect(payload['day'], 'Monday 26');
   });
+
+  test('reports the minutes into the live hour and its progress', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 9, 42),
+      entries: <HourEntry>[entry(9, 'Standup')],
+    );
+
+    expect(payload['minutesIntoHour'], 42);
+    expect(payload['minutesLeft'], 18);
+    expect(payload['hourPercent'], 70);
+  });
+
+  test('the hour progress is capped at the end of the hour', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 23, 59),
+      entries: <HourEntry>[entry(23, 'Sleep')],
+    );
+
+    expect(payload['minutesIntoHour'], 59);
+    expect(payload['minutesLeft'], 1);
+    expect(payload['hourPercent'], 98);
+  });
+
+  test('exposes the next planned item after the live hour', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 9, 5),
+      entries: <HourEntry>[
+        entry(9, 'Standup'),
+        entry(11, 'Review', status: HourStatus.completed),
+      ],
+    );
+
+    final Map<String, Object?> next = payload['next']! as Map<String, Object?>;
+    expect(next['hour'], 11);
+    expect(next['label'], '11:00');
+    expect(next['text'], 'Review');
+    expect(next['status'], 'completed');
+  });
+
+  test('there is no next item when the rest of the window is empty', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 21),
+      entries: <HourEntry>[entry(9, 'Gym'), entry(21, 'Read')],
+    );
+
+    expect(payload['next'], isNull);
+  });
+
+  test('day progress uses the whole day, not the visible slots', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 26, 20),
+      entries: <HourEntry>[
+        entry(7, 'Gym', status: HourStatus.completed),
+        entry(8, 'Work', status: HourStatus.completed),
+        entry(21, 'Read'),
+      ],
+    );
+
+    expect(payload['dayPercent'], 67);
+  });
 }

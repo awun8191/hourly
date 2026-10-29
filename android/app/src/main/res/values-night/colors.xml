@@ -8,4 +8,12 @@
     <color name="widget_active_bg">#112E1E</color>
     <color name="widget_done_text">#FFB4AB</color>
     <color name="widget_done_bg">#38140F</color>
+    <color name="widget_accent">#9FDCC0</color>
+    <color name="widget_progress_fill">#7FA894</color>
+    <color name="widget_track">#2A332C</color>
+    <color name="widget_hero_neutral">#1B221D</color>
+    <color name="widget_hero_neutral_stroke">#2B352D</color>
+    <color name="widget_active_stroke">#2E5B41</color>
+    <color name="widget_done_stroke">#5A2A24</color>
+    <color name="widget_chip_muted_bg">#26302A</color>
 </resources>

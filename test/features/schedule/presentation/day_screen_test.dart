@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:todo_app/app.dart';
+import 'package:todo_app/core/theme/app_theme.dart';
+import 'package:todo_app/features/schedule/domain/entities/hour_entry.dart';
 
 import '../../../helpers/fake_schedule_repository.dart';
 import '../../../helpers/fake_widget_bridge.dart';
@@ -113,5 +115,56 @@ void main() {
     await pumpApp(tester);
 
     expect(find.text('Standup'), findsOneWidget);
+  });
+
+  testWidgets('a 360x640 phone renders the grouped day without overflow',
+      (WidgetTester tester) async {
+    tester.view.physicalSize = const Size(1080, 1920);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    repository = FakeScheduleRepository(<String, List<HourEntry>>{
+      '2026-10-26': <HourEntry>[
+        HourEntry(dateKey: '2026-10-26', hour: 9, text: 'Standup', updatedAt: fixed),
+        HourEntry(
+          dateKey: '2026-10-26',
+          hour: 11,
+          text: 'Review',
+          status: HourStatus.completed,
+          updatedAt: fixed,
+        ),
+      ],
+    });
+
+    await pumpApp(tester);
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Standup'), findsOneWidget);
+    expect(find.text('Review'), findsOneWidget);
+    expect(find.text('1 of 2 done'), findsOneWidget);
+  });
+
+  testWidgets('the dark theme paints the same day', (WidgetTester tester) async {
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    repository = FakeScheduleRepository(<String, List<HourEntry>>{
+      '2026-10-26': <HourEntry>[
+        HourEntry(dateKey: '2026-10-26', hour: 9, text: 'Standup', updatedAt: fixed),
+        HourEntry(
+          dateKey: '2026-10-26',
+          hour: 10,
+          text: 'Review',
+          status: HourStatus.completed,
+          updatedAt: fixed,
+        ),
+      ],
+    });
+
+    await pumpApp(tester);
+
+    expect(tester.takeException(), isNull);
+    final BuildContext context = tester.element(find.text('Standup'));
+    expect(Theme.of(context).brightness, Brightness.dark);
+    expect(StatusPalette.of(context).activeSurface, StatusPalette.dark.activeSurface);
+    expect(find.text('1 of 2 done'), findsOneWidget);
   });
 }

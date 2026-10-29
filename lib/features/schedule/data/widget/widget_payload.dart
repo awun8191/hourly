@@ -7,7 +7,7 @@ import '../../domain/entities/hour_entry.dart';
 /// it a small JSON document through `home_widget`, and the native provider
 /// renders that document.
 abstract final class WidgetPayload {
-  /// Rows the widget shows: the current hour and the next four.
+  /// Rows the widget may show: the current hour and the next four.
   static const int maxSlots = 5;
 
   static Map<String, Object?> build({
@@ -29,13 +29,34 @@ abstract final class WidgetPayload {
         'status': entry?.status.name ?? 'empty',
       });
     }
+    final int done = entries.where((HourEntry entry) => entry.isCompleted).length;
+    final int total = entries.length;
+
     return <String, Object?>{
       'date': DateKey.of(now),
       'day': _dayLabel(now),
-      'done': entries.where((HourEntry entry) => entry.isCompleted).length,
-      'total': entries.length,
+      'done': done,
+      'total': total,
+      // The live hour, so the widget can draw its progress without a timer.
+      'minutesIntoHour': now.minute,
+      'minutesLeft': 60 - now.minute,
+      'hourPercent': (now.minute * 100 / 60).round(),
+      'dayPercent': total == 0 ? 0 : (done * 100 / total).round(),
+      'next': _nextSlot(slots),
       'slots': slots,
     };
+  }
+
+  /// The first planned hour after the live one, or null when the rest of the
+  /// visible window is empty. It reuses the slot map so both sides share one
+  /// shape.
+  static Map<String, Object?>? _nextSlot(List<Map<String, Object?>> slots) {
+    for (int i = 1; i < slots.length; i++) {
+      if (slots[i]['status'] != 'empty') {
+        return slots[i];
+      }
+    }
+    return null;
   }
 
   static String _dayLabel(DateTime now) {

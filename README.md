@@ -21,22 +21,53 @@ Tap an empty block to type. Tap an item to edit or remove it. Use the switch to
 move between green and red. The arrows change the day, and every day stays in
 history.
 
+The list is grouped by part of day (night, morning, afternoon, evening), and the
+live hour carries a `NOW` tag, a tinted card, and a soft shadow. Empty hours stay
+quiet so a planned day stands out.
+
 ## Android widget
 
-The widget shows the current hour and the next four. Each row has the hour, the
-item, and a state chip:
+The widget leads with the live hour, then the hours after it:
 
-- `NOW` in green. Tap it to mark the item done.
-- `DONE` in red. Tap it to put the item back in place.
-- `Tap to add` on an empty hour. Tap it to open the app.
+- **Hero** for the current hour: the time in large tabular figures, a state chip
+  (`IN PLACE` green, `DONE` red, `FREE` grey), the item, a bar for how much of
+  the hour has run, and a line such as `42 min left in this hour`.
+- **Next up** line: the first planned hour after the live one.
+- **Three compact rows** for the hours that follow, each with a state bar, the
+  hour, the item, and a chip.
+- **Day progress** at the bottom: a red bar (red means done) and `2 of 5 done`.
 
-A tap on a chip runs a Dart callback in a background isolate. It flips the item,
+Tapping a chip runs a Dart callback in a background isolate. It flips the item,
 saves it, and repaints the widget. The app and the widget share one store, so a
-change in one shows in the other.
+change in one shows in the other. A tap on a row opens the app at that hour.
+
+The widget also handles its quiet states: a hero with no item asks you to plan
+the hour, a day with no items says so, and a payload from another day is marked
+`STALE` with a `From Monday 26` label. Dark mode comes from `values-night`.
 
 `android/app/src/main/kotlin/com/awun/todo_app/HourlyWidgetProvider.kt` builds
-the rows with `RemoteViews`. The app sends JSON through the `home_widget`
-package under the key `hourly_payload`.
+the views with `RemoteViews`. The app sends JSON through the `home_widget`
+package under the key `hourly_payload`:
+
+```json
+{
+  "date": "2026-10-26",
+  "day": "Monday 26",
+  "done": 1,
+  "total": 3,
+  "minutesIntoHour": 42,
+  "minutesLeft": 18,
+  "hourPercent": 70,
+  "dayPercent": 33,
+  "next": { "hour": 11, "label": "11:00", "text": "Review", "status": "active" },
+  "slots": [
+    { "hour": 9, "label": "09:00", "text": "Standup", "status": "active" }
+  ]
+}
+```
+
+`WidgetPayload.build()` computes every field from the injected `now`, so the
+payload tests cover the hour math, the next-up lookup, and the day percent.
 
 ## Stack
 
@@ -122,19 +153,20 @@ A day document holds at most 24 entries. Invalid JSON raises
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 29 tests
+flutter test      # 36 tests
 ```
 
 | Suite | Covers |
 |---|---|
 | `day_schedule_cubit_test.dart` | load, save, toggle, delete, day change, write failure, widget sync, progress |
 | `schedule_local_repository_test.dart` | day isolation, replace, delete, bad records, bad JSON |
-| `widget_payload_test.dart` | slot window, midnight stop, day counts |
-| `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload |
+| `widget_payload_test.dart` | slot window, midnight stop, day counts, minutes into the hour, next-up lookup, day percent |
+| `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |
 
 ## Limits
 
 - The widget is Android only. iOS uses the same store, but it has no widget yet.
 - There is no sync and no backup. Uninstalling the app removes the plan.
-- The widget shows five hours. A full day list needs a taller, scrollable widget.
+- The widget shows the live hour, the next-up line, and three compact rows. A
+  full day list needs a taller, scrollable widget.
 - Due dates, notes, and reminders are not implemented. One hour holds one item.

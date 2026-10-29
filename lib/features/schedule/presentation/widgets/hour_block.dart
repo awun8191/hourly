@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/date/date_key.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/hour_entry.dart';
 
-/// One hour row: the time label, then the block.
+/// One hour row: the time rail, then the block.
 ///
-/// Empty: a tap target that opens the editor.
-/// Active: green card, switch on.
-/// Completed: small red text, switch off.
+/// Empty: a quiet outline that opens the editor.
+/// In place: green card, switch on.
+/// Done: muted red card, struck text, switch off.
 class HourBlock extends StatelessWidget {
   const HourBlock({
     super.key,
@@ -25,171 +26,252 @@ class HourBlock extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onToggle;
 
+  static const BorderRadius _radius = BorderRadius.all(Radius.circular(16));
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final ColorScheme scheme = theme.colorScheme;
     final StatusPalette palette = StatusPalette.of(context);
+    final HourEntry? current = entry;
+    final bool isDone = current?.isCompleted ?? false;
+    final bool isEmpty = current == null;
+
+    final Color surface = isEmpty
+        ? (isCurrentHour ? scheme.primary.withValues(alpha: 0.06) : Colors.transparent)
+        : isDone
+            ? palette.completedSurface.withValues(alpha: 0.55)
+            : palette.activeSurface;
+    final Color border = isEmpty
+        ? (isCurrentHour
+            ? scheme.primary.withValues(alpha: 0.6)
+            : scheme.outlineVariant.withValues(alpha: 0.7))
+        : isDone
+            ? palette.completed.withValues(alpha: 0.22)
+            : palette.active.withValues(alpha: 0.42);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          SizedBox(
-            width: 54,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  DateKey.hourLabel(hour),
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: isCurrentHour ? FontWeight.w800 : FontWeight.w500,
-                    color: isCurrentHour ? scheme.primary : scheme.onSurfaceVariant,
-                  ),
-                ),
-                if (isCurrentHour)
-                  Text(
-                    'now',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: scheme.primary,
-                      fontSize: 10,
-                      height: 1.1,
+          _HourRail(hour: hour, isCurrentHour: isCurrentHour),
+          const SizedBox(width: Insets.md),
+          Expanded(
+            child: AnimatedContainer(
+              duration: Motion.normal,
+              curve: Motion.state,
+              height: isEmpty ? 50 : 58,
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: _radius,
+                border: Border.all(color: border),
+                boxShadow: isCurrentHour
+                    ? <BoxShadow>[
+                        BoxShadow(
+                          color: scheme.primary.withValues(alpha: 0.12),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Semantics(
+                      container: true,
+                      button: true,
+                      label: _semanticsLabel(current),
+                      onTap: onTap,
+                      child: ExcludeSemantics(
+                        child: Material(
+                          color: Colors.transparent,
+                          borderRadius: _radius,
+                          child: InkWell(
+                            onTap: onTap,
+                            borderRadius: _radius,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                left: Insets.lg,
+                                right: isEmpty ? Insets.lg : Insets.xs,
+                              ),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: _content(theme, scheme, palette, current),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-              ],
+                  if (!isEmpty)
+                    MergeSemantics(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 2),
+                        child: Semantics(
+                          label: isDone
+                              ? 'Put "${current.text}" back in place'
+                              : 'Mark "${current.text}" done',
+                          child: _HourSwitch(
+                            key: Key('toggle-$hour'),
+                            value: !isDone,
+                            palette: palette,
+                            onChanged: onToggle,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(width: 10),
-          Expanded(child: _block(context, theme, scheme, palette)),
         ],
       ),
     );
   }
 
-  Widget _block(
-    BuildContext context,
+  String _semanticsLabel(HourEntry? current) {
+    if (current == null) {
+      return '${DateKey.hourRangeLabel(hour)}, empty. Double tap to plan this hour.';
+    }
+    final String state = current.isCompleted ? 'done' : 'in place';
+    return '${DateKey.hourRangeLabel(hour)}, ${current.text}, $state. '
+        'Double tap to edit.';
+  }
+
+  Widget _content(
     ThemeData theme,
     ColorScheme scheme,
     StatusPalette palette,
+    HourEntry? current,
   ) {
-    final HourEntry? current = entry;
-    final BorderRadius radius = BorderRadius.circular(14);
-
     if (current == null) {
-      return Material(
-        color: isCurrentHour ? scheme.primary.withValues(alpha: 0.05) : Colors.transparent,
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: radius,
-              border: Border.all(
-                color: isCurrentHour
-                    ? scheme.primary.withValues(alpha: 0.5)
-                    : scheme.outlineVariant.withValues(alpha: 0.7),
+      final Color tint = isCurrentHour ? scheme.primary : scheme.onSurfaceVariant;
+      return Row(
+        children: <Widget>[
+          Icon(Icons.add_rounded, size: 18, color: tint),
+          const SizedBox(width: Insets.sm),
+          Flexible(
+            child: Text(
+              isCurrentHour ? 'Plan this hour' : 'Add task',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: tint,
+                fontWeight: isCurrentHour ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Row(
-              children: <Widget>[
-                Icon(Icons.add_rounded, size: 18, color: scheme.onSurfaceVariant),
-                const SizedBox(width: 8),
-                Text(
-                  'Add task',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
           ),
-        ),
+        ],
       );
     }
 
     if (current.isCompleted) {
-      return Material(
-        color: palette.completedSurface.withValues(alpha: 0.5),
-        borderRadius: radius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: radius,
-          child: Container(
-            padding: const EdgeInsets.only(left: 14, right: 4),
-            child: Row(
-              children: <Widget>[
-                Container(
-                  width: 6,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: palette.completed,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    current.text,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: palette.completedText,
-                      decoration: TextDecoration.lineThrough,
-                      decorationColor: palette.completed,
-                    ),
-                  ),
-                ),
-                _HourSwitch(
-                  key: Key('toggle-$hour'),
-                  value: false,
-                  palette: palette,
-                  onChanged: onToggle,
-                ),
-              ],
+      return Row(
+        children: <Widget>[
+          AnimatedContainer(
+            duration: Motion.normal,
+            curve: Motion.state,
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: palette.completed,
             ),
           ),
-        ),
+          const SizedBox(width: Insets.md),
+          Expanded(
+            child: Text(
+              current.text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontSize: 13.5,
+                height: 1.2,
+                color: palette.completedText,
+                fontWeight: FontWeight.w500,
+                decoration: TextDecoration.lineThrough,
+                decorationColor: palette.completed,
+                decorationThickness: 1.6,
+              ),
+            ),
+          ),
+        ],
       );
     }
 
-    return Material(
-      color: palette.activeSurface,
-      borderRadius: radius,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: radius,
-        child: Container(
-          padding: const EdgeInsets.only(left: 14, right: 4),
-          decoration: BoxDecoration(
-            borderRadius: radius,
-            border: Border.all(color: palette.active.withValues(alpha: 0.45)),
+    return Text(
+      current.text,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.titleMedium?.copyWith(
+        fontSize: 15,
+        color: palette.activeText,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+}
+
+/// The left rail: the hour and, for the live hour, a small NOW tag.
+class _HourRail extends StatelessWidget {
+  const _HourRail({
+    required this.hour,
+    required this.isCurrentHour,
+  });
+
+  final int hour;
+  final bool isCurrentHour;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final ColorScheme scheme = theme.colorScheme;
+
+    return SizedBox(
+      width: 58,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: <Widget>[
+          AnimatedDefaultTextStyle(
+            duration: Motion.fast,
+            curve: Motion.state,
+            style: theme.textTheme.labelMedium!.copyWith(
+              fontSize: 12.5,
+              height: 1.1,
+              fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+              fontWeight: isCurrentHour ? FontWeight.w800 : FontWeight.w500,
+              color: isCurrentHour
+                  ? scheme.primary
+                  : scheme.onSurfaceVariant,
+            ),
+            child: Text(DateKey.hourLabel(hour)),
           ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  current.text,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: palette.activeText,
-                    fontWeight: FontWeight.w600,
-                  ),
+          const SizedBox(height: 3),
+          if (isCurrentHour)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              decoration: BoxDecoration(
+                color: scheme.primary.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                'NOW',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontSize: 8.5,
+                  height: 1.2,
+                  letterSpacing: 0.8,
+                  fontWeight: FontWeight.w800,
+                  color: scheme.primary,
                 ),
               ),
-              _HourSwitch(
-                key: Key('toggle-$hour'),
-                value: true,
-                palette: palette,
-                onChanged: onToggle,
-              ),
-            ],
-          ),
-        ),
+            )
+          else
+            const SizedBox(height: 11),
+        ],
       ),
     );
   }
@@ -209,19 +291,29 @@ class _HourSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Transform.scale(
-      scale: 0.85,
-      child: Switch(
-        value: value,
-        onChanged: (bool _) => onChanged(),
-        thumbColor: const WidgetStatePropertyAll<Color>(Colors.white),
-        trackColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-          return states.contains(WidgetState.selected)
-              ? palette.active
-              : palette.completed;
-        }),
-        trackOutlineColor: const WidgetStatePropertyAll<Color>(Colors.transparent),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    return SizedBox(
+      width: 54,
+      height: Insets.touch,
+      child: Center(
+        child: Transform.scale(
+          scale: 0.9,
+          child: Switch(
+            value: value,
+            onChanged: (bool _) {
+              HapticFeedback.lightImpact();
+              onChanged();
+            },
+            thumbColor: const WidgetStatePropertyAll<Color>(Colors.white),
+            trackColor: WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+              return states.contains(WidgetState.selected)
+                  ? palette.active
+                  : palette.completed;
+            }),
+            trackOutlineColor:
+                const WidgetStatePropertyAll<Color>(Colors.transparent),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+        ),
       ),
     );
   }
