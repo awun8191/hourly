@@ -2,8 +2,9 @@
 
 ## Active
 
-- [ ] Install `build/app/outputs/flutter-apk/app-debug.apk` on a phone
-- [ ] Add the widget from the home screen picker and check the five rows
+- [ ] Install `build/app/outputs/flutter-apk/app-arm64-v8a-release.apk` on a phone
+- [ ] Add the widget from the home screen picker, on a 4x4 cell
+- [ ] Check the hero, the next line, the three rows, and the footer do not clip
 - [ ] Check the widget toggle loop on the device: chip tap, red state, app state
 - [ ] Add a screenshot of the widget to the README
 

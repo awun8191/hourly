@@ -37,6 +37,10 @@ The widget leads with the live hour, then the hours after it:
   hour, the item, and a chip.
 - **Day progress** at the bottom: a red bar (red means done) and `2 of 5 done`.
 
+The widget asks for a 4x4 cell (`minHeight 280dp`). It needs the height: a hero,
+a next line, three rows, and a footer do not fit in a 4x3 cell. On a shorter
+cell the bottom rows clip.
+
 Tapping a chip runs a Dart callback in a background isolate. It flips the item,
 saves it, and repaints the widget. The app and the widget share one store, so a
 change in one shows in the other. A tap on a row opens the app at that hour.
