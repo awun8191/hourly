@@ -29,7 +29,7 @@ void main() {
       expect(colors['widget_background'], AppColors.paper);
       expect(colors['widget_active_text'], AppColors.ink);
       expect(colors['widget_active_bg'], AppColors.paperRaised);
-      expect(colors['widget_done_text'], AppColors.bloodRed);
+      expect(colors['widget_done_text'], AppColors.bloodRedDeep);
       expect(colors['widget_done_bg'], AppColors.bloodRedSurfaceLight);
       expect(colors['widget_accent'], AppColors.ink);
     });
@@ -41,7 +41,7 @@ void main() {
       expect(colors['widget_background'], AppColors.black);
       expect(colors['widget_active_text'], AppColors.white);
       expect(colors['widget_active_bg'], AppColors.surfaceDarkRaised);
-      expect(colors['widget_done_text'], AppColors.bloodRedText);
+      expect(colors['widget_done_text'], AppColors.bloodRed);
       expect(colors['widget_done_bg'], AppColors.bloodRedSurfaceDark);
       expect(colors['widget_accent'], AppColors.white);
       expect(colors['widget_progress_fill'], AppColors.white);
@@ -55,7 +55,7 @@ void main() {
     expect(theme.colorScheme.surface, AppColors.black);
     expect(theme.colorScheme.primary, AppColors.white);
     expect(theme.colorScheme.onPrimary, AppColors.black);
-    expect(theme.colorScheme.error, AppColors.bloodRedText);
+    expect(theme.colorScheme.error, AppColors.bloodRed);
     expect(StatusPalette.dark.active, AppColors.white);
     expect(StatusPalette.dark.completed, AppColors.bloodRed);
   });
@@ -66,7 +66,7 @@ void main() {
     expect(theme.scaffoldBackgroundColor, AppColors.paper);
     expect(theme.colorScheme.primary, AppColors.ink);
     expect(StatusPalette.light.active, AppColors.ink);
-    expect(StatusPalette.light.completed, AppColors.bloodRed);
+    expect(StatusPalette.light.completed, AppColors.bloodRedDeep);
   });
 
   test('no token carries a green hue', () {
@@ -84,6 +84,7 @@ void main() {
       AppColors.mutedDark,
       AppColors.mutedLight,
       AppColors.bloodRed,
+      AppColors.bloodRedDeep,
       AppColors.bloodRedText,
       AppColors.bloodRedSurfaceDark,
       AppColors.bloodRedSurfaceLight,

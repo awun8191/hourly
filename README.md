@@ -15,8 +15,8 @@ The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
 | In place | Accent card, toggle on | The item is set for this hour |
 | Done | Small red struck text, switch off | The item is complete |
 
-White is in place on dark, ink on light. Blood red is done. This mapping is the
-user's choice.
+White is in place on dark, ink on light. Red `#FF3B30` is done. This mapping is
+the user's choice.
 
 Every hour carries the toggle, empty hours too. The track is red when the hour is
 off and white when the item is in place. The knob is yellow, with a gradient, a

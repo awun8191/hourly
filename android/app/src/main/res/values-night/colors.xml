@@ -8,19 +8,19 @@
     <!-- In place: white is the accent on black. No green anywhere. -->
     <color name="widget_active_text">#FFFFFF</color>
     <color name="widget_active_bg">#121212</color>
-    <!-- Done: blood red. #8B0000 is the fill, #E00000 the text that reads on black. -->
-    <color name="widget_done_text">#E00000</color>
-    <color name="widget_done_bg">#240404</color>
+    <!-- Done: the bright red the owner asked for, #FF3B30. -->
+    <color name="widget_done_text">#FF3B30</color>
+    <color name="widget_done_bg">#2E0B09</color>
     <color name="widget_accent">#FFFFFF</color>
     <color name="widget_progress_fill">#FFFFFF</color>
     <color name="widget_track">#262626</color>
     <color name="widget_hero_neutral">#0D0D0D</color>
     <color name="widget_hero_neutral_stroke">#262626</color>
     <color name="widget_active_stroke">#CCFFFFFF</color>
-    <color name="widget_done_stroke">#4A0A0A</color>
+    <color name="widget_done_stroke">#5C1A13</color>
     <color name="widget_chip_muted_bg">#1C1C1C</color>
-    <!-- Missed: a muted blood red, never the white of in place. -->
+    <!-- Missed: a muted red, never the white of in place. -->
     <color name="widget_missed_text">#C4463A</color>
     <color name="widget_missed_bar">#8B0000</color>
-    <color name="widget_missed_stroke">#6E1414</color>
+    <color name="widget_missed_stroke">#8E4A42</color>
 </resources>

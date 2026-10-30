@@ -40,11 +40,12 @@ abstract final class AppTheme {
           isDark ? const Color(0xFF1C1C1C) : const Color(0xFFE4E4E4),
       outlineVariant: isDark ? AppColors.lineDark : AppColors.lineLight,
       onSurfaceVariant: isDark ? AppColors.mutedDark : AppColors.mutedLight,
-      error: isDark ? AppColors.bloodRedText : AppColors.bloodRed,
+      error: isDark ? AppColors.bloodRed : AppColors.bloodRedDeep,
       onError: AppColors.white,
       errorContainer:
           isDark ? AppColors.bloodRedSurfaceDark : AppColors.bloodRedSurfaceLight,
-      onErrorContainer: isDark ? AppColors.bloodRedText : AppColors.bloodRed,
+      onErrorContainer:
+          isDark ? AppColors.bloodRedText : AppColors.bloodRedDeep,
     );
 
     final ThemeData base = ThemeData(

@@ -8,19 +8,19 @@
     <!-- In place: ink on paper. White is the accent only on black. -->
     <color name="widget_active_text">#111111</color>
     <color name="widget_active_bg">#F4F4F4</color>
-    <!-- Done: blood red, the only hue in the product. -->
-    <color name="widget_done_text">#8B0000</color>
-    <color name="widget_done_bg">#F7E7E6</color>
+    <!-- Done on paper: the deeper red, because #FF3B30 is too light here. -->
+    <color name="widget_done_text">#D92D20</color>
+    <color name="widget_done_bg">#FCEAE8</color>
     <color name="widget_accent">#111111</color>
     <color name="widget_progress_fill">#111111</color>
     <color name="widget_track">#E4E4E4</color>
     <color name="widget_hero_neutral">#F4F4F4</color>
     <color name="widget_hero_neutral_stroke">#E2E2E2</color>
     <color name="widget_active_stroke">#111111</color>
-    <color name="widget_done_stroke">#E3C2BE</color>
+    <color name="widget_done_stroke">#EFC7C0</color>
     <color name="widget_chip_muted_bg">#EFEFEF</color>
     <!-- Missed: an item still in place in an hour that has already gone by. -->
-    <color name="widget_missed_text">#7A2B25</color>
-    <color name="widget_missed_bar">#8B0000</color>
+    <color name="widget_missed_text">#A03A2E</color>
+    <color name="widget_missed_bar">#B0473A</color>
     <color name="widget_missed_stroke">#C9A6A1</color>
 </resources>

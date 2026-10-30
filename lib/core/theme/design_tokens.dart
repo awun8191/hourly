@@ -25,14 +25,15 @@ abstract final class AppColors {
   static const Color mutedDark = Color(0xFFB8B8B8);
   static const Color mutedLight = Color(0xFF5A5A5A);
 
-  /// Blood red, the only red in the product.
-  ///
-  /// [bloodRed] is the fill: switch track, row bar, meter tick, chip fill.
-  /// [bloodRedText] is the same hue lifted just enough to read on black.
-  static const Color bloodRed = Color(0xFF8B0000);
-  static const Color bloodRedText = Color(0xFFE00000);
-  static const Color bloodRedSurfaceDark = Color(0xFF240404);
-  static const Color bloodRedSurfaceLight = Color(0xFFF7E7E6);
+  /// The red the owner settled on. Bright, with a pure hue so it never reads
+  /// orange or pink.
+  static const Color bloodRed = Color(0xFFFF3B30);
+  static const Color bloodRedText = Color(0xFFFF3B30);
+
+  /// The same red darkened for paper, where #FF3B30 is too light to read.
+  static const Color bloodRedDeep = Color(0xFFD92D20);
+  static const Color bloodRedSurfaceDark = Color(0xFF2E0B09);
+  static const Color bloodRedSurfaceLight = Color(0xFFFCEAE8);
   static const Color bloodRedMuted = Color(0xFFB3403A);
 
   /// The only warm note: the toggle knob.
@@ -68,9 +69,9 @@ class StatusPalette {
     active: AppColors.ink,
     activeSurface: AppColors.paperRaised,
     activeText: AppColors.ink,
-    completed: AppColors.bloodRed,
+    completed: AppColors.bloodRedDeep,
     completedSurface: AppColors.bloodRedSurfaceLight,
-    completedText: AppColors.bloodRed,
+    completedText: AppColors.bloodRedDeep,
   );
 
   static const StatusPalette dark = StatusPalette(

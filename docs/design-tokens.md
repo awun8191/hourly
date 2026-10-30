@@ -18,17 +18,19 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.lineLight` | `#E2E2E2` | Hairlines on light |
 | `AppColors.mutedDark` | `#B8B8B8` | Secondary text on dark |
 | `AppColors.mutedLight` | `#5A5A5A` | Secondary text on light |
-| `AppColors.bloodRed` | `#8B0000` | Done and missed fill, toggle track, meter tick |
-| `AppColors.bloodRedText` | `#E00000` | Done and missed text on black |
-| `AppColors.bloodRedSurfaceDark` | `#240404` | Done card on dark |
-| `AppColors.bloodRedSurfaceLight` | `#F7E7E6` | Done card on light |
+| `AppColors.bloodRed` | `#FF3B30` | Done and missed fill, toggle track, meter tick |
+| `AppColors.bloodRedText` | `#FF3B30` | Done and missed text on black |
+| `AppColors.bloodRedDeep` | `#D92D20` | Done text and fill on paper |
+| `AppColors.bloodRedSurfaceDark` | `#2E0B09` | Done card on dark |
+| `AppColors.bloodRedSurfaceLight` | `#FCEAE8` | Done card on light |
 | `AppColors.knobYellow` | `#FFD24D` | Toggle knob gradient start |
 | `AppColors.knobYellowDeep` | `#F2B705` | Toggle knob gradient end |
 
 Rules:
 
 - White is the accent on black. Ink is the accent on paper. There is no green.
-- Blood red is the only hue. It belongs to done, missed, and the error role.
+- Red is one bright hue, `#FF3B30` on black. On paper it deepens to `#D92D20`
+  so it stays legible. It belongs to done, missed, and the error role.
 - Yellow belongs to the toggle knob only.
 
 ## Mapping to the widget
@@ -42,10 +44,10 @@ Rules:
 | `widget_active_text` | `#111111` | `#FFFFFF` | `ink` / `white` |
 | `widget_active_bg` | `#F4F4F4` | `#121212` | `paperRaised` / `surfaceDarkRaised` |
 | `widget_active_stroke` | `#111111` | `#CCFFFFFF` | ink / white at 80 percent |
-| `widget_done_text` | `#8B0000` | `#E00000` | `bloodRed` / `bloodRedText` |
-| `widget_done_bg` | `#F7E7E6` | `#240404` | `bloodRedSurfaceLight` / `bloodRedSurfaceDark` |
+| `widget_done_text` | `#D92D20` | `#FF3B30` | `bloodRedDeep` / `bloodRed` |
+| `widget_done_bg` | `#FCEAE8` | `#2E0B09` | `bloodRedSurfaceLight` / `bloodRedSurfaceDark` |
 | `widget_missed_text` | `#7A2B25` | `#C4463A` | blood red, muted |
-| `widget_missed_bar` | `#8B0000` | `#8B0000` | `bloodRed` |
+| `widget_missed_bar` | `#8B0000` | `#8B0000` | blood red, muted |
 | `widget_accent` | `#111111` | `#FFFFFF` | `ink` / `white` |
 | `widget_progress_fill` | `#111111` | `#FFFFFF` | `ink` / `white` |
 | `widget_track` | `#E4E4E4` | `#262626` | neutral track |
