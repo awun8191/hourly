@@ -64,7 +64,9 @@ from the reported width and height (a cell is about 70dp):
   hours fold into `+2 earlier hours planned` and the furthest into
   `+3 more hours planned`.
 - **Rows** for the hours around the hero: a state bar, the hour, the item, and a
-  chip reading `IN PLACE`, `DONE`, `MISSED`, or `FREE`. A row is a fixed height
+  chip reading `IN PLACE`, `DONE`, or `MISSED`. A free hour draws as the app's
+  empty card instead: a hairline outline with `+ Add task`, no bar and no chip.
+  A row is a fixed height
   (40dp in medium, 44dp in large) with a 6dp gap and it sits at the top of the
   body. Rows never grow to fill the card: the height they do not use is the day
   panel's, so a small day reads as a short list, not as four hours spread over

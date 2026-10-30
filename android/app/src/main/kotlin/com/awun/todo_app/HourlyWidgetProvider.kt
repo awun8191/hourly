@@ -443,17 +443,18 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             }
 
             RowState.free -> {
-                row.setTextViewText(R.id.slot_text, context.getString(R.string.widget_free_hour))
+                // Match the app: an empty hour is a quiet outline with a plus,
+                // not a "free" row with a chip. No bar, no chip, just the
+                // invitation to plan the hour.
+                row.setTextViewText(R.id.slot_text, context.getString(R.string.widget_add_task))
                 row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_muted))
+                row.setTextViewTextSize(R.id.slot_text, TypedValue.COMPLEX_UNIT_SP, 13f)
                 row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
-                row.setInt(R.id.slot_bar, "setBackgroundResource", R.drawable.bg_row_bar_empty)
-                applyRowChip(
-                    context,
-                    row,
-                    R.string.widget_chip_free,
-                    R.color.widget_muted,
-                    R.drawable.bg_widget_chip_muted,
-                )
+                row.setViewVisibility(R.id.slot_bar, View.GONE)
+                row.setViewVisibility(R.id.slot_status, View.GONE)
+                row.setInt(R.id.slot_row, "setBackgroundResource", R.drawable.bg_row_free)
+                val inset = (10 * context.resources.displayMetrics.density).toInt()
+                row.setViewPadding(R.id.slot_row, inset, 0, inset, 0)
             }
         }
 

@@ -21,6 +21,7 @@
     <string name="widget_hero_add">Tap to plan this hour</string>
     <string name="widget_nothing_else">Nothing else planned today</string>
     <string name="widget_free_hour">free</string>
+    <string name="widget_add_task">+ Add task</string>
     <string name="widget_open_app">Tap to open the app</string>
     <!-- Every countdown names what ends. A bare "36 min left" can be read as
          the end of the task instead of the end of the hour. -->
