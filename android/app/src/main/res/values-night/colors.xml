@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Mirrors lib/core/theme/design_tokens.dart. Change both together. -->
 <resources>
-    <color name="widget_background">#000000</color>
-    <color name="widget_stroke">#1F1F1F</color>
+    <color name="widget_background">#0C1A12</color>
+    <color name="widget_stroke">#26382C</color>
     <color name="widget_text">#F2F2F2</color>
-    <color name="widget_muted">#B8B8B8</color>
-    <!-- In place: white is the accent on black. No green anywhere. -->
+    <color name="widget_muted">#B8C6BC</color>
+    <!-- In place: white is the accent on the forest. -->
     <color name="widget_active_text">#FFFFFF</color>
-    <color name="widget_active_bg">#121212</color>
+    <color name="widget_active_bg">#14291D</color>
     <!-- Done: the bright red the owner asked for, #FF3B30. -->
     <color name="widget_done_text">#FF3B30</color>
     <color name="widget_done_bg">#2E0B09</color>
     <color name="widget_accent">#FFFFFF</color>
     <color name="widget_progress_fill">#FFFFFF</color>
-    <color name="widget_track">#262626</color>
-    <color name="widget_hero_neutral">#0D0D0D</color>
-    <color name="widget_hero_neutral_stroke">#262626</color>
+    <color name="widget_track">#2A3B30</color>
+    <color name="widget_hero_neutral">#102117</color>
+    <color name="widget_hero_neutral_stroke">#2A4033</color>
     <color name="widget_active_stroke">#CCFFFFFF</color>
     <color name="widget_done_stroke">#5C1A13</color>
-    <color name="widget_chip_muted_bg">#1C1C1C</color>
+    <color name="widget_chip_muted_bg">#1B2E22</color>
     <!-- Missed: a muted red, never the white of in place. -->
     <color name="widget_missed_text">#C4463A</color>
     <color name="widget_missed_bar">#8B0000</color>

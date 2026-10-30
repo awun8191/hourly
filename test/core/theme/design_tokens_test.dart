@@ -38,7 +38,7 @@ void main() {
       final Map<String, Color> colors =
           readPalette('android/app/src/main/res/values-night/colors.xml');
 
-      expect(colors['widget_background'], AppColors.black);
+      expect(colors['widget_background'], AppColors.surfaceDark);
       expect(colors['widget_active_text'], AppColors.white);
       expect(colors['widget_active_bg'], AppColors.surfaceDarkRaised);
       expect(colors['widget_done_text'], AppColors.bloodRed);
@@ -48,11 +48,11 @@ void main() {
     });
   });
 
-  test('the dark theme uses a white accent on a black surface', () {
+  test('the dark theme uses a white accent on a deep forest surface', () {
     final ThemeData theme = AppTheme.dark;
 
-    expect(theme.scaffoldBackgroundColor, AppColors.black);
-    expect(theme.colorScheme.surface, AppColors.black);
+    expect(theme.scaffoldBackgroundColor, AppColors.surfaceDark);
+    expect(theme.colorScheme.surface, AppColors.surfaceDark);
     expect(theme.colorScheme.primary, AppColors.white);
     expect(theme.colorScheme.onPrimary, AppColors.black);
     expect(theme.colorScheme.error, AppColors.bloodRed);
@@ -74,19 +74,14 @@ void main() {
     expect(StatusPalette.light.switchOn, AppColors.switchOnLight);
   });
 
-  test('no token carries a green hue', () {
-    final List<Color> tokens = <Color>[
+  test('no accent token carries a green hue', () {
+    final List<Color> accents = <Color>[
       AppColors.black,
       AppColors.white,
       AppColors.ink,
       AppColors.paper,
       AppColors.paperRaised,
-      AppColors.surfaceDark,
-      AppColors.surfaceDarkRaised,
-      AppColors.surfaceDarkSunken,
-      AppColors.lineDark,
       AppColors.lineLight,
-      AppColors.mutedDark,
       AppColors.mutedLight,
       AppColors.bloodRed,
       AppColors.bloodRedDeep,
@@ -102,7 +97,7 @@ void main() {
       StatusPalette.dark.completed,
     ];
 
-    for (final Color color in tokens) {
+    for (final Color color in accents) {
       final double other = color.r > color.b ? color.r : color.b;
       expect(
         color.g,
@@ -110,6 +105,20 @@ void main() {
         reason: 'green dominates $color',
       );
     }
+  });
+
+  test('the background ramp is a dark forest tint', () {
+    for (final Color surface in <Color>[
+      AppColors.surfaceDark,
+      AppColors.surfaceDarkRaised,
+      AppColors.surfaceDarkSunken,
+      AppColors.surfaceDarkHigh,
+      AppColors.surfaceDarkHighest,
+    ]) {
+      expect(surface.g, greaterThan(surface.r), reason: 'not forest: $surface');
+      expect(surface.g, greaterThan(surface.b), reason: 'not forest: $surface');
+    }
+    expect(AppColors.surfaceDark.computeLuminance(), lessThan(0.05));
   });
 }
 

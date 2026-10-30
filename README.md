@@ -21,7 +21,7 @@ the user's choice.
 Every hour carries the toggle, empty hours too. The track is red when the hour is
 off and green when the toggle is on. The knob is yellow, with a gradient, a
 shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
-a true black background.
+a deep forest background.
 
 Tap an empty block to type. Tap an item to edit or remove it. Use the switch to
 move between in place and done. The arrows change the day, and every day stays in

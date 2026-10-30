@@ -35,9 +35,9 @@ abstract final class AppTheme {
       surfaceContainer:
           isDark ? AppColors.surfaceDarkRaised : const Color(0xFFEFEFEF),
       surfaceContainerHigh:
-          isDark ? const Color(0xFF181818) : const Color(0xFFEAEAEA),
+          isDark ? AppColors.surfaceDarkHigh : const Color(0xFFEAEAEA),
       surfaceContainerHighest:
-          isDark ? const Color(0xFF1C1C1C) : const Color(0xFFE4E4E4),
+          isDark ? AppColors.surfaceDarkHighest : const Color(0xFFE4E4E4),
       outlineVariant: isDark ? AppColors.lineDark : AppColors.lineLight,
       onSurfaceVariant: isDark ? AppColors.mutedDark : AppColors.mutedLight,
       error: isDark ? AppColors.bloodRed : AppColors.bloodRedDeep,

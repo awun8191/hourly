@@ -17,12 +17,14 @@ abstract final class AppColors {
   static const Color ink = Color(0xFF111111);
   static const Color paper = Color(0xFFFFFFFF);
   static const Color paperRaised = Color(0xFFF4F4F4);
-  static const Color surfaceDark = Color(0xFF000000);
-  static const Color surfaceDarkRaised = Color(0xFF121212);
-  static const Color surfaceDarkSunken = Color(0xFF0A0A0A);
-  static const Color lineDark = Color(0xFF232323);
+  static const Color surfaceDark = Color(0xFF0C1A12);
+  static const Color surfaceDarkRaised = Color(0xFF14291D);
+  static const Color surfaceDarkSunken = Color(0xFF0F2017);
+  static const Color surfaceDarkHigh = Color(0xFF1A3124);
+  static const Color surfaceDarkHighest = Color(0xFF213B2C);
+  static const Color lineDark = Color(0xFF26382C);
   static const Color lineLight = Color(0xFFE2E2E2);
-  static const Color mutedDark = Color(0xFFB8B8B8);
+  static const Color mutedDark = Color(0xFFB8C6BC);
   static const Color mutedLight = Color(0xFF5A5A5A);
 
   /// The red the owner settled on. Bright, with a pure hue so it never reads
