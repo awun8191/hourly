@@ -39,6 +39,11 @@ abstract final class AppColors {
   /// The only warm note: the toggle knob.
   static const Color knobYellow = Color(0xFFFFD24D);
   static const Color knobYellowDeep = Color(0xFFF2B705);
+
+  /// The toggle fill when an item is on. The owner asked for green here only,
+  /// after the rest of the green left the product.
+  static const Color switchOn = Color(0xFF22C55E);
+  static const Color switchOnLight = Color(0xFF15803D);
 }
 
 /// Colors for the two hour states.
@@ -50,6 +55,7 @@ class StatusPalette {
     required this.active,
     required this.activeSurface,
     required this.activeText,
+    required this.switchOn,
     required this.completed,
     required this.completedSurface,
     required this.completedText,
@@ -60,6 +66,9 @@ class StatusPalette {
   final Color activeSurface;
   final Color activeText;
 
+  /// The toggle fill when the item is on.
+  final Color switchOn;
+
   /// The done red as a fill: the switch track, the row bar, the meter tick.
   final Color completed;
   final Color completedSurface;
@@ -69,6 +78,7 @@ class StatusPalette {
     active: AppColors.ink,
     activeSurface: AppColors.paperRaised,
     activeText: AppColors.ink,
+    switchOn: AppColors.switchOnLight,
     completed: AppColors.bloodRedDeep,
     completedSurface: AppColors.bloodRedSurfaceLight,
     completedText: AppColors.bloodRedDeep,
@@ -78,6 +88,7 @@ class StatusPalette {
     active: AppColors.white,
     activeSurface: AppColors.surfaceDarkRaised,
     activeText: AppColors.white,
+    switchOn: AppColors.switchOn,
     completed: AppColors.bloodRed,
     completedSurface: AppColors.bloodRedSurfaceDark,
     completedText: AppColors.bloodRedText,

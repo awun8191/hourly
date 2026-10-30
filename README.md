@@ -19,7 +19,7 @@ White is in place on dark, ink on light. Red `#FF3B30` is done. This mapping is
 the user's choice.
 
 Every hour carries the toggle, empty hours too. The track is red when the hour is
-off and white when the item is in place. The knob is yellow, with a gradient, a
+off and green when the toggle is on. The knob is yellow, with a gradient, a
 shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
 a true black background.
 

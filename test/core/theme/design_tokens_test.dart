@@ -69,6 +69,11 @@ void main() {
     expect(StatusPalette.light.completed, AppColors.bloodRedDeep);
   });
 
+  test('the toggle is green when on', () {
+    expect(StatusPalette.dark.switchOn, AppColors.switchOn);
+    expect(StatusPalette.light.switchOn, AppColors.switchOnLight);
+  });
+
   test('no token carries a green hue', () {
     final List<Color> tokens = <Color>[
       AppColors.black,

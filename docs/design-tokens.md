@@ -25,10 +25,13 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.bloodRedSurfaceLight` | `#FCEAE8` | Done card on light |
 | `AppColors.knobYellow` | `#FFD24D` | Toggle knob gradient start |
 | `AppColors.knobYellowDeep` | `#F2B705` | Toggle knob gradient end |
+| `AppColors.switchOn` | `#22C55E` | Toggle fill when on, dark |
+| `AppColors.switchOnLight` | `#15803D` | Toggle fill when on, light |
 
 Rules:
 
-- White is the accent on black. Ink is the accent on paper. There is no green.
+- White is the accent on black. Ink is the accent on paper. Green appears only
+  in the toggle, never in the rest of the UI.
 - Red is one bright hue, `#FF3B30` on black. On paper it deepens to `#D92D20`
   so it stays legible. It belongs to done, missed, and the error role.
 - Yellow belongs to the toggle knob only.
