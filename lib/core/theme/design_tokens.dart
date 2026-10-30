@@ -40,10 +40,10 @@ abstract final class AppColors {
   static const Color knobYellow = Color(0xFFFFD24D);
   static const Color knobYellowDeep = Color(0xFFF2B705);
 
-  /// The toggle fill when an item is on. The owner asked for green here only,
-  /// after the rest of the green left the product.
-  static const Color switchOn = Color(0xFF22C55E);
-  static const Color switchOnLight = Color(0xFF15803D);
+  /// The toggle fill when an item is on. Back to the app's original emerald,
+  /// the green the switch used before the monochrome pass.
+  static const Color switchOn = Color(0xFF7DDBA8);
+  static const Color switchOnLight = Color(0xFF1F7A4C);
 }
 
 /// Colors for the two hour states.

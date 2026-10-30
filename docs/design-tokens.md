@@ -25,8 +25,8 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.bloodRedSurfaceLight` | `#FCEAE8` | Done card on light |
 | `AppColors.knobYellow` | `#FFD24D` | Toggle knob gradient start |
 | `AppColors.knobYellowDeep` | `#F2B705` | Toggle knob gradient end |
-| `AppColors.switchOn` | `#22C55E` | Toggle fill when on, dark |
-| `AppColors.switchOnLight` | `#15803D` | Toggle fill when on, light |
+| `AppColors.switchOn` | `#7DDBA8` | Toggle fill when on, dark (original emerald) |
+| `AppColors.switchOnLight` | `#1F7A4C` | Toggle fill when on, light (original emerald) |
 
 Rules:
 
