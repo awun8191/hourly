@@ -2,8 +2,8 @@ import 'package:equatable/equatable.dart';
 
 /// State of one hour block.
 ///
-/// The app uses the user's mapping: [active] is green (the item is in place),
-/// [completed] is red (the item is done).
+/// The app uses the user's mapping: [active] is the accent (the item is in
+/// place), [completed] is blood red (the item is done).
 enum HourStatus { active, completed }
 
 /// One item in one hour block of one day.

@@ -5,7 +5,7 @@ import '../../../../core/theme/app_theme.dart';
 
 /// The hour switch.
 ///
-/// The track is red when the hour is off (empty or done) and green when the
+/// The track is red when the hour is off (empty or done) and white when the
 /// item is in place. The knob is yellow and sits above the track with a shadow.
 ///
 /// Both shadows are neutral black: the knob's lift is depth, not light, so the

@@ -5,8 +5,8 @@ import 'hour_entry.dart';
 
 /// State of one segment of the day meter.
 ///
-/// The colours keep the app's mapping: [active] is green (the item is in
-/// place), [completed] is red (the item is done), [empty] is the faint track.
+/// The colours keep the app's mapping: [active] is the accent (in place),
+/// [completed] is red (the item is done), [empty] is the faint track.
 enum DaySegmentState { empty, active, completed }
 
 /// One hour of the day meter: which hour it stands for, what is in it, and

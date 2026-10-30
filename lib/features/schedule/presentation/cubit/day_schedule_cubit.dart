@@ -87,7 +87,7 @@ class DayScheduleCubit extends Cubit<DayScheduleState> {
     return _commit(entry);
   }
 
-  /// Flips green (in place) and red (done).
+  /// Flips the hour between in place and done.
   Future<bool> toggle(int hour) async {
     final HourEntry? entry = state.entries[hour];
     if (entry == null) {

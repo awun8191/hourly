@@ -12,18 +12,19 @@ The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
 | State | Look | Meaning |
 |---|---|---|
 | Empty | Outline and "Add task" | No item in this hour |
-| In place | Green card, switch on | The item is set for this hour |
+| In place | Accent card, toggle on | The item is set for this hour |
 | Done | Small red struck text, switch off | The item is complete |
 
-Green means in place. Red means done. This mapping is the user's choice.
+White is in place on dark, ink on light. Blood red is done. This mapping is the
+user's choice.
 
 Every hour carries the toggle, empty hours too. The track is red when the hour is
-off and green when the item is in place. The knob is yellow, with a gradient, a
+off and white when the item is in place. The knob is yellow, with a gradient, a
 shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
 a true black background.
 
 Tap an empty block to type. Tap an item to edit or remove it. Use the switch to
-move between green and red. The arrows change the day, and every day stays in
+move between in place and done. The arrows change the day, and every day stays in
 history.
 
 The list is grouped by part of day (night, morning, afternoon, evening), and the
@@ -31,7 +32,7 @@ live hour carries a `NOW` tag, a tinted card, and a soft shadow. Empty hours sta
 quiet so a planned day stands out.
 
 The header carries a segmented day meter: one segment per hour, 24 in all, drawn
-as four groups of six to match the sections below it. Red is done, green is in
+as four groups of six to match the sections below it. Red is done, white is in
 place, the faint track is a free hour, and the live hour carries a ring and a
 small lift. It is one semantics node; the segments themselves are decorative.
 
@@ -50,7 +51,7 @@ from the reported width and height (a cell is about 70dp):
 | Large | 320dp tall or more (4x6, full screen) | `hourly_widget_large` | the day in hour order, the hero in place, up to 6 rows, then the 24 hour day strip with its labels, the quiet line, the count, and the legend |
 
 - **Hero** for the current hour: the time in large tabular figures, a `NOW` tag,
-  a state chip (`IN PLACE` green, `DONE` red, `FREE` grey, `MISSED` muted red
+  a state chip (`IN PLACE` white, `DONE` red, `FREE` grey, `MISSED` muted red
   outline), the item on one ellipsised line, a bar for how much of the hour has
   run, and a line such as `This hour ends in 18 min`. One line is what keeps the
   hero a fixed height, so the body fits its box without guesswork. In the
@@ -74,7 +75,7 @@ from the reported width and height (a cell is about 70dp):
   marking it done late is one tap. A done hour stays done, a free hour stays
   free, and a payload from another day is never missed.
 - **The day strip** at the bottom in the medium and large buckets: one tick per
-  hour of the day, 00 to 23, in hour order. Green is in place, red is done,
+  hour of the day, 00 to 23, in hour order. White is in place, red is done,
   muted red is missed, the faint track is a free hour, and the live hour carries
   a ring. The large bucket labels it `00 06 12 18` under the ticks and groups it
   with the count (`3 of 7 planned hours done`), the line
@@ -187,6 +188,10 @@ to the widget. A failed write restores the old state and shows a message. A
 failed widget sync does not block the edit.
 
 The store is an interface, so a different backend is one line in `main.dart`.
+
+The palette, spacing, radii and motion live in `lib/core/theme/design_tokens.dart`.
+The Android widget mirrors those values in XML, and
+`docs/design-tokens.md` maps every name. A test fails when the two drift.
 
 ## Data format
 

@@ -272,7 +272,7 @@ class _DayChip extends StatelessWidget {
 /// groups of six to match the night, morning, afternoon, and evening sections
 /// of the list below it.
 ///
-/// Red is done, green is in place, the faint track is a free hour, and the live
+/// Red is done, the accent is in place, the faint track is a free hour, and the live
 /// hour carries a ring and a small lift. The whole meter is one semantics node;
 /// the segments themselves are decorative.
 ///

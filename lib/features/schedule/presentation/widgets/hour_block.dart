@@ -8,7 +8,7 @@ import 'hour_toggle.dart';
 /// One hour row: the time rail, then the block.
 ///
 /// Empty: a quiet outline that opens the editor.
-/// In place: green card, switch on.
+/// In place: accent card, toggle on.
 /// Done: muted red card, struck text, switch off.
 ///
 /// The live hour is the only row that lifts off the page, and it lifts with a
