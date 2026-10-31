@@ -50,6 +50,11 @@
             android:theme="@style/QuickAddTheme"
             android:windowSoftInputMode="stateVisible|adjustResize" />
 
+        <service
+            android:name=".HourlyWidgetService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <!-- Runs the Dart callback when the user taps a widget chip -->
         <receiver
             android:name="es.antonborri.home_widget.HomeWidgetBackgroundReceiver"

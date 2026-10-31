@@ -14,7 +14,7 @@
     <string name="widget_now">NOW</string>
     <string name="widget_chip_free">FREE</string>
     <string name="widget_chip_in_place">IN PLACE</string>
-    <string name="widget_slot_add">+ Add</string>
+    <string name="widget_slot_add">+ Add task</string>
     <string name="widget_chip_add">+ ADD</string>
     <string name="widget_meta_done">Marked done</string>
     <string name="widget_meta_add">Tap to add an item</string>

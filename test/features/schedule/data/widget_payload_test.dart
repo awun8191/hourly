@@ -55,6 +55,18 @@ void main() {
     expect((upcoming.single! as Map<String, Object?>)['hour'], 23);
   });
 
+  test('the list holds every later hour of the day', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 30, 9, 5),
+      entries: const <HourEntry>[],
+    );
+
+    final List<Object?> upcoming = payload['upcoming']! as List<Object?>;
+    expect(upcoming, hasLength(14));
+    expect((upcoming.first! as Map<String, Object?>)['hour'], 10);
+    expect((upcoming.last! as Map<String, Object?>)['hour'], 23);
+  });
+
   test('an empty live hour has no text and an empty status', () {
     final Map<String, Object?> payload = WidgetPayload.build(
       now: DateTime(2026, 10, 30, 9, 0),

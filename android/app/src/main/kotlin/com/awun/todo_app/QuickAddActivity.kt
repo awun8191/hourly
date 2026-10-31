@@ -36,8 +36,15 @@ class QuickAddActivity : Activity() {
         setContentView(R.layout.quick_add)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
 
-        val date = intent.getStringExtra(EXTRA_DATE) ?: todayKey()
-        val hour = intent.getIntExtra(EXTRA_HOUR, -1)
+        val data = intent.data
+        val date = intent.getStringExtra(EXTRA_DATE)
+            ?: data?.getQueryParameter("date")
+            ?: todayKey()
+        val hour = if (intent.hasExtra(EXTRA_HOUR)) {
+            intent.getIntExtra(EXTRA_HOUR, -1)
+        } else {
+            data?.getQueryParameter("hour")?.toIntOrNull() ?: -1
+        }
         if (hour !in 0..23) {
             finish()
             return

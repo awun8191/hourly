@@ -7,8 +7,9 @@ import '../../domain/entities/hour_entry.dart';
 /// the user can tap and fill. It cannot read Flutter's `SharedPreferences`
 /// file, so the app sends this small JSON document through `home_widget`.
 abstract final class WidgetPayload {
-  /// Hour fields after the live card. Three fit a 4x3 cell.
-  static const int upcomingHours = 3;
+  /// Every hour after the live one, up to 23:00. The widget list scrolls, so
+  /// the payload does not cap the count.
+  static const int lastHour = 23;
 
   static Map<String, Object?> build({
     required DateTime now,
@@ -20,11 +21,7 @@ abstract final class WidgetPayload {
     final HourEntry? entry = byHour[now.hour];
 
     final List<Map<String, Object?>> upcoming = <Map<String, Object?>>[];
-    for (int i = 1; i <= upcomingHours; i++) {
-      final int hour = now.hour + i;
-      if (hour > 23) {
-        break;
-      }
+    for (int hour = now.hour + 1; hour <= lastHour; hour++) {
       final HourEntry? next = byHour[hour];
       upcoming.add(<String, Object?>{
         'hour': hour,

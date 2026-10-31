@@ -5,13 +5,10 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Paint
 import android.net.Uri
 import android.widget.RemoteViews
-
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetProvider
-import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -19,13 +16,12 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Home screen widget: one card for the current hour.
+ * Home screen widget: a card for the live hour, then every later hour of the
+ * day as a tappable card in a scrolling list.
  *
- * The app sends the live hour through `home_widget` under `hourly_payload`.
- * The card shows the time, the item, and one state colour: green for in place,
- * red for done, muted for an empty hour. A tap on the card opens a small text
- * field over the home screen, because Android widgets cannot host an EditText.
- * A tap on the chip flips the item.
+ * The list is a ListView backed by [HourlyWidgetService], because RemoteViews
+ * cannot scroll without a collection view. The payload arrives under
+ * `hourly_payload` through `home_widget`.
  */
 class HourlyWidgetProvider : HomeWidgetProvider() {
 
@@ -38,11 +34,18 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val payload = widgetData.getString("hourly_payload", null)
         appWidgetIds.forEach { id ->
             appWidgetManager.updateAppWidget(id, buildViews(context, payload))
+            appWidgetManager.notifyAppWidgetViewDataChanged(id, R.id.widget_list)
         }
     }
 
     private fun buildViews(context: Context, payload: String?): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.hourly_widget)
+        views.setRemoteAdapter(
+            R.id.widget_list,
+            Intent(context, HourlyWidgetService::class.java),
+        )
+        views.setPendingIntentTemplate(R.id.widget_list, editTemplate(context))
+
         val root = payload?.let { runCatching { JSONObject(it) }.getOrNull() }
         if (root == null) {
             views.setTextViewText(R.id.hero_time, "--:--")
@@ -92,7 +95,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
 
             else -> bindEmpty(context, views, hour, date, text)
         }
-        bindRows(context, views, root.optJSONArray("upcoming"), date)
         return views
     }
 
@@ -107,50 +109,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val target = date.ifEmpty { todayKey() }
         views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, target, hour))
         views.setOnClickPendingIntent(R.id.hero_chip, quickAddIntent(context, target, hour))
-    }
-
-    /** The next few hours as fields. A tap fills the hour. */
-    private fun bindRows(context: Context, views: RemoteViews, slots: JSONArray?, date: String) {
-        views.removeAllViews(R.id.widget_rows)
-        if (slots == null) {
-            return
-        }
-        for (index in 0 until minOf(slots.length(), MAX_ROWS)) {
-            val slot = slots.optJSONObject(index) ?: continue
-            val hour = slot.optInt("hour", -1)
-            if (hour !in 0..HOURS - 1) {
-                continue
-            }
-            val text = slot.optString("text")
-            val status = slot.optString("status")
-            val row = RemoteViews(context.packageName, R.layout.hourly_widget_slot)
-            row.setTextViewText(R.id.slot_hour, slot.optString("label"))
-            when (status) {
-                "completed" -> {
-                    row.setTextViewText(R.id.slot_text, text)
-                    row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_done_text))
-                    row.setInt(
-                        R.id.slot_text,
-                        "setPaintFlags",
-                        Paint.STRIKE_THRU_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG,
-                    )
-                }
-
-                "active" -> {
-                    row.setTextViewText(R.id.slot_text, text)
-                    row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_text))
-                    row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
-                }
-
-                else -> {
-                    row.setTextViewText(R.id.slot_text, context.getString(R.string.widget_slot_add))
-                    row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_muted))
-                    row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
-                }
-            }
-            row.setOnClickPendingIntent(R.id.slot_row, quickAddIntent(context, date, hour))
-            views.addView(R.id.widget_rows, row)
-        }
     }
 
     private fun hourMeta(context: Context, minutesLeft: Int): String = when {
@@ -190,6 +148,19 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         )
     }
 
+    /** Template for the list rows. Each row fills in its own date and hour. */
+    private fun editTemplate(context: Context): PendingIntent {
+        val intent = Intent(context, QuickAddActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+        }
+        return PendingIntent.getActivity(
+            context,
+            300,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
+        )
+    }
+
     private fun todayKey(): String =
         SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
@@ -197,6 +168,5 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
 
     private companion object {
         const val HOURS = 24
-        const val MAX_ROWS = 3
     }
 }

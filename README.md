@@ -38,23 +38,25 @@ small lift. It is one semantics node; the segments themselves are decorative.
 
 ## Android widget
 
-One card for the live hour, then the next three hours as fields.
+One card for the live hour, then every later hour of the day as a card.
 
-- The live hour is a card: 24sp time, a state chip, the item, and a line such as
-  `This hour ends in 18 min`.
+- The live hour is a hero card: 26sp time, a state chip, the item, and a line
+  such as `This hour ends in 18 min`.
 - The chip and the card colour carry the state: `IN PLACE` on the green card,
   `DONE` on the red card, `+ ADD` on the empty card, `STALE` when the payload is
   from another day.
-- **The next three hours are fields**: the time, then the item or a muted
-  `+ Add`. Tap any field to type that hour.
-- **Tap the card** and a small text field opens over the home screen, prefilled
-  with the current item. Android widgets cannot host an `EditText`, so
+- **Every later hour is a card in a scrolling list**: the time, then the item or
+  a muted `+ Add task`. The list fills the cell when the widget is tall and
+  scrolls when it is short.
+- **Tap any card** and a small text field opens over the home screen, prefilled
+  with that hour's item. Android widgets cannot host an `EditText`, so
   `QuickAddActivity` is a dialog-style activity with a real field. `Save` writes
   the item, `Clear` removes it, `Cancel` changes nothing.
-- **Tap the chip** to flip the live hour between in place and done.
+- **Tap the hero chip** to flip the live hour between in place and done. On an
+  empty hero, the chip and the card open the text field.
 
-No day list, no 24 hour strip, no counts. The widget asks for a 4x3 cell
-(`minHeight` 210dp) and resizes both ways.
+No 24 hour strip, no counts, no progress bars. The widget asks for a 4x4 cell
+(`minHeight` 240dp) and resizes both ways.
 
 `HourlyWidgetProvider` builds the card with `RemoteViews`. The app sends one
 small JSON document through `home_widget` under `hourly_payload`:
@@ -143,7 +145,8 @@ Android side:
 ```
 android/app/src/main/kotlin/com/awun/todo_app/
 ├── MainActivity.kt
-├── HourlyWidgetProvider.kt   # one card, RemoteViews
+├── HourlyWidgetProvider.kt   # hero card, RemoteViews
+├── HourlyWidgetService.kt    # the scrolling list of hour cards
 └── QuickAddActivity.kt       # the text field the widget opens
 ```
 
@@ -184,7 +187,7 @@ A day document holds at most 24 entries. Invalid JSON raises
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 56 tests
+flutter test      # 57 tests
 ```
 
 | Suite | Covers |
