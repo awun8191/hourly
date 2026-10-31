@@ -14,6 +14,14 @@
     <string name="widget_now">NOW</string>
     <string name="widget_chip_free">FREE</string>
     <string name="widget_chip_in_place">IN PLACE</string>
+    <string name="widget_chip_add">+ ADD</string>
+    <string name="widget_meta_done">Marked done</string>
+    <string name="widget_meta_add">Tap to add an item</string>
+    <string name="quick_add_title">Plan %1$s</string>
+    <string name="quick_hint">What happens in this hour?</string>
+    <string name="quick_save">Save</string>
+    <string name="quick_cancel">Cancel</string>
+    <string name="quick_clear">Clear</string>
     <string name="widget_chip_stale">STALE</string>
     <!-- An item still in place in an hour that has already gone by -->
     <string name="widget_chip_missed">MISSED</string>

@@ -13,7 +13,7 @@ The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
 |---|---|---|
 | Empty | Outline and "Add task" | No item in this hour |
 | In place | Accent card, toggle on | The item is set for this hour |
-| Done | Small red struck text, switch off | The item is complete |
+| Done | Small red struck text, toggle off | The item is complete |
 
 White is in place on dark, ink on light. Red `#FF3B30` is done. This mapping is
 the user's choice.
@@ -23,13 +23,13 @@ off and green when the toggle is on. The knob is yellow, with a gradient, a
 shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
 a deep forest background.
 
-Tap an empty block to type. Tap an item to edit or remove it. Use the switch to
+Tap an empty block to type. Tap an item to edit or remove it. Use the toggle to
 move between in place and done. The arrows change the day, and every day stays in
 history.
 
 The list is grouped by part of day (night, morning, afternoon, evening), and the
-live hour carries a `NOW` tag, a tinted card, and a soft shadow. Empty hours stay
-quiet so a planned day stands out.
+live hour carries a `NOW` tag and a tinted card. Empty hours stay quiet so a
+planned day stands out.
 
 The header carries a segmented day meter: one segment per hour, 24 in all, drawn
 as four groups of six to match the sections below it. Red is done, white is in
@@ -38,99 +38,42 @@ small lift. It is one semantics node; the segments themselves are decorative.
 
 ## Android widget
 
-The widget resizes from a 2x2 cell to a full screen card. `minWidth` and
-`minHeight` are 110dp so a small placement is allowed, the default is a 4x4
-cell, and `HourlyWidgetProvider.onAppWidgetOptionsChanged` repaints the widget
-when the launcher reports a new size. `WidgetSize` picks one of three layouts
-from the reported width and height (a cell is about 70dp):
+One card. One hour: the current hour.
 
-| Bucket | Placement | Layout | Shows |
-|---|---|---|---|
-| Compact | under 170dp wide or 200dp tall (2x2, 4x2) | `hourly_widget_compact` | the live hour, one state chip, its item, the hour bar with its label, the count |
-| Medium | 200dp to 319dp tall (4x3, 4x4) | `hourly_widget` | the hero, up to 2 rows after it, the day strip, the count |
-| Large | 320dp tall or more (4x6, full screen) | `hourly_widget_large` | the day in hour order, the hero in place, up to 6 rows, then the 24 hour day strip with its labels, the quiet line, the count, and the legend |
+- The time in 28sp tabular figures, a state chip, the item, and a line such as
+  `This hour ends in 18 min`.
+- The chip and the card colour carry the state: `IN PLACE` on the green card,
+  `DONE` on the red card, `+ ADD` on the empty card, `STALE` when the payload is
+  from another day.
+- **Tap the card** and a small text field opens over the home screen, prefilled
+  with the current item. Android widgets cannot host an `EditText`, so
+  `QuickAddActivity` is a dialog-style activity with a real field. `Save` writes
+  the item, `Clear` removes it, `Cancel` changes nothing.
+- **Tap the chip** to flip the hour between in place and done.
 
-- **Hero** for the current hour: the time in large tabular figures, a `NOW` tag,
-  a state chip (`IN PLACE` white, `DONE` red, `FREE` grey, `MISSED` muted red
-  outline), the item on one ellipsised line, a bar for how much of the hour has
-  run, and a line such as `This hour ends in 18 min`. One line is what keeps the
-  hero a fixed height, so the body fits its box without guesswork. In the
-  compact bucket the chip carries `NOW` itself (`NOW · IN PLACE`) and the line
-  under the bar reads `This hour · 26 min left`, so the bar cannot be read as
-  the day.
-- **The day in hour order** in the large bucket, not only the future: hours that
-  have passed are dimmed (done ones struck red), the live hour is the hero card
-  in its place, then the hours after it. When the day does not fit, the oldest
-  hours fold into `+2 earlier hours planned` and the furthest into
-  `+3 more hours planned`.
-- **Rows** for the hours around the hero: a state bar, the hour, the item, and a
-  chip reading `IN PLACE`, `DONE`, or `MISSED`. A free hour draws as the app's
-  empty card instead: a hairline outline with `+ Add task`, no bar and no chip.
-  A row is a fixed height
-  (40dp in medium, 44dp in large) with a 6dp gap and it sits at the top of the
-  body. Rows never grow to fill the card: the height they do not use is the day
-  panel's, so a small day reads as a short list, not as four hours spread over
-  the whole card.
-- **A past hour is never in place.** An item whose hour has gone by and that is
-  still active reads `MISSED`: a muted red bar, muted text, and an outline chip.
-  The stored state is untouched, so a tap still toggles in place and done, and
-  marking it done late is one tap. A done hour stays done, a free hour stays
-  free, and a payload from another day is never missed.
-- **The day strip** at the bottom in the medium and large buckets: one tick per
-  hour of the day, 00 to 23, in hour order. White is in place, red is done,
-  muted red is missed, the faint track is a free hour, and the live hour carries
-  a ring. The large bucket labels it `00 06 12 18` under the ticks and groups it
-  with the count (`3 of 7 planned hours done`), the line
-  `Nothing else planned today` when no hour is left, and the legend.
-- **The leftover height is the day panel**, never padding: in the large bucket
-  the strip block takes whatever the rows do not, so a full screen card shows
-  the day at a glance instead of a blank band. The medium bucket keeps the strip
-  and the count under the last row and puts the slack under them.
+There is no day list, no hour rows, and no segmented strip in the widget. It asks
+for a 4x2 cell (`minHeight` 100dp) and resizes both ways.
 
-Each hour appears once: the next hour is a row, there is no separate NEXT line,
-and only the hero hour says `NOW`.
-
-Tapping a chip runs a Dart callback in a background isolate. It flips the item,
-saves it, and repaints the widget. The app and the widget share one store, so a
-change in one shows in the other. A tap on a row opens the app at that hour.
-
-The widget also handles its quiet states: a hero with no item asks you to plan
-the hour, a day with no items says so, and a payload from another day is marked
-`SHOWING MONDAY 26` with a `STALE` chip. Dark mode comes from `values-night`.
-
-`android/app/src/main/kotlin/com/awun/todo_app/HourlyWidgetProvider.kt` builds
-the views with `RemoteViews`. `WidgetSize.kt` is the size chooser and
-`WidgetDayPlan.kt` decides which hours to paint; both are pure Kotlin and unit
-tested. The app sends JSON through the `home_widget` package under the key
-`hourly_payload`:
+`HourlyWidgetProvider` builds the card with `RemoteViews`. The app sends one
+small JSON document through `home_widget` under `hourly_payload`:
 
 ```json
 {
-  "date": "2026-10-26",
-  "day": "Monday 26",
-  "done": 1,
-  "total": 3,
-  "nowHour": 9,
-  "minutesIntoHour": 42,
-  "minutesLeft": 18,
-  "hourPercent": 70,
-  "dayPercent": 33,
-  "segments": [
-    { "hour": 9, "state": "active", "text": "Standup" },
-    { "hour": 11, "state": "completed", "text": "Review" }
-  ],
-  "next": { "hour": 11, "label": "11:00", "text": "Review", "status": "completed" },
-  "slots": [
-    { "hour": 9, "label": "09:00", "text": "Standup", "status": "active", "current": true }
-  ]
+  "date": "2026-10-30",
+  "day": "Friday 30",
+  "hour": 23,
+  "label": "23:00",
+  "text": "Slap Aaliyah",
+  "status": "active",
+  "minutesLeft": 26
 }
 ```
 
-`WidgetPayload.build()` computes every field from the injected `now`, so the
-payload tests cover the hour math, the next-up lookup, and the day percent.
-`segments` carries every planned hour of the day, which feeds both the meter and
-the chronological body. The provider parses it with `optJSONArray` and an hour
-range check, and falls back to `slots` when the field is missing.
+A chip tap runs a Dart callback in a background isolate, which flips the item and
+repaints the widget. The quick add dialog writes the same store the app reads
+(`FlutterSharedPreferences`, key `flutter.hours.v1.<date>`), then sends
+`hourly://refresh` so the Dart callback repaints from the store. The app picks up
+a widget-written item on its next load.
 
 ## Stack
 
@@ -141,7 +84,7 @@ range check, and falls back to `slots` when the field is missing.
 | Local store | `shared_preferences` 2 (one JSON document per day) |
 | Widget bridge | `home_widget` 0.10 |
 | Dates | `intl` |
-| Tests | `flutter_test`, `bloc_test` |
+| Tests | `flutter_test` |
 
 ## Get started
 
@@ -175,19 +118,29 @@ lib/
     │   ├── models/hour_entry_mapper.dart
     │   ├── repositories/schedule_local_repository.dart
     │   └── widget/
-    │       ├── widget_payload.dart         # JSON shape for the widget
+    │       ├── widget_payload.dart         # current hour for the widget
     │       ├── home_widget_bridge.dart     # home_widget calls
-    │       └── widget_toggle_callback.dart # background isolate
+    │       └── widget_toggle_callback.dart # toggle and refresh callbacks
     └── presentation/
         ├── cubit/day_schedule_cubit.dart, day_schedule_state.dart
         ├── screens/day_screen.dart
-        └── widgets/hour_block.dart, day_header.dart, hour_editor_sheet.dart
+        └── widgets/hour_block.dart, hour_toggle.dart, day_header.dart,
+            hour_editor_sheet.dart
+```
+
+Android side:
+
+```
+android/app/src/main/kotlin/com/awun/todo_app/
+├── MainActivity.kt
+├── HourlyWidgetProvider.kt   # one card, RemoteViews
+└── QuickAddActivity.kt       # the text field the widget opens
 ```
 
 Data flow: a block calls `DayScheduleCubit`, the cubit changes
-`DayScheduleState` and writes through `ScheduleRepository`, then it sends today
-to the widget. A failed write restores the old state and shows a message. A
-failed widget sync does not block the edit.
+`DayScheduleState` and writes through `ScheduleRepository`, then it sends the
+current hour to the widget. A failed write restores the old state and shows a
+message. A failed widget sync does not block the edit.
 
 The store is an interface, so a different backend is one line in `main.dart`.
 
@@ -221,25 +174,24 @@ A day document holds at most 24 entries. Invalid JSON raises
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 53 tests
-cd android && ./gradlew :app:testDebugUnitTest   # 30 widget Java/Kotlin tests
+flutter test      # 55 tests
 ```
 
 | Suite | Covers |
 |---|---|
 | `day_schedule_cubit_test.dart` | load, save, toggle, delete, day change, write failure, widget sync, progress |
 | `schedule_local_repository_test.dart` | day isolation, replace, delete, bad records, bad JSON |
-| `widget_payload_test.dart` | slot window, midnight stop, day counts, minutes into the hour, next-up lookup, day percent, meter segments |
+| `widget_payload_test.dart` | one hour only, label, status, minutes left, empty hour |
 | `day_segments_test.dart` | 24 segments, in place vs done, live hour, out of range hours, meter label |
 | `day_header_test.dart` | segment count, colours, live ring and lift, one semantics node, empty day, dark theme |
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |
-| `WidgetSizeTest` | compact, medium, and large buckets, row counts, resize headroom, fixed row heights, every fitted body inside its box |
-| `WidgetDayPlanTest` | chronological day, earlier and more lines, free hour fill, one hero per day, the MISSED rule, the nothing-else line |
+| `design_tokens_test.dart` | the widget XML mirrors the tokens, forest ramp, no stray green or pink |
 
 ## Limits
 
 - The widget is Android only. iOS uses the same store, but it has no widget yet.
 - There is no sync and no backup. Uninstalling the app removes the plan.
-- The widget paints at most seven hour cells. A whole 24 hour day in one card
-  needs scrolling, which `RemoteViews` does not do simply.
+- The widget shows the current hour only. It does not list the day.
+- Android widgets cannot host an `EditText`; the text field is a dialog activity
+  over the home screen.
 - Due dates, notes, and reminders are not implemented. One hour holds one item.
