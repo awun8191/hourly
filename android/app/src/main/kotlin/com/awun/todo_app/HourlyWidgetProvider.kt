@@ -5,10 +5,13 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Paint
 import android.net.Uri
 import android.widget.RemoteViews
+
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetProvider
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -42,7 +45,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val views = RemoteViews(context.packageName, R.layout.hourly_widget)
         val root = payload?.let { runCatching { JSONObject(it) }.getOrNull() }
         if (root == null) {
-            views.setTextViewText(R.id.widget_day, "")
             views.setTextViewText(R.id.hero_time, "--:--")
             bindEmpty(context, views, currentHour(), "", "")
             return views
@@ -58,10 +60,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val status = root.optString("status").ifEmpty { "empty" }
         val minutesLeft = root.optInt("minutesLeft", 60).coerceIn(0, 60)
 
-        views.setTextViewText(
-            R.id.widget_day,
-            root.optString("day").uppercase(Locale.getDefault()),
-        )
         views.setTextViewText(R.id.hero_time, label)
 
         when {
@@ -94,6 +92,7 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
 
             else -> bindEmpty(context, views, hour, date, text)
         }
+        bindRows(context, views, root.optJSONArray("upcoming"), date)
         return views
     }
 
@@ -108,6 +107,50 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         val target = date.ifEmpty { todayKey() }
         views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, target, hour))
         views.setOnClickPendingIntent(R.id.hero_chip, quickAddIntent(context, target, hour))
+    }
+
+    /** The next few hours as fields. A tap fills the hour. */
+    private fun bindRows(context: Context, views: RemoteViews, slots: JSONArray?, date: String) {
+        views.removeAllViews(R.id.widget_rows)
+        if (slots == null) {
+            return
+        }
+        for (index in 0 until minOf(slots.length(), MAX_ROWS)) {
+            val slot = slots.optJSONObject(index) ?: continue
+            val hour = slot.optInt("hour", -1)
+            if (hour !in 0..HOURS - 1) {
+                continue
+            }
+            val text = slot.optString("text")
+            val status = slot.optString("status")
+            val row = RemoteViews(context.packageName, R.layout.hourly_widget_slot)
+            row.setTextViewText(R.id.slot_hour, slot.optString("label"))
+            when (status) {
+                "completed" -> {
+                    row.setTextViewText(R.id.slot_text, text)
+                    row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_done_text))
+                    row.setInt(
+                        R.id.slot_text,
+                        "setPaintFlags",
+                        Paint.STRIKE_THRU_TEXT_FLAG or Paint.ANTI_ALIAS_FLAG,
+                    )
+                }
+
+                "active" -> {
+                    row.setTextViewText(R.id.slot_text, text)
+                    row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_text))
+                    row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
+                }
+
+                else -> {
+                    row.setTextViewText(R.id.slot_text, context.getString(R.string.widget_slot_add))
+                    row.setTextColor(R.id.slot_text, context.getColor(R.color.widget_muted))
+                    row.setInt(R.id.slot_text, "setPaintFlags", Paint.ANTI_ALIAS_FLAG)
+                }
+            }
+            row.setOnClickPendingIntent(R.id.slot_row, quickAddIntent(context, date, hour))
+            views.addView(R.id.widget_rows, row)
+        }
     }
 
     private fun hourMeta(context: Context, minutesLeft: Int): String = when {
@@ -154,5 +197,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
 
     private companion object {
         const val HOURS = 24
+        const val MAX_ROWS = 3
     }
 }

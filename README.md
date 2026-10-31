@@ -38,21 +38,23 @@ small lift. It is one semantics node; the segments themselves are decorative.
 
 ## Android widget
 
-One card. One hour: the current hour.
+One card for the live hour, then the next three hours as fields.
 
-- The time in 28sp tabular figures, a state chip, the item, and a line such as
+- The live hour is a card: 24sp time, a state chip, the item, and a line such as
   `This hour ends in 18 min`.
 - The chip and the card colour carry the state: `IN PLACE` on the green card,
   `DONE` on the red card, `+ ADD` on the empty card, `STALE` when the payload is
   from another day.
+- **The next three hours are fields**: the time, then the item or a muted
+  `+ Add`. Tap any field to type that hour.
 - **Tap the card** and a small text field opens over the home screen, prefilled
   with the current item. Android widgets cannot host an `EditText`, so
   `QuickAddActivity` is a dialog-style activity with a real field. `Save` writes
   the item, `Clear` removes it, `Cancel` changes nothing.
-- **Tap the chip** to flip the hour between in place and done.
+- **Tap the chip** to flip the live hour between in place and done.
 
-There is no day list, no hour rows, and no segmented strip in the widget. It asks
-for a 4x2 cell (`minHeight` 100dp) and resizes both ways.
+No day list, no 24 hour strip, no counts. The widget asks for a 4x3 cell
+(`minHeight` 210dp) and resizes both ways.
 
 `HourlyWidgetProvider` builds the card with `RemoteViews`. The app sends one
 small JSON document through `home_widget` under `hourly_payload`:
@@ -61,13 +63,21 @@ small JSON document through `home_widget` under `hourly_payload`:
 {
   "date": "2026-10-30",
   "day": "Friday 30",
-  "hour": 23,
-  "label": "23:00",
+  "hour": 20,
+  "label": "20:00",
   "text": "Slap Aaliyah",
   "status": "active",
-  "minutesLeft": 26
+  "minutesLeft": 26,
+  "upcoming": [
+    { "hour": 21, "label": "21:00", "text": "", "status": "empty" },
+    { "hour": 22, "label": "22:00", "text": "Read", "status": "active" },
+    { "hour": 23, "label": "23:00", "text": "", "status": "empty" }
+  ]
 }
 ```
+
+`upcoming` carries the next three hours, empty ones included, so each field has
+a label, text, and state. It stops at 23:00 instead of wrapping to tomorrow.
 
 A chip tap runs a Dart callback in a background isolate, which flips the item and
 repaints the widget. The quick add dialog writes the same store the app reads
@@ -174,7 +184,7 @@ A day document holds at most 24 entries. Invalid JSON raises
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 55 tests
+flutter test      # 56 tests
 ```
 
 | Suite | Covers |

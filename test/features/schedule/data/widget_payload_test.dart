@@ -13,21 +13,46 @@ void main() {
     );
   }
 
-  test('sends only the live hour', () {
+  test('sends the live hour and the next three hours', () {
     final Map<String, Object?> payload = WidgetPayload.build(
-      now: DateTime(2026, 10, 30, 23, 34),
-      entries: <HourEntry>[entry(9, 'Gym'), entry(23, 'Slap Aaliyah')],
+      now: DateTime(2026, 10, 30, 20, 34),
+      entries: <HourEntry>[
+        entry(9, 'Gym'),
+        entry(20, 'Slap Aaliyah'),
+        entry(22, 'Read'),
+      ],
     );
 
     expect(payload['date'], '2026-10-30');
     expect(payload['day'], 'Friday 30');
-    expect(payload['hour'], 23);
-    expect(payload['label'], '23:00');
+    expect(payload['hour'], 20);
+    expect(payload['label'], '20:00');
     expect(payload['text'], 'Slap Aaliyah');
     expect(payload['status'], 'active');
     expect(payload['minutesLeft'], 26);
-    expect(payload.containsKey('slots'), isFalse);
-    expect(payload.containsKey('segments'), isFalse);
+
+    final List<Object?> upcoming = payload['upcoming']! as List<Object?>;
+    expect(upcoming, hasLength(3));
+    final Map<String, Object?> first = upcoming.first! as Map<String, Object?>;
+    expect(first['hour'], 21);
+    expect(first['label'], '21:00');
+    expect(first['text'], '');
+    expect(first['status'], 'empty');
+    final Map<String, Object?> second = upcoming[1]! as Map<String, Object?>;
+    expect(second['hour'], 22);
+    expect(second['text'], 'Read');
+    expect(second['status'], 'active');
+  });
+
+  test('stops the fields at midnight', () {
+    final Map<String, Object?> payload = WidgetPayload.build(
+      now: DateTime(2026, 10, 30, 22, 10),
+      entries: const <HourEntry>[],
+    );
+
+    final List<Object?> upcoming = payload['upcoming']! as List<Object?>;
+    expect(upcoming, hasLength(1));
+    expect((upcoming.single! as Map<String, Object?>)['hour'], 23);
   });
 
   test('an empty live hour has no text and an empty status', () {
