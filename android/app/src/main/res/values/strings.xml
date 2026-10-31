@@ -23,6 +23,7 @@
     <string name="quick_save">Save</string>
     <string name="quick_cancel">Cancel</string>
     <string name="quick_clear">Clear</string>
+    <string name="quick_close">Close</string>
     <string name="widget_chip_stale">STALE</string>
     <!-- An item still in place in an hour that has already gone by -->
     <string name="widget_chip_missed">MISSED</string>

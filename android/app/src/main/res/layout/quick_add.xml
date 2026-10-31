@@ -1,64 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="24dp"
-    android:background="@drawable/bg_widget"
-    android:orientation="vertical"
+    android:background="@android:color/transparent"
     android:padding="20dp">
-
-    <TextView
-        android:id="@+id/quick_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/widget_text"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/quick_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="@color/widget_muted"
-        android:hint="@string/quick_hint"
-        android:inputType="textCapSentences"
-        android:maxLines="3"
-        android:minLines="1"
-        android:textColor="@color/widget_text"
-        android:textColorHint="@color/widget_muted"
-        android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:gravity="end"
-        android:orientation="horizontal">
+        android:background="@drawable/bg_quick_add"
+        android:elevation="24dp"
+        android:orientation="vertical"
+        android:paddingStart="22dp"
+        android:paddingTop="22dp"
+        android:paddingEnd="22dp"
+        android:paddingBottom="18dp">
 
-        <Button
-            android:id="@+id/quick_clear"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/quick_clear"
-            android:textColor="@color/widget_done_text" />
+            android:gravity="top"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/quick_cancel"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/quick_cancel"
-            android:textColor="@color/widget_muted" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <Button
-            android:id="@+id/quick_save"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/quick_day"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.16"
+                    android:textColor="@color/widget_muted"
+                    android:textSize="9.5sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/quick_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFeatureSettings="tnum"
+                    android:includeFontPadding="false"
+                    android:letterSpacing="-0.02"
+                    android:textColor="@color/widget_text"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/quick_close"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_quick_add_close"
+                android:contentDescription="@string/quick_close"
+                android:gravity="center"
+                android:text="✕"
+                android:textColor="@color/widget_muted"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/quick_text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/quick_save"
-            android:textColor="@color/widget_accent"
-            android:textStyle="bold" />
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_quick_add_field"
+            android:gravity="top|start"
+            android:hint="@string/quick_hint"
+            android:includeFontPadding="false"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLines="3"
+            android:minLines="3"
+            android:padding="14dp"
+            android:textColor="@color/widget_text"
+            android:textColorHint="@color/widget_muted"
+            android:textSize="15.5sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/quick_clear"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:paddingStart="6dp"
+                android:paddingEnd="12dp"
+                android:text="@string/quick_clear"
+                android:textColor="@color/widget_done_text"
+                android:textSize="13.5sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/quick_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:gravity="center"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="@string/quick_cancel"
+                android:textColor="@color/widget_muted"
+                android:textSize="13.5sp" />
+
+            <TextView
+                android:id="@+id/quick_save"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_quick_add_save"
+                android:gravity="center"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:text="@string/quick_save"
+                android:textColor="@color/widget_background"
+                android:textSize="13.5sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

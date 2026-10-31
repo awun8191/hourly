@@ -58,6 +58,18 @@ One card for the live hour, then every later hour of the day as a card.
 No 24 hour strip, no counts, no progress bars. The widget asks for a 4x4 cell
 (`minHeight` 240dp) and resizes both ways.
 
+### Quick add
+
+A tap on the hero or on any hour card opens one small card over the home screen,
+in the widget's colours.
+
+- A day overline (`FRIDAY 30`), the hour at 26sp, and a 34dp close control.
+- One recessed text field, three lines tall, with the item already in it.
+- `Clear` sits on the left in red and stays dim until the field has text.
+- `Save` is the accent pill. `Cancel` and the close control change nothing.
+- The card is centered with 20dp margins, a 26dp radius, a 1dp border, and a
+  24dp lift. The keyboard pushes the card up instead of covering it.
+
 `HourlyWidgetProvider` builds the card with `RemoteViews`. The app sends one
 small JSON document through `home_widget` under `hourly_payload`:
 
