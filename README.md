@@ -38,16 +38,18 @@ small lift. It is one semantics node; the segments themselves are decorative.
 
 ## Android widget
 
-One card for the live hour, then every later hour of the day as a card.
+One hero card for the live hour, then a rolling 24-hour list of hour cards.
 
 - The live hour is a hero card: 26sp time, a state chip, the item, and a line
-  such as `This hour ends in 18 min`.
+  such as `This hour ends at 19:00`. The widget repaints just after each hour
+  starts, and after every edit.
 - The chip and the card colour carry the state: `IN PLACE` on the green card,
-  `DONE` on the red card, `+ ADD` on the empty card, `STALE` when the payload is
-  from another day.
-- **Every later hour is a card in a scrolling list**: the time, then the item or
-  a muted `+ Add task`. The list fills the cell when the widget is tall and
-  scrolls when it is short.
+  `DONE` on the red card, `+ ADD` on the empty card. The live hour comes from the
+  device clock, not from the payload's timestamp.
+- **A rolling 24-hour list**: the hour after the live one, then onward, across
+  midnight. Each card carries its time and its item, or a muted `+ Add task`.
+  The first card after midnight carries a `TMRW` tag. The list fills the cell
+  when the widget is tall and scrolls when it is short.
 - **Tap any card** and a small text field opens over the home screen, prefilled
   with that hour's item. Android widgets cannot host an `EditText`, so
   `QuickAddActivity` is a dialog-style activity with a real field. `Save` writes
@@ -70,28 +72,49 @@ in the widget's colours.
 - The card is centered with 20dp margins, a 26dp radius, a 1dp border, and a
   24dp lift. The keyboard pushes the card up instead of covering it.
 
-`HourlyWidgetProvider` builds the card with `RemoteViews`. The app sends one
-small JSON document through `home_widget` under `hourly_payload`:
+`HourlyWidgetProvider` builds the hero card with `RemoteViews`, and
+`HourlyWidgetService` builds the rows. The app sends one small JSON document
+through `home_widget` under `hourly_payload`:
 
 ```json
 {
   "date": "2026-10-30",
   "day": "Friday 30",
-  "hour": 20,
-  "label": "20:00",
-  "text": "Slap Aaliyah",
-  "status": "active",
-  "minutesLeft": 26,
-  "upcoming": [
-    { "hour": 21, "label": "21:00", "text": "", "status": "empty" },
-    { "hour": 22, "label": "22:00", "text": "Read", "status": "active" },
-    { "hour": 23, "label": "23:00", "text": "", "status": "empty" }
+  "hour": 22,
+  "slots": [
+    {
+      "date": "2026-10-30",
+      "hour": 22,
+      "label": "22:00",
+      "text": "Brush teeth",
+      "status": "active",
+      "tomorrow": false
+    },
+    {
+      "date": "2026-10-30",
+      "hour": 23,
+      "label": "23:00",
+      "text": "",
+      "status": "empty",
+      "tomorrow": false
+    },
+    {
+      "date": "2026-10-31",
+      "hour": 0,
+      "label": "00:00",
+      "text": "",
+      "status": "empty",
+      "tomorrow": true
+    }
   ]
 }
 ```
 
-`upcoming` carries the next three hours, empty ones included, so each field has
-a label, text, and state. It stops at 23:00 instead of wrapping to tomorrow.
+`slots` holds 26 hours from the live hour onward. Every slot carries its own
+date, so a card after midnight writes to the next day. The widget finds the live
+slot with the device clock, which keeps the hero correct when the app has not
+run for a while. The app sends today and tomorrow, so items past midnight show
+their text.
 
 A chip tap runs a Dart callback in a background isolate, which flips the item and
 repaints the widget. The quick add dialog writes the same store the app reads
@@ -142,7 +165,8 @@ lib/
     │   ├── models/hour_entry_mapper.dart
     │   ├── repositories/schedule_local_repository.dart
     │   └── widget/
-    │       ├── widget_payload.dart         # current hour for the widget
+    │       ├── widget_payload.dart         # rolling 26 hour window
+    │       ├── widget_window.dart          # today and tomorrow for the widget
     │       ├── home_widget_bridge.dart     # home_widget calls
     │       └── widget_toggle_callback.dart # toggle and refresh callbacks
     └── presentation/
@@ -199,14 +223,14 @@ A day document holds at most 24 entries. Invalid JSON raises
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 57 tests
+flutter test      # 54 tests
 ```
 
 | Suite | Covers |
 |---|---|
 | `day_schedule_cubit_test.dart` | load, save, toggle, delete, day change, write failure, widget sync, progress |
 | `schedule_local_repository_test.dart` | day isolation, replace, delete, bad records, bad JSON |
-| `widget_payload_test.dart` | one hour only, label, status, minutes left, empty hour |
+| `widget_payload_test.dart` | 26 hour window, midnight crossing, tomorrow text, empty hour |
 | `day_segments_test.dart` | 24 segments, in place vs done, live hour, out of range hours, meter label |
 | `day_header_test.dart` | segment count, colours, live ring and lift, one semantics node, empty day, dark theme |
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |

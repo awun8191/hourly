@@ -1,45 +1,44 @@
 import '../../../../core/date/date_key.dart';
 import '../../domain/entities/hour_entry.dart';
 
-/// Data contract between the app and the Android widget.
+/// Data contract for the Android widget.
 ///
-/// The widget shows the live hour as a card, then the next few hours as fields
-/// the user can tap and fill. It cannot read Flutter's `SharedPreferences`
-/// file, so the app sends this small JSON document through `home_widget`.
+/// The widget shows a rolling window that starts at the live hour and runs
+/// [slotCount] hours forward, across midnight. Each slot carries its own date,
+/// so a row after midnight writes to the next day.
 abstract final class WidgetPayload {
-  /// Every hour after the live one, up to 23:00. The widget list scrolls, so
-  /// the payload does not cap the count.
-  static const int lastHour = 23;
+  static const int slotCount = 26;
 
   static Map<String, Object?> build({
     required DateTime now,
     required List<HourEntry> entries,
   }) {
-    final Map<int, HourEntry> byHour = <int, HourEntry>{
-      for (final HourEntry entry in entries) entry.hour: entry,
+    final Map<String, HourEntry> byKey = <String, HourEntry>{
+      for (final HourEntry entry in entries) '${entry.dateKey}:${entry.hour}': entry,
     };
-    final HourEntry? entry = byHour[now.hour];
+    final DateTime base = DateTime(now.year, now.month, now.day, now.hour);
+    final String todayKey = DateKey.of(now);
 
-    final List<Map<String, Object?>> upcoming = <Map<String, Object?>>[];
-    for (int hour = now.hour + 1; hour <= lastHour; hour++) {
-      final HourEntry? next = byHour[hour];
-      upcoming.add(<String, Object?>{
-        'hour': hour,
-        'label': DateKey.hourLabel(hour),
-        'text': next?.text ?? '',
-        'status': next?.status.name ?? 'empty',
+    final List<Map<String, Object?>> slots = <Map<String, Object?>>[];
+    for (int index = 0; index < slotCount; index++) {
+      final DateTime moment = base.add(Duration(hours: index));
+      final String dateKey = DateKey.of(moment);
+      final HourEntry? entry = byKey['$dateKey:${moment.hour}'];
+      slots.add(<String, Object?>{
+        'date': dateKey,
+        'hour': moment.hour,
+        'label': DateKey.hourLabel(moment.hour),
+        'text': entry?.text ?? '',
+        'status': entry?.status.name ?? 'empty',
+        'tomorrow': dateKey != todayKey,
       });
     }
 
     return <String, Object?>{
-      'date': DateKey.of(now),
+      'date': todayKey,
       'day': _dayLabel(now),
       'hour': now.hour,
-      'label': DateKey.hourLabel(now.hour),
-      'text': entry?.text ?? '',
-      'status': entry?.status.name ?? 'empty',
-      'minutesLeft': 60 - now.minute,
-      'upcoming': upcoming,
+      'slots': slots,
     };
   }
 

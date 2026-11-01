@@ -1,5 +1,6 @@
 package com.awun.todo_app
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -9,6 +10,7 @@ import android.net.Uri
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetProvider
+import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -16,12 +18,12 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Home screen widget: a card for the live hour, then every later hour of the
- * day as a tappable card in a scrolling list.
+ * Home screen widget: the live hour as a card, then a rolling window of hour
+ * cards that always fills the cell and always scrolls.
  *
- * The list is a ListView backed by [HourlyWidgetService], because RemoteViews
- * cannot scroll without a collection view. The payload arrives under
- * `hourly_payload` through `home_widget`.
+ * The widget picks its own hours from the device clock, so it stays correct
+ * when the app has not run for a while. The payload carries the items; the
+ * clock decides which item is live and which rows come next.
  */
 class HourlyWidgetProvider : HomeWidgetProvider() {
 
@@ -36,6 +38,35 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             appWidgetManager.updateAppWidget(id, buildViews(context, payload))
             appWidgetManager.notifyAppWidgetViewDataChanged(id, R.id.widget_list)
         }
+        scheduleNextHour(context, appWidgetIds)
+    }
+
+    /**
+     * Repaints just after the next hour starts, so the hero card always shows
+     * the live hour. The system's own update period is 30 minutes at best.
+     */
+    private fun scheduleNextHour(context: Context, ids: IntArray) {
+        if (ids.isEmpty()) {
+            return
+        }
+        val alarm = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, HourlyWidgetProvider::class.java).apply {
+            action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        }
+        val pending = PendingIntent.getBroadcast(
+            context,
+            400,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val next = Calendar.getInstance().apply {
+            add(Calendar.HOUR_OF_DAY, 1)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 10)
+            set(Calendar.MILLISECOND, 0)
+        }
+        alarm.setAndAllowWhileIdle(AlarmManager.RTC, next.timeInMillis, pending)
     }
 
     private fun buildViews(context: Context, payload: String?): RemoteViews {
@@ -46,54 +77,44 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         )
         views.setPendingIntentTemplate(R.id.widget_list, editTemplate(context))
 
+        val now = Calendar.getInstance()
+        val nowKey = keyOf(now.time)
+        val nowHour = now.get(Calendar.HOUR_OF_DAY)
         val root = payload?.let { runCatching { JSONObject(it) }.getOrNull() }
-        if (root == null) {
-            views.setTextViewText(R.id.hero_time, "--:--")
-            bindEmpty(context, views, currentHour(), "", "")
+        val slot = findSlot(root?.optJSONArray("slots"), nowKey, nowHour)
+
+        views.setTextViewText(R.id.hero_time, label(nowHour))
+
+        if (slot == null) {
+            bindEmpty(context, views, nowHour, nowKey, "")
             return views
         }
 
-        val date = root.optString("date")
-        val isToday = date == todayKey()
-        val hour = root.optInt("hour", currentHour()).coerceIn(0, HOURS - 1)
-        val label = root.optString("label").ifEmpty {
-            String.format(Locale.getDefault(), "%02d:00", hour)
-        }
-        val text = root.optString("text")
-        val status = root.optString("status").ifEmpty { "empty" }
-        val minutesLeft = root.optInt("minutesLeft", 60).coerceIn(0, 60)
-
-        views.setTextViewText(R.id.hero_time, label)
-
-        when {
-            !isToday -> {
-                views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_empty)
-                setChip(context, views, R.string.widget_chip_stale, R.color.widget_muted, R.drawable.bg_widget_chip_muted)
-                views.setTextViewText(R.id.hero_text, text.ifEmpty { context.getString(R.string.widget_empty_hint) })
-                views.setTextViewText(R.id.hero_meta, context.getString(R.string.widget_stale_hint))
-                views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, date, hour))
-                views.setOnClickPendingIntent(R.id.hero_chip, quickAddIntent(context, date, hour))
-            }
-
-            status == "active" -> {
+        val text = slot.optString("text")
+        val status = slot.optString("status").ifEmpty { "empty" }
+        when (status) {
+            "active" -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_active)
                 setChip(context, views, R.string.widget_chip_in_place, R.color.widget_active_text, R.drawable.bg_widget_chip_active)
                 views.setTextViewText(R.id.hero_text, text)
-                views.setTextViewText(R.id.hero_meta, hourMeta(context, minutesLeft))
-                views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, date, hour))
-                views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, date, hour))
+                views.setTextViewText(
+                    R.id.hero_meta,
+                    context.getString(R.string.widget_hour_ends_at, label((nowHour + 1) % 24)),
+                )
+                views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, nowKey, nowHour))
+                views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, nowKey, nowHour))
             }
 
-            status == "completed" -> {
+            "completed" -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_done)
                 setChip(context, views, R.string.widget_done, R.color.widget_done_text, R.drawable.bg_widget_chip_done)
                 views.setTextViewText(R.id.hero_text, text)
                 views.setTextViewText(R.id.hero_meta, context.getString(R.string.widget_meta_done))
-                views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, date, hour))
-                views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, date, hour))
+                views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, nowKey, nowHour))
+                views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, nowKey, nowHour))
             }
 
-            else -> bindEmpty(context, views, hour, date, text)
+            else -> bindEmpty(context, views, nowHour, nowKey, text)
         }
         return views
     }
@@ -106,15 +127,21 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             text.ifEmpty { context.getString(R.string.widget_hero_empty) },
         )
         views.setTextViewText(R.id.hero_meta, context.getString(R.string.widget_meta_add))
-        val target = date.ifEmpty { todayKey() }
-        views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, target, hour))
-        views.setOnClickPendingIntent(R.id.hero_chip, quickAddIntent(context, target, hour))
+        views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, date, hour))
+        views.setOnClickPendingIntent(R.id.hero_chip, quickAddIntent(context, date, hour))
     }
 
-    private fun hourMeta(context: Context, minutesLeft: Int): String = when {
-        minutesLeft <= 1 -> context.getString(R.string.widget_hour_ending)
-        minutesLeft >= 60 -> context.getString(R.string.widget_hour_started)
-        else -> context.getString(R.string.widget_hour_ends_in, minutesLeft)
+    private fun findSlot(slots: JSONArray?, date: String, hour: Int): JSONObject? {
+        if (slots == null) {
+            return null
+        }
+        for (index in 0 until slots.length()) {
+            val slot = slots.optJSONObject(index) ?: continue
+            if (slot.optString("date") == date && slot.optInt("hour", -1) == hour) {
+                return slot
+            }
+        }
+        return null
     }
 
     private fun setChip(
@@ -161,12 +188,8 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
         )
     }
 
-    private fun todayKey(): String =
-        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    private fun label(hour: Int): String = String.format(Locale.getDefault(), "%02d:00", hour)
 
-    private fun currentHour(): Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-
-    private companion object {
-        const val HOURS = 24
-    }
+    private fun keyOf(date: Date): String =
+        SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
 }

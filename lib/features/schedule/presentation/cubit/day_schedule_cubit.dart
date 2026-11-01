@@ -4,6 +4,7 @@ import '../../../../core/date/date_key.dart';
 import '../../domain/entities/hour_entry.dart';
 import '../../domain/repositories/schedule_repository.dart';
 import '../../data/widget/home_widget_bridge.dart';
+import '../../data/widget/widget_window.dart';
 import 'day_schedule_state.dart';
 
 /// Owns the selected day, applies the edits, and mirrors today to the widget.
@@ -162,7 +163,7 @@ class DayScheduleCubit extends Cubit<DayScheduleState> {
     try {
       await _widgets.sync(
         now: now,
-        entries: state.entries.values.toList(growable: false),
+        entries: await WidgetWindow.collect(_repository, now),
       );
     } on Object {
       // Ignore. The app state is already saved.
