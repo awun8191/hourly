@@ -27,20 +27,26 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.bloodRedDeep` | `#D92D20` | Done text and fill on paper |
 | `AppColors.bloodRedSurfaceDark` | `#2E0B09` | Done card on dark |
 | `AppColors.bloodRedSurfaceLight` | `#FCEAE8` | Done card on light |
-| `AppColors.knobYellow` | `#FFD24D` | Toggle knob gradient start |
-| `AppColors.knobYellowDeep` | `#F2B705` | Toggle knob gradient end |
-| `AppColors.switchOn` | `#7DDBA8` | Toggle fill when on, dark (original emerald) |
-| `AppColors.switchOnLight` | `#1F7A4C` | Toggle fill when on, light (original emerald) |
-| `AppColors.switchOff` | `#4D9FFF` | Toggle track when off, dark (blue, never pink) |
-| `AppColors.switchOffLight` | `#2563EB` | Toggle track when off, light |
+| `AppColors.switchOn` | `#B7D9B0` | Toggle fill when on, dark (pale moss, flat) |
+| `AppColors.switchOnLight` | `#2E5B3E` | Toggle fill when on, light (deep moss, flat) |
+| `AppColors.switchOff` | `#14291D` | Toggle track when off, dark (bark, flat) |
+| `AppColors.switchOffLight` | `#E8EDE8` | Toggle track when off, light (flat) |
+| `AppColors.switchKnobOn` | `#0C1A12` | Toggle knob when on, dark (solid) |
+| `AppColors.switchKnobOnLight` | `#FFFFFF` | Toggle knob when on, light (solid) |
+| `AppColors.switchKnobOff` | `#6B7F71` | Toggle knob when off, dark (solid) |
+| `AppColors.switchKnobOffLight` | `#7A8A7E` | Toggle knob when off, light (solid) |
+| `AppColors.switchBorderOff` | `#33463A` | Toggle off track border, dark, 1.5px |
+| `AppColors.switchBorderOffLight` | `#C2CFC4` | Toggle off track border, light, 1.5px |
 
 Rules:
 
-- White is the accent on the deep forest. Ink is the accent on paper. Green
-  appears only in the toggle, never in the rest of the UI.
+- White is the accent on the deep forest. Ink is the accent on paper. Moss
+  bark greens appear only in the toggle, never in the rest of the UI.
 - Red is one bright hue, `#FF3B30` on black. On paper it deepens to `#D92D20`
   so it stays legible. It belongs to done, missed, and the error role.
-- Yellow belongs to the toggle knob only.
+- The toggle is Moss on bark: flat fills only, no gradient, no glow. Off
+  tracks carry a 1.5px border; on tracks have none. The knob keeps a neutral
+  black shadow for lift.
 
 ## Mapping to the widget
 

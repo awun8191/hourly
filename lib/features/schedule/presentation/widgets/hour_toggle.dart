@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_theme.dart';
 
-/// The hour switch.
+/// The hour switch, Moss on bark.
 ///
-/// The track is blue when the hour is off (empty or done) and green when the
-/// item is in place. The knob is yellow and sits above the track with a shadow.
+/// Flat fills only, no gradient, no glow. The off track is bark with a 1.5px
+/// border; the on track is moss with no border. The knob is a solid 24 circle
+/// on a 52x30 pill.
 ///
 /// Both shadows are neutral black: the knob's lift is depth, not light, so the
 /// switch never tints the card around it.
@@ -26,6 +27,7 @@ class HourToggle extends StatelessWidget {
   static const double _trackWidth = 52;
   static const double _trackHeight = 30;
   static const double _knob = 24;
+  static const double _offBorderWidth = 1.5;
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +56,12 @@ class HourToggle extends StatelessWidget {
               decoration: BoxDecoration(
                 color: value ? palette.switchOn : palette.switchOff,
                 borderRadius: BorderRadius.circular(_trackHeight),
-                boxShadow: const <BoxShadow>[
-                  BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+                border: value
+                    ? null
+                    : Border.all(
+                        color: palette.switchBorderOff,
+                        width: _offBorderWidth,
+                      ),
               ),
               child: AnimatedAlign(
                 duration: Motion.fast,
@@ -70,12 +71,10 @@ class HourToggle extends StatelessWidget {
                   width: _knob,
                   height: _knob,
                   decoration: BoxDecoration(
+                    color: value
+                        ? palette.switchKnobOn
+                        : palette.switchKnobOff,
                     shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: <Color>[Color(0xFFFFE082), Color(0xFFF2B705)],
-                    ),
                     boxShadow: const <BoxShadow>[
                       BoxShadow(
                         color: Color(0x59000000),

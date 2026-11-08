@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 /// mirrors these values by name. `test/core/theme/design_tokens_test.dart`
 /// fails when the two drift apart.
 ///
-/// The palette is monochrome plus one blood red. White is the accent for an
-/// hour in place. Blood red means done or missed. Yellow belongs to the knob
-/// only. There is no green anywhere.
+/// The palette is monochrome plus one blood red, plus moss bark greens for
+/// the toggle only. White is the accent for an hour in place. Blood red
+/// means done or missed. Moss belongs to the toggle fills only.
 abstract final class AppColors {
   // Base
   static const Color black = Color(0xFF000000);
@@ -38,18 +38,24 @@ abstract final class AppColors {
   static const Color bloodRedSurfaceLight = Color(0xFFFCEAE8);
   static const Color bloodRedMuted = Color(0xFFB3403A);
 
-  /// The only warm note: the toggle knob.
-  static const Color knobYellow = Color(0xFFFFD24D);
-  static const Color knobYellowDeep = Color(0xFFF2B705);
+  /// Moss on bark toggle fills. Flat only, no gradient, no glow.
+  /// Dark on is pale moss, light on is deep moss.
+  static const Color switchOn = Color(0xFFB7D9B0);
+  static const Color switchOnLight = Color(0xFF2E5B3E);
 
-  /// The toggle fill when an item is on. Back to the app's original emerald,
-  /// the green the switch used before the monochrome pass.
-  static const Color switchOn = Color(0xFF7DDBA8);
-  static const Color switchOnLight = Color(0xFF1F7A4C);
+  /// Bark toggle tracks when off.
+  static const Color switchOff = Color(0xFF14291D);
+  static const Color switchOffLight = Color(0xFFE8EDE8);
 
-  /// The toggle track when the hour is off. Blue, so it never reads pink.
-  static const Color switchOff = Color(0xFF4D9FFF);
-  static const Color switchOffLight = Color(0xFF2563EB);
+  /// Toggle knob fills: dark ink on moss, grey-green when off.
+  static const Color switchKnobOn = Color(0xFF0C1A12);
+  static const Color switchKnobOnLight = Color(0xFFFFFFFF);
+  static const Color switchKnobOff = Color(0xFF6B7F71);
+  static const Color switchKnobOffLight = Color(0xFF7A8A7E);
+
+  /// 1.5px off-state track borders.
+  static const Color switchBorderOff = Color(0xFF33463A);
+  static const Color switchBorderOffLight = Color(0xFFC2CFC4);
 }
 
 /// Colors for the two hour states.
@@ -63,6 +69,9 @@ class StatusPalette {
     required this.activeText,
     required this.switchOn,
     required this.switchOff,
+    required this.switchKnobOn,
+    required this.switchKnobOff,
+    required this.switchBorderOff,
     required this.completed,
     required this.completedSurface,
     required this.completedText,
@@ -73,11 +82,18 @@ class StatusPalette {
   final Color activeSurface;
   final Color activeText;
 
-  /// The toggle fill when the item is on.
+  /// Moss on bark toggle fills. Flat only, no gradient, no glow.
   final Color switchOn;
 
-  /// The toggle track when the hour is off. Blue, never pink.
+  /// Bark track when off, with a 1.5px [switchBorderOff] border.
   final Color switchOff;
+
+  /// Solid knob fills for the on and off positions.
+  final Color switchKnobOn;
+  final Color switchKnobOff;
+
+  /// Off-state track border. The on state has no border.
+  final Color switchBorderOff;
 
   /// The done red as a fill: the row bar, the meter tick.
   final Color completed;
@@ -90,6 +106,9 @@ class StatusPalette {
     activeText: AppColors.ink,
     switchOn: AppColors.switchOnLight,
     switchOff: AppColors.switchOffLight,
+    switchKnobOn: AppColors.switchKnobOnLight,
+    switchKnobOff: AppColors.switchKnobOffLight,
+    switchBorderOff: AppColors.switchBorderOffLight,
     completed: AppColors.bloodRedDeep,
     completedSurface: AppColors.bloodRedSurfaceLight,
     completedText: AppColors.bloodRedDeep,
@@ -101,6 +120,9 @@ class StatusPalette {
     activeText: AppColors.white,
     switchOn: AppColors.switchOn,
     switchOff: AppColors.switchOff,
+    switchKnobOn: AppColors.switchKnobOn,
+    switchKnobOff: AppColors.switchKnobOff,
+    switchBorderOff: AppColors.switchBorderOff,
     completed: AppColors.bloodRed,
     completedSurface: AppColors.bloodRedSurfaceDark,
     completedText: AppColors.bloodRedText,

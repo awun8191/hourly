@@ -7,8 +7,8 @@ import 'package:todo_app/core/theme/app_theme.dart';
 /// Guards the single source of truth.
 ///
 /// The widget cannot import Dart, so its colours live in XML. These tests fail
-/// when the XML drifts from `design_tokens.dart`, when green comes back, or
-/// when the dark accent stops being white.
+/// when the XML drifts from `design_tokens.dart`, when moss leaves the toggle,
+/// or when the dark accent stops being white.
 void main() {
   Map<String, Color> readPalette(String path) {
     final String text = File(path).readAsStringSync();
@@ -69,17 +69,42 @@ void main() {
     expect(StatusPalette.light.completed, AppColors.bloodRedDeep);
   });
 
-  test('the toggle is green when on', () {
+  test('the toggle is moss when on', () {
     expect(StatusPalette.dark.switchOn, AppColors.switchOn);
+    expect(StatusPalette.dark.switchOn, const Color(0xFFB7D9B0));
     expect(StatusPalette.light.switchOn, AppColors.switchOnLight);
+    expect(StatusPalette.light.switchOn, const Color(0xFF2E5B3E));
   });
 
-  test('the toggle is blue when off', () {
+  test('the toggle is bark when off, with a 1.5px border', () {
     expect(StatusPalette.dark.switchOff, AppColors.switchOff);
+    expect(StatusPalette.dark.switchOff, const Color(0xFF14291D));
     expect(StatusPalette.light.switchOff, AppColors.switchOffLight);
+    expect(StatusPalette.light.switchOff, const Color(0xFFE8EDE8));
+    expect(StatusPalette.dark.switchBorderOff, AppColors.switchBorderOff);
+    expect(StatusPalette.dark.switchBorderOff, const Color(0xFF33463A));
+    expect(
+      StatusPalette.light.switchBorderOff,
+      AppColors.switchBorderOffLight,
+    );
+    expect(
+      StatusPalette.light.switchBorderOff,
+      const Color(0xFFC2CFC4),
+    );
   });
 
-  test('no accent token carries a green hue', () {
+  test('the toggle knob is solid, ink on moss and grey-green when off', () {
+    expect(StatusPalette.dark.switchKnobOn, AppColors.switchKnobOn);
+    expect(StatusPalette.dark.switchKnobOn, const Color(0xFF0C1A12));
+    expect(StatusPalette.light.switchKnobOn, AppColors.switchKnobOnLight);
+    expect(StatusPalette.light.switchKnobOn, const Color(0xFFFFFFFF));
+    expect(StatusPalette.dark.switchKnobOff, AppColors.switchKnobOff);
+    expect(StatusPalette.dark.switchKnobOff, const Color(0xFF6B7F71));
+    expect(StatusPalette.light.switchKnobOff, AppColors.switchKnobOffLight);
+    expect(StatusPalette.light.switchKnobOff, const Color(0xFF7A8A7E));
+  });
+
+  test('moss lives only in the toggle, never in the accents', () {
     final List<Color> accents = <Color>[
       AppColors.black,
       AppColors.white,
@@ -94,8 +119,6 @@ void main() {
       AppColors.bloodRedSurfaceDark,
       AppColors.bloodRedSurfaceLight,
       AppColors.bloodRedMuted,
-      AppColors.knobYellow,
-      AppColors.knobYellowDeep,
       StatusPalette.light.active,
       StatusPalette.light.completed,
       StatusPalette.dark.active,
