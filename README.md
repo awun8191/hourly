@@ -18,10 +18,10 @@ The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
 White is in place on dark, ink on light. Red `#FF3B30` is done. This mapping is
 the user's choice.
 
-Every hour carries the toggle, empty hours too. The track is blue when the hour is
-off and moss green when the toggle is on. The knob is a solid disc, with a
+Every hour carries the toggle, empty hours too. The track is bark when the hour is
+off and pale moss when the toggle is on. The knob is a solid disc, with a
 shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
-a deep forest background.
+a deep indigo background.
 
 Tap an empty block to type. Tap an item to edit or remove it. Use the toggle to
 move between in place and done. The arrows change the day, and every day stays in
@@ -232,7 +232,7 @@ flutter test      # 54 tests
 | `day_segments_test.dart` | 24 segments, in place vs done, live hour, out of range hours, meter label |
 | `day_header_test.dart` | segment count, colours, live ring and lift, one semantics node, empty day, dark theme |
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |
-| `design_tokens_test.dart` | the widget XML mirrors the tokens, forest ramp, no stray green or pink |
+| `design_tokens_test.dart` | the widget XML mirrors the tokens, indigo ramp, no stray green or pink |
 
 ## Limits
 
