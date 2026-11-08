@@ -48,10 +48,10 @@ void main() {
     });
   });
 
-  test('the dark theme uses a white accent on a deep indigo surface', () {
+  test('the dark theme uses a white accent on a soft indigo surface', () {
     final ThemeData theme = AppTheme.dark;
 
-    expect(AppColors.surfaceDark, const Color(0xFF2B2B85));
+    expect(AppColors.surfaceDark, const Color(0xFF55559B));
     expect(theme.scaffoldBackgroundColor, AppColors.surfaceDark);
     expect(theme.colorScheme.surface, AppColors.surfaceDark);
     expect(theme.colorScheme.primary, AppColors.white);
@@ -149,7 +149,7 @@ void main() {
     }
   });
 
-  test('the background ramp is a deep indigo tint', () {
+  test('the background ramp is a soft indigo tint', () {
     for (final Color surface in <Color>[
       AppColors.surfaceDark,
       AppColors.surfaceDarkRaised,
@@ -160,7 +160,7 @@ void main() {
       expect(surface.b, greaterThan(surface.r), reason: 'not indigo: $surface');
       expect(surface.b, greaterThan(surface.g), reason: 'not indigo: $surface');
     }
-    expect(AppColors.surfaceDark.computeLuminance(), lessThan(0.05));
+    expect(AppColors.surfaceDark.computeLuminance(), lessThan(0.13));
   });
 }
 

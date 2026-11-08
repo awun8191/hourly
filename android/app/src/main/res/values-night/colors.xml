@@ -3,10 +3,10 @@
 <resources>
     <!-- Launcher icon ground: the logo sits on white. -->
     <color name="ic_launcher_background">#FFFFFF</color>
-    <color name="widget_background">#2B2B85</color>
-    <color name="widget_stroke">#4A4AA3</color>
+    <color name="widget_background">#55559B</color>
+    <color name="widget_stroke">#7777B6</color>
     <color name="widget_text">#F2F2F2</color>
-    <color name="widget_muted">#C6C6E6</color>
+    <color name="widget_muted">#D8D8EE</color>
     <!-- In place: a light card with ink text on indigo. -->
     <color name="widget_active_text">#111111</color>
     <color name="widget_active_bg">#F4F1E9</color>
@@ -15,12 +15,12 @@
     <color name="widget_done_bg">#FCEAE8</color>
     <color name="widget_accent">#FFFFFF</color>
     <color name="widget_progress_fill">#FFFFFF</color>
-    <color name="widget_track">#4D4DAE</color>
-    <color name="widget_hero_neutral">#23236F</color>
-    <color name="widget_hero_neutral_stroke">#4A4AA3</color>
+    <color name="widget_track">#7F7FC0</color>
+    <color name="widget_hero_neutral">#484884</color>
+    <color name="widget_hero_neutral_stroke">#7777B6</color>
     <color name="widget_active_stroke">#CCFFFFFF</color>
     <color name="widget_done_stroke">#5C1A13</color>
-    <color name="widget_chip_muted_bg">#353595</color>
+    <color name="widget_chip_muted_bg">#6060A6</color>
     <!-- Missed: a muted red, never the white of in place. -->
     <color name="widget_missed_text">#C4463A</color>
     <color name="widget_missed_bar">#8B0000</color>

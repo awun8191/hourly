@@ -22,15 +22,15 @@ abstract final class AppColors {
   /// and stays calm on white.
   static const Color paperRaised = Color(0xFFF4F1E9);
 
-  /// Deep indigo full bleed surfaces, darkest first.
-  static const Color surfaceDark = Color(0xFF2B2B85);
-  static const Color surfaceDarkSunken = Color(0xFF23236F);
-  static const Color surfaceDarkRaised = Color(0xFF353595);
-  static const Color surfaceDarkHigh = Color(0xFF3F3F9E);
-  static const Color surfaceDarkHighest = Color(0xFF4D4DAE);
-  static const Color lineDark = Color(0xFF4A4AA3);
+  /// Soft indigo full bleed surfaces, darkest first.
+  static const Color surfaceDark = Color(0xFF55559B);
+  static const Color surfaceDarkSunken = Color(0xFF484884);
+  static const Color surfaceDarkRaised = Color(0xFF6060A6);
+  static const Color surfaceDarkHigh = Color(0xFF6E6EB2);
+  static const Color surfaceDarkHighest = Color(0xFF7F7FC0);
+  static const Color lineDark = Color(0xFF7777B6);
   static const Color lineLight = Color(0xFFE2E2E2);
-  static const Color mutedDark = Color(0xFFC6C6E6);
+  static const Color mutedDark = Color(0xFFD8D8EE);
   static const Color mutedLight = Color(0xFF5A5A5A);
 
   /// The red the owner settled on. Bright, with a pure hue so it never reads

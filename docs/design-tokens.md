@@ -13,14 +13,14 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.ink` | `#111111` | Card titles and primary on light |
 | `AppColors.paper` | `#FFFFFF` | Light background |
 | `AppColors.paperRaised` | `#F4F1E9` | Hour card on either background, warm paper |
-| `AppColors.surfaceDark` | `#2B2B85` | Dark background, deep indigo full bleed |
-| `AppColors.surfaceDarkSunken` | `#23236F` | Sheet and card base on dark |
-| `AppColors.surfaceDarkRaised` | `#353595` | Raised layer on dark |
-| `AppColors.surfaceDarkHigh` | `#3F3F9E` | Raised layer on dark |
-| `AppColors.surfaceDarkHighest` | `#4D4DAE` | Faint track on dark |
-| `AppColors.lineDark` | `#4A4AA3` | Hairlines on dark |
+| `AppColors.surfaceDark` | `#55559B` | Dark background, soft indigo full bleed |
+| `AppColors.surfaceDarkSunken` | `#484884` | Sheet and card base on dark |
+| `AppColors.surfaceDarkRaised` | `#6060A6` | Raised layer on dark |
+| `AppColors.surfaceDarkHigh` | `#6E6EB2` | Raised layer on dark |
+| `AppColors.surfaceDarkHighest` | `#7F7FC0` | Faint track on dark |
+| `AppColors.lineDark` | `#7777B6` | Hairlines on dark |
 | `AppColors.lineLight` | `#E2E2E2` | Hairlines on light |
-| `AppColors.mutedDark` | `#C6C6E6` | Secondary text on dark |
+| `AppColors.mutedDark` | `#D8D8EE` | Secondary text on dark |
 | `AppColors.mutedLight` | `#5A5A5A` | Secondary text on light |
 | `AppColors.bloodRed` | `#FF3B30` | Done and missed fill, meter tick |
 | `AppColors.bloodRedText` | `#FF3B30` | Done and missed text on indigo |
@@ -40,7 +40,7 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 
 Rules:
 
-- Deep indigo sits behind everything on dark. Hours are light cards on
+- Soft indigo sits behind everything on dark. Hours are light cards on
   either background: ink title plus the hour range under it, struck red text
   when done. White is the accent on indigo. Moss bark greens appear only in
   the toggle, never in the rest of the UI.
@@ -56,10 +56,10 @@ Rules:
 
 | Widget resource | Light | Dark | Token |
 |---|---|---|---|
-| `widget_background` | `#FFFFFF` | `#2B2B85` | `paper` / `surfaceDark` |
-| `widget_stroke` | `#E2E2E2` | `#4A4AA3` | `lineLight` / `lineDark` |
+| `widget_background` | `#FFFFFF` | `#55559B` | `paper` / `surfaceDark` |
+| `widget_stroke` | `#E2E2E2` | `#7777B6` | `lineLight` / `lineDark` |
 | `widget_text` | `#111111` | `#F2F2F2` | `ink` / white text |
-| `widget_muted` | `#5A5A5A` | `#C6C6E6` | `mutedLight` / `mutedDark` |
+| `widget_muted` | `#5A5A5A` | `#D8D8EE` | `mutedLight` / `mutedDark` |
 | `widget_active_text` | `#111111` | `#111111` | `ink` / `ink` |
 | `widget_active_bg` | `#F4F1E9` | `#F4F1E9` | `paperRaised` / `paperRaised` |
 | `widget_active_stroke` | `#111111` | `#CCFFFFFF` | ink / white at 80 percent |
@@ -69,7 +69,7 @@ Rules:
 | `widget_missed_bar` | `#8B0000` | `#8B0000` | blood red, muted |
 | `widget_accent` | `#111111` | `#FFFFFF` | `ink` / `white` |
 | `widget_progress_fill` | `#111111` | `#FFFFFF` | `ink` / `white` |
-| `widget_track` | `#E4E4E4` | `#4D4DAE` | neutral track / `surfaceDarkHighest` |
+| `widget_track` | `#E4E4E4` | `#7F7FC0` | neutral track / `surfaceDarkHighest` |
 
 ## Scale
 
