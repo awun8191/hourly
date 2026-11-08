@@ -15,7 +15,9 @@
     <string name="widget_chip_free">FREE</string>
     <string name="widget_chip_in_place">IN PLACE</string>
     <string name="widget_slot_add">+ Add task</string>
-    <string name="widget_tomorrow">TMRW</string>
+    <string name="widget_tomorrow">TOMORROW</string>
+    <string name="widget_today">TODAY</string>
+    <string name="widget_section_tomorrow">TOMORROW · %1$s</string>
     <string name="widget_hour_ends_at">This hour ends at %1$s</string>
     <string name="widget_chip_add">+ ADD</string>
     <string name="widget_meta_done">Marked done</string>

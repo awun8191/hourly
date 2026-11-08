@@ -46,10 +46,12 @@ One hero card for the live hour, then a rolling 24-hour list of hour cards.
 - The chip and the card colour carry the state: `IN PLACE` on the green card,
   `DONE` on the red card, `+ ADD` on the empty card. The live hour comes from the
   device clock, not from the payload's timestamp.
-- **A rolling 24-hour list**: the hour after the live one, then onward, across
-  midnight. Each card carries its time and its item, or a muted `+ Add task`.
-  The first card after midnight carries a `TMRW` tag. The list fills the cell
-  when the widget is tall and scrolls when it is short.
+- **A rolling 24-hour list, with a header for each day**: the hour after the
+  live one, then onward, across midnight. A `TODAY` header and rule start the
+  list. The first hour after midnight sits under `TOMORROW · SUN 1`. The header
+  comes from the device clock, so tomorrow becomes today on its own. Each card
+  carries its time and its item, or a muted `+ Add task`. The list fills the
+  cell when the widget is tall and scrolls when it is short.
 - **Tap any card** and a small text field opens over the home screen, prefilled
   with that hour's item. Android widgets cannot host an `EditText`, so
   `QuickAddActivity` is a dialog-style activity with a real field. `Save` writes

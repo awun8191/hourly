@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
 import android.net.Uri
-import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import es.antonborri.home_widget.HomeWidgetPlugin
@@ -18,9 +17,8 @@ import java.util.Locale
  * Backs the widget's list of hour cards.
  *
  * The list is a rolling window: every hour after the live one, for 24 hours,
- * across midnight. The rows come from the payload when it covers the hour and
- * from the clock otherwise, so the widget stays full and scrollable even after
- * a long idle period.
+ * across midnight. A header names each day (`TODAY`, `TOMORROW · SUN 1`), and it
+ * is computed from the device clock, so it follows the day change by itself.
  */
 class HourlyWidgetService : RemoteViewsService() {
 
@@ -34,13 +32,17 @@ private data class Slot(
     val label: String,
     val text: String,
     val status: String,
-    val firstOfTomorrow: Boolean,
 )
+
+private sealed interface Row {
+    data class Header(val label: String) : Row
+    data class Card(val slot: Slot) : Row
+}
 
 private class HourlySlotFactory(private val context: Context) :
     RemoteViewsService.RemoteViewsFactory {
 
-    private var slots: List<Slot> = emptyList()
+    private var rows: List<Row> = emptyList()
 
     override fun onCreate() = Unit
 
@@ -53,8 +55,7 @@ private class HourlySlotFactory(private val context: Context) :
             ?.let { runCatching { JSONObject(it) }.getOrNull() }
         val payload = root?.optJSONArray("slots")
 
-        val parsed = ArrayList<Slot>()
-        var seenTomorrow = false
+        val slots = ArrayList<Slot>()
         if (payload != null) {
             for (index in 0 until payload.length()) {
                 val item = payload.optJSONObject(index) ?: continue
@@ -66,69 +67,84 @@ private class HourlySlotFactory(private val context: Context) :
                 if (!isAfter(date, hour, nowKey, nowHour)) {
                     continue
                 }
-                val tomorrow = date != nowKey
-                parsed.add(
+                slots.add(
                     Slot(
                         date = date,
                         hour = hour,
                         label = item.optString("label"),
                         text = item.optString("text"),
                         status = item.optString("status"),
-                        firstOfTomorrow = tomorrow && !seenTomorrow,
                     ),
                 )
-                if (tomorrow) {
-                    seenTomorrow = true
-                }
             }
         }
-        slots = parsed.ifEmpty { clockOnly(now, nowKey) }
+        val window = slots.ifEmpty { clockOnly(now) }
+        rows = withHeaders(window, nowKey)
     }
 
     /** A full window of empty cards, so the list is never blank. */
-    private fun clockOnly(now: Calendar, nowKey: String): List<Slot> {
+    private fun clockOnly(now: Calendar): List<Slot> {
         val result = ArrayList<Slot>()
-        var seenTomorrow = false
         val start = now.clone() as Calendar
         start.add(Calendar.HOUR_OF_DAY, 1)
         start.set(Calendar.MINUTE, 0)
         for (index in 0 until WINDOW) {
-            val date = dateKey(start.time)
             val hour = start.get(Calendar.HOUR_OF_DAY)
-            val tomorrow = date != nowKey
             result.add(
                 Slot(
-                    date = date,
+                    date = dateKey(start.time),
                     hour = hour,
                     label = String.format(Locale.getDefault(), "%02d:00", hour),
                     text = "",
                     status = "empty",
-                    firstOfTomorrow = tomorrow && !seenTomorrow,
                 ),
             )
-            if (tomorrow) {
-                seenTomorrow = true
-            }
             start.add(Calendar.HOUR_OF_DAY, 1)
         }
         return result
     }
 
-    override fun getCount(): Int = slots.size
-
-    override fun getViewAt(position: Int): RemoteViews {
-        val views = RemoteViews(context.packageName, R.layout.hourly_widget_slot)
-        if (position !in slots.indices) {
-            return views
+    private fun withHeaders(slots: List<Slot>, nowKey: String): List<Row> {
+        val result = ArrayList<Row>()
+        var lastDate: String? = null
+        for (slot in slots) {
+            if (slot.date != lastDate) {
+                result.add(Row.Header(headerLabel(slot.date, nowKey)))
+                lastDate = slot.date
+            }
+            result.add(Row.Card(slot))
         }
-        val slot = slots[position]
-        views.setTextViewText(R.id.slot_hour, slot.label)
-        views.setTextViewText(R.id.slot_tag, context.getString(R.string.widget_tomorrow))
-        views.setViewVisibility(
-            R.id.slot_tag,
-            if (slot.firstOfTomorrow) View.VISIBLE else View.GONE,
-        )
+        return result
+    }
 
+    private fun headerLabel(date: String, nowKey: String): String {
+        if (date == nowKey) {
+            return context.getString(R.string.widget_today)
+        }
+        val parsed = runCatching {
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
+        }.getOrNull() ?: return context.getString(R.string.widget_tomorrow)
+        val short = SimpleDateFormat("EEE d", Locale.getDefault())
+            .format(parsed)
+            .uppercase(Locale.getDefault())
+        return context.getString(R.string.widget_section_tomorrow, short)
+    }
+
+    override fun getCount(): Int = rows.size
+
+    override fun getViewTypeCount(): Int = 2
+
+    override fun getViewAt(position: Int): RemoteViews = when (val row = rows[position]) {
+        is Row.Header -> RemoteViews(context.packageName, R.layout.hourly_widget_section).apply {
+            setTextViewText(R.id.section_label, row.label)
+        }
+
+        is Row.Card -> cardViews(row.slot)
+    }
+
+    private fun cardViews(slot: Slot): RemoteViews {
+        val views = RemoteViews(context.packageName, R.layout.hourly_widget_slot)
+        views.setTextViewText(R.id.slot_hour, slot.label)
         when (slot.status) {
             "completed" -> {
                 views.setTextViewText(R.id.slot_text, slot.text)
@@ -163,14 +179,12 @@ private class HourlySlotFactory(private val context: Context) :
 
     override fun getLoadingView(): RemoteViews? = null
 
-    override fun getViewTypeCount(): Int = 1
-
     override fun getItemId(position: Int): Long = position.toLong()
 
     override fun hasStableIds(): Boolean = false
 
     override fun onDestroy() {
-        slots = emptyList()
+        rows = emptyList()
     }
 
     private fun isAfter(date: String, hour: Int, nowKey: String, nowHour: Int): Boolean =
@@ -183,5 +197,7 @@ private class HourlySlotFactory(private val context: Context) :
 
     private companion object {
         const val WINDOW = 24
+        const val TYPE_HEADER = 0
+        const val TYPE_CARD = 1
     }
 }

@@ -44,5 +44,14 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Signing and local machine config. Never commit these.
+android/key.properties
+android/local.properties
+*.jks
+*.keystore
+*.p12
+.env
+*.env
+
 # Widget Preview related
 .widget_preview/
