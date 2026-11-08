@@ -42,7 +42,7 @@ void main() {
     await pumpApp(tester);
 
     expect(find.text('26 October 2026'), findsOneWidget);
-    expect(find.text('Tap an hour to plan it'), findsOneWidget);
+    expect(find.text('Nothing planned yet'), findsOneWidget);
 
     await addItem(tester, 9, 'Standup');
 
@@ -120,7 +120,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Standup'), findsNothing);
-    expect(find.text('Tap an hour to plan it'), findsOneWidget);
+    expect(find.text('Nothing planned yet'), findsOneWidget);
     expect(repository.day('2026-10-26'), isEmpty);
   });
 

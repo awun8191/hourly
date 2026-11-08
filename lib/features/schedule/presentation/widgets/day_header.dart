@@ -24,6 +24,7 @@ class DayHeader extends StatelessWidget {
     required this.onPrevious,
     required this.onNext,
     required this.onToday,
+    required this.onPlanHour,
   });
 
   final DateTime day;
@@ -40,6 +41,9 @@ class DayHeader extends StatelessWidget {
   final VoidCallback onPrevious;
   final VoidCallback onNext;
   final VoidCallback onToday;
+
+  /// Opens the editor for the hour the empty day CTA points at.
+  final ValueChanged<int> onPlanHour;
 
   @override
   Widget build(BuildContext context) {
@@ -116,13 +120,34 @@ class DayHeader extends StatelessWidget {
           if (total == 0)
             Padding(
               padding: const EdgeInsets.only(bottom: Insets.sm),
-              child: Text(
-                'Tap an hour to plan it',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontSize: 12.5,
-                  color: scheme.onSurfaceVariant,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Nothing planned yet',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: Insets.xs),
+                  Text(
+                    'Pick an hour below, or start with this one.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: Insets.md),
+                  FilledButton(
+                    onPressed: () => onPlanHour(liveHour ?? 9),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 44),
+                    ),
+                    child: const Text('Plan the current hour'),
+                  ),
+                ],
               ),
             )
           else
@@ -142,7 +167,6 @@ class DayHeader extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelMedium?.copyWith(
-                          fontSize: 11.5,
                           color: scheme.onSurfaceVariant,
                           fontFeatures: const <FontFeature>[
                             FontFeature.tabularFigures(),
@@ -239,7 +263,6 @@ class _DayChip extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.labelSmall?.copyWith(
-              fontSize: 10,
               height: 1.2,
               color: foreground,
               fontWeight: FontWeight.w700,
@@ -415,7 +438,6 @@ class _LegendTag extends StatelessWidget {
             label,
             style: theme.textTheme.labelSmall?.copyWith(
               color: foreground,
-              fontSize: 10.5,
               height: 1.2,
               letterSpacing: 0.1,
               fontWeight: FontWeight.w600,

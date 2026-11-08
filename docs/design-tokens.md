@@ -64,5 +64,5 @@ Rules:
 - Spacing: 2, 4, 8, 12, 16, 24, 32. Touch target 48.
 - Radii: card 16, chip 20, field 14, sheet 28.
 - Motion: 140 ms fast, 220 ms normal, 320 ms slow, ease-out cubic.
-- Type: nothing below 10 sp. Body line height 1.45.
+- Type: nothing below 9.5 sp. Body line height 1.45.
 - Elevation: neutral black shadows only. No coloured glow.

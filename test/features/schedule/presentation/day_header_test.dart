@@ -36,6 +36,7 @@ void main() {
           onPrevious: () {},
           onNext: () {},
           onToday: () {},
+          onPlanHour: (_) {},
         ),
       ),
     );
@@ -104,11 +105,38 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('an empty day shows the hint instead of the meter', (WidgetTester tester) async {
+  testWidgets('an empty day shows the plan CTA instead of the meter', (WidgetTester tester) async {
     await tester.pumpWidget(header());
 
-    expect(find.text('Tap an hour to plan it'), findsOneWidget);
+    expect(find.text('Nothing planned yet'), findsOneWidget);
+    expect(find.text('Plan the current hour'), findsOneWidget);
     expect(segment(0), findsNothing);
+  });
+
+  testWidgets('the CTA plans the live hour, or 9 AM off today', (WidgetTester tester) async {
+    int? planned;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: DayHeader(
+            day: day,
+            isToday: false,
+            doneCount: 0,
+            total: 0,
+            entries: const <HourEntry>[],
+            liveHour: null,
+            onPrevious: () {},
+            onNext: () {},
+            onToday: () {},
+            onPlanHour: (int hour) => planned = hour,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Plan the current hour'));
+    expect(planned, 9);
   });
 
   testWidgets('keeps the count and the legend', (WidgetTester tester) async {

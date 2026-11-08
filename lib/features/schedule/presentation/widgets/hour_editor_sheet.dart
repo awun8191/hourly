@@ -123,7 +123,6 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
                     stateLabel,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: stateColor,
-                      fontSize: 10,
                       height: 1.2,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.9,
@@ -138,7 +137,6 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
                   ? 'Edit the one item in this hour.'
                   : 'One item per hour. Keep it to a single line.',
               style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 12.5,
                 color: scheme.onSurfaceVariant,
               ),
             ),
@@ -158,18 +156,17 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
               decoration: InputDecoration(
                 hintText: 'What happens in this hour?',
                 counterStyle: theme.textTheme.labelSmall?.copyWith(
-                  fontSize: 10,
                   color: scheme.onSurfaceVariant,
                 ),
               ),
               onSubmitted: (String _) => _save(),
             ),
-            const SizedBox(height: Insets.sm),
+            const SizedBox(height: Insets.md),
             Divider(
               color: scheme.outlineVariant.withValues(alpha: 0.5),
               height: 1,
             ),
-            const SizedBox(height: Insets.lg),
+            const SizedBox(height: Insets.md),
             Row(
               children: <Widget>[
                 if (isEditing)
@@ -179,7 +176,8 @@ class _HourEditorSheetState extends State<HourEditorSheet> {
                     label: const Text('Remove'),
                     style: TextButton.styleFrom(
                       foregroundColor: scheme.error,
-                      padding: const EdgeInsets.symmetric(horizontal: Insets.sm),
+                      minimumSize: const Size(0, Insets.touch),
+                      padding: const EdgeInsets.symmetric(horizontal: Insets.md),
                     ),
                   ),
                 const Spacer(),

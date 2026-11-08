@@ -95,7 +95,7 @@ class QuickAddActivity : Activity() {
             finish()
         }
         findViewById<TextView>(R.id.quick_cancel).setOnClickListener { finish() }
-        findViewById<TextView>(R.id.quick_close).setOnClickListener { finish() }
+        findViewById(R.id.quick_close).setOnClickListener { finish() }
         findViewById<TextView>(R.id.quick_save).setOnClickListener {
             write(date, hour, field.text.toString().trim())
             finish()

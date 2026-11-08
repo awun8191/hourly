@@ -62,7 +62,7 @@ class HourBlock extends StatelessWidget {
             : palette.active.withValues(alpha: 0.38);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: Insets.sm),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
@@ -72,7 +72,7 @@ class HourBlock extends StatelessWidget {
             child: AnimatedContainer(
               duration: Motion.normal,
               curve: Motion.state,
-              height: isEmpty ? 50 : 58,
+              height: isEmpty ? 52 : 58,
               decoration: BoxDecoration(
                 color: surface,
                 borderRadius: _radius,
@@ -163,7 +163,6 @@ class HourBlock extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelLarge?.copyWith(
-                fontSize: 13,
                 height: 1.2,
                 color: tint,
                 fontWeight: isCurrentHour ? FontWeight.w600 : FontWeight.w500,
@@ -178,8 +177,8 @@ class HourBlock extends StatelessWidget {
       return Row(
         children: <Widget>[
           Container(
-            width: 6,
-            height: 6,
+            width: 7,
+            height: 7,
             decoration: BoxDecoration(shape: BoxShape.circle, color: palette.completed),
           ),
           const SizedBox(width: Insets.md),
@@ -189,7 +188,6 @@ class HourBlock extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelLarge?.copyWith(
-                fontSize: 13.5,
                 height: 1.25,
                 color: palette.completedText,
                 fontWeight: FontWeight.w500,
@@ -246,7 +244,6 @@ class _HourRail extends StatelessWidget {
             duration: Motion.fast,
             curve: Motion.state,
             style: theme.textTheme.labelMedium!.copyWith(
-              fontSize: 12.5,
               height: 1.1,
               fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
               fontWeight: isCurrentHour ? FontWeight.w700 : FontWeight.w500,
@@ -258,7 +255,7 @@ class _HourRail extends StatelessWidget {
           const SizedBox(height: 3),
           if (isCurrentHour)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
               decoration: BoxDecoration(
                 color: scheme.primary.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(5),
@@ -266,9 +263,9 @@ class _HourRail extends StatelessWidget {
               child: Text(
                 'NOW',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  fontSize: 10,
+                  fontSize: 10.5,
                   height: 1.15,
-                  letterSpacing: 0.7,
+                  letterSpacing: 0.9,
                   fontWeight: FontWeight.w700,
                   color: scheme.primary,
                 ),

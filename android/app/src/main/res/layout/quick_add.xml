@@ -50,17 +50,15 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <TextView
+            <ImageView
                 android:id="@+id/quick_close"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="10dp"
                 android:background="@drawable/bg_quick_add_close"
                 android:contentDescription="@string/quick_close"
-                android:gravity="center"
-                android:text="✕"
-                android:textColor="@color/widget_muted"
-                android:textSize="13sp" />
+                android:padding="13dp"
+                android:src="@drawable/ic_quick_close" />
         </LinearLayout>
 
         <EditText
@@ -74,7 +72,7 @@
             android:includeFontPadding="false"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLines="3"
-            android:minLines="3"
+            android:minLines="2"
             android:padding="14dp"
             android:textColor="@color/widget_text"
             android:textColorHint="@color/widget_muted"
@@ -97,7 +95,7 @@
                 android:paddingEnd="12dp"
                 android:text="@string/quick_clear"
                 android:textColor="@color/widget_done_text"
-                android:textSize="13.5sp" />
+                android:textSize="14sp" />
 
             <Space
                 android:layout_width="0dp"
@@ -114,7 +112,7 @@
                 android:paddingEnd="14dp"
                 android:text="@string/quick_cancel"
                 android:textColor="@color/widget_muted"
-                android:textSize="13.5sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/quick_save"
@@ -127,7 +125,7 @@
                 android:paddingEnd="24dp"
                 android:text="@string/quick_save"
                 android:textColor="@color/widget_background"
-                android:textSize="13.5sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

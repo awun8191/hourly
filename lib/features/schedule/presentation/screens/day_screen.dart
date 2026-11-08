@@ -131,6 +131,7 @@ class _DayScreenState extends State<DayScreen>
                   onPrevious: () => cubit.shiftDay(-1),
                   onNext: () => cubit.shiftDay(1),
                   onToday: cubit.goToToday,
+                  onPlanHour: (int hour) => _openEditor(hour, null),
                 ),
                 Expanded(
                   child: state.status == ScheduleStatus.initial ||
@@ -224,7 +225,7 @@ class _SectionLabel extends StatelessWidget {
     final Color color = isNow ? scheme.primary : scheme.onSurfaceVariant;
 
     return Padding(
-      padding: const EdgeInsets.only(top: Insets.md, bottom: 6),
+      padding: const EdgeInsets.only(top: Insets.sm, bottom: Insets.sm),
       child: Row(
         children: <Widget>[
           Text(
