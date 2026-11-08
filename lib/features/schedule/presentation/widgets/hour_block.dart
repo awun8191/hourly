@@ -8,10 +8,10 @@ import 'hour_toggle.dart';
 /// One hour row: the time rail, then the block.
 ///
 /// Empty: a quiet outline that opens the editor.
-/// In place: accent card, toggle on.
-/// Done: muted red card, struck text, switch off.
+/// In place: a light card, ink title plus the hour range under it, toggle on.
+/// Done: a light rose card, struck red text, switch off.
 ///
-/// The live hour is the only row that lifts off the page, and it lifts with a
+/// The live hour is the only row that lifts higher, and it lifts with a
 /// neutral depth shadow and a tinted surface, never with a coloured halo. A
 /// glow around a card is decoration, and on this screen colour already means
 /// state.
@@ -39,6 +39,11 @@ class HourBlock extends StatelessWidget {
     BoxShadow(color: Color(0x14000000), blurRadius: 14, offset: Offset(0, 4)),
   ];
 
+  /// The quiet elevation every filled card carries. Neutral black only.
+  static const List<BoxShadow> _cardShadow = <BoxShadow>[
+    BoxShadow(color: Color(0x1A000000), blurRadius: 12, offset: Offset(0, 3)),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -59,7 +64,7 @@ class HourBlock extends StatelessWidget {
             : scheme.outlineVariant.withValues(alpha: 0.55))
         : isDone
             ? palette.completed.withValues(alpha: 0.30)
-            : palette.active.withValues(alpha: 0.38);
+            : palette.activeText.withValues(alpha: 0.28);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: Insets.sm),
@@ -72,12 +77,16 @@ class HourBlock extends StatelessWidget {
             child: AnimatedContainer(
               duration: Motion.normal,
               curve: Motion.state,
-              height: isEmpty ? 52 : 58,
+              height: isEmpty ? 52 : 64,
               decoration: BoxDecoration(
                 color: surface,
                 borderRadius: _radius,
                 border: Border.all(color: border),
-                boxShadow: isCurrentHour ? _lift : null,
+                boxShadow: isCurrentHour
+                    ? _lift
+                    : isEmpty
+                        ? null
+                        : _cardShadow,
               ),
               child: Row(
                 children: <Widget>[
@@ -101,7 +110,7 @@ class HourBlock extends StatelessWidget {
                               ),
                               child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: _content(theme, scheme, palette, current),
+                                child: _content(theme, scheme, palette, hour, current),
                               ),
                             ),
                           ),
@@ -149,6 +158,7 @@ class HourBlock extends StatelessWidget {
     ThemeData theme,
     ColorScheme scheme,
     StatusPalette palette,
+    int hour,
     HourEntry? current,
   ) {
     if (current == null) {
@@ -183,34 +193,67 @@ class HourBlock extends StatelessWidget {
           ),
           const SizedBox(width: Insets.md),
           Expanded(
-            child: Text(
-              current.text,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.labelLarge?.copyWith(
-                height: 1.25,
-                color: palette.completedText,
-                fontWeight: FontWeight.w500,
-                decoration: TextDecoration.lineThrough,
-                decorationColor: palette.completedText,
-                decorationThickness: 1.4,
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  current.text,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontSize: 15,
+                    height: 1.25,
+                    color: palette.completedText,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.lineThrough,
+                    decorationColor: palette.completedText,
+                    decorationThickness: 1.4,
+                  ),
+                ),
+                Text(
+                  DateKey.hourRangeLabel(hour),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    height: 1.3,
+                    color: palette.completedText.withValues(alpha: 0.7),
+                    fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       );
     }
 
-    return Text(
-      current.text,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: theme.textTheme.titleMedium?.copyWith(
-        fontSize: 15,
-        height: 1.25,
-        color: palette.activeText,
-        fontWeight: FontWeight.w600,
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          current.text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontSize: 15,
+            height: 1.25,
+            color: palette.activeText,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          DateKey.hourRangeLabel(hour),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.bodySmall?.copyWith(
+            height: 1.3,
+            color: palette.activeText.withValues(alpha: 0.6),
+            fontFeatures: const <FontFeature>[FontFeature.tabularFigures()],
+          ),
+        ),
+      ],
     );
   }
 }

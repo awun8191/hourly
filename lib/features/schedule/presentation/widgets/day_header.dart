@@ -94,16 +94,33 @@ class DayHeader extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Text(
-                        DateFormat('d MMMM yyyy').format(day),
+                      child: Column(
                         key: ValueKey<String>('day-${day.toIso8601String()}'),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: -0.7,
-                          height: 1.1,
-                        ),
+                        children: <Widget>[
+                          Text(
+                            weekday,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.headlineLarge?.copyWith(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.8,
+                              height: 1.05,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormat('d MMMM yyyy').format(day),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.1,
+                              height: 1.3,
+                              color: scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

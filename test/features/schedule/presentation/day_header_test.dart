@@ -64,7 +64,7 @@ void main() {
     ), findsNWidgets(24));
   });
 
-  testWidgets('colours a done hour red, an in place hour green, a free hour faint',
+  testWidgets('colours a done hour red, an in place hour accent, a free hour faint',
       (WidgetTester tester) async {
     await tester.pumpWidget(
       header(entries: <HourEntry>[entry(9), entry(11, status: HourStatus.completed)]),

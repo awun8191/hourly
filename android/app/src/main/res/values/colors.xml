@@ -9,14 +9,14 @@
     <color name="widget_muted">#5A5A5A</color>
     <!-- In place: ink on paper. White is the accent only on black. -->
     <color name="widget_active_text">#111111</color>
-    <color name="widget_active_bg">#F4F4F4</color>
+    <color name="widget_active_bg">#F4F1E9</color>
     <!-- Done on paper: the deeper red, because #FF3B30 is too light here. -->
     <color name="widget_done_text">#D92D20</color>
     <color name="widget_done_bg">#FCEAE8</color>
     <color name="widget_accent">#111111</color>
     <color name="widget_progress_fill">#111111</color>
     <color name="widget_track">#E4E4E4</color>
-    <color name="widget_hero_neutral">#F4F4F4</color>
+    <color name="widget_hero_neutral">#F4F1E9</color>
     <color name="widget_hero_neutral_stroke">#E2E2E2</color>
     <color name="widget_active_stroke">#111111</color>
     <color name="widget_done_stroke">#EFC7C0</color>

@@ -39,25 +39,30 @@ void main() {
           readPalette('android/app/src/main/res/values-night/colors.xml');
 
       expect(colors['widget_background'], AppColors.surfaceDark);
-      expect(colors['widget_active_text'], AppColors.white);
-      expect(colors['widget_active_bg'], AppColors.surfaceDarkRaised);
-      expect(colors['widget_done_text'], AppColors.bloodRed);
-      expect(colors['widget_done_bg'], AppColors.bloodRedSurfaceDark);
+      expect(colors['widget_active_text'], AppColors.ink);
+      expect(colors['widget_active_bg'], AppColors.paperRaised);
+      expect(colors['widget_done_text'], AppColors.bloodRedDeep);
+      expect(colors['widget_done_bg'], AppColors.bloodRedSurfaceLight);
       expect(colors['widget_accent'], AppColors.white);
       expect(colors['widget_progress_fill'], AppColors.white);
     });
   });
 
-  test('the dark theme uses a white accent on a deep forest surface', () {
+  test('the dark theme uses a white accent on a deep indigo surface', () {
     final ThemeData theme = AppTheme.dark;
 
+    expect(AppColors.surfaceDark, const Color(0xFF2B2B85));
     expect(theme.scaffoldBackgroundColor, AppColors.surfaceDark);
     expect(theme.colorScheme.surface, AppColors.surfaceDark);
     expect(theme.colorScheme.primary, AppColors.white);
     expect(theme.colorScheme.onPrimary, AppColors.black);
     expect(theme.colorScheme.error, AppColors.bloodRed);
     expect(StatusPalette.dark.active, AppColors.white);
+    expect(StatusPalette.dark.activeSurface, AppColors.paperRaised);
+    expect(StatusPalette.dark.activeText, AppColors.ink);
     expect(StatusPalette.dark.completed, AppColors.bloodRed);
+    expect(StatusPalette.dark.completedSurface, AppColors.bloodRedSurfaceLight);
+    expect(StatusPalette.dark.completedText, AppColors.bloodRedDeep);
   });
 
   test('the light theme uses an ink accent on paper', () {
@@ -113,6 +118,7 @@ void main() {
       AppColors.paperRaised,
       AppColors.lineLight,
       AppColors.mutedLight,
+      AppColors.mutedDark,
       AppColors.bloodRed,
       AppColors.bloodRedDeep,
       AppColors.bloodRedText,
@@ -120,9 +126,17 @@ void main() {
       AppColors.bloodRedSurfaceLight,
       AppColors.bloodRedMuted,
       StatusPalette.light.active,
+      StatusPalette.light.activeSurface,
+      StatusPalette.light.activeText,
       StatusPalette.light.completed,
+      StatusPalette.light.completedSurface,
+      StatusPalette.light.completedText,
       StatusPalette.dark.active,
+      StatusPalette.dark.activeSurface,
+      StatusPalette.dark.activeText,
       StatusPalette.dark.completed,
+      StatusPalette.dark.completedSurface,
+      StatusPalette.dark.completedText,
     ];
 
     for (final Color color in accents) {
@@ -135,7 +149,7 @@ void main() {
     }
   });
 
-  test('the background ramp is a dark forest tint', () {
+  test('the background ramp is a deep indigo tint', () {
     for (final Color surface in <Color>[
       AppColors.surfaceDark,
       AppColors.surfaceDarkRaised,
@@ -143,8 +157,8 @@ void main() {
       AppColors.surfaceDarkHigh,
       AppColors.surfaceDarkHighest,
     ]) {
-      expect(surface.g, greaterThan(surface.r), reason: 'not forest: $surface');
-      expect(surface.g, greaterThan(surface.b), reason: 'not forest: $surface');
+      expect(surface.b, greaterThan(surface.r), reason: 'not indigo: $surface');
+      expect(surface.b, greaterThan(surface.g), reason: 'not indigo: $surface');
     }
     expect(AppColors.surfaceDark.computeLuminance(), lessThan(0.05));
   });

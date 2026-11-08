@@ -6,8 +6,9 @@ export 'design_tokens.dart';
 
 /// Material 3 theme built from `design_tokens.dart`.
 ///
-/// The scheme is monochrome: white is the accent on black, ink on paper. Blood
-/// red is the only hue, and it belongs to the done state and the error role.
+/// Deep indigo behind everything, light cards for the hours, white as the
+/// accent. Blood red is the only other hue, and it belongs to the done
+/// state and the error role.
 abstract final class AppTheme {
   static const Color seed = AppColors.white;
 

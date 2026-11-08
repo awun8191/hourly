@@ -62,7 +62,7 @@ void main() {
     expect(cubit.state.errorMessage, isNotNull);
   });
 
-  test('saveEntry trims the text, starts green, and syncs the widget', () async {
+  test('saveEntry trims the text, starts in place, and syncs the widget', () async {
     final FakeWidgetBridge bridge = FakeWidgetBridge();
     final FakeScheduleRepository repository = FakeScheduleRepository();
     final DayScheduleCubit cubit = await build(repository: repository, bridge: bridge);
@@ -91,7 +91,7 @@ void main() {
     expect(cubit.state.entries, isEmpty);
   });
 
-  test('toggle moves an item from green to red and back', () async {
+  test('toggle moves an item from in place to done and back', () async {
     final FakeScheduleRepository repository = FakeScheduleRepository(<String, List<HourEntry>>{
       monday: <HourEntry>[entry(9, 'Standup')],
     });

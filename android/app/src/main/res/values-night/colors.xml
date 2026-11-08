@@ -3,24 +3,24 @@
 <resources>
     <!-- Launcher icon ground: the logo sits on white. -->
     <color name="ic_launcher_background">#FFFFFF</color>
-    <color name="widget_background">#0C1A12</color>
-    <color name="widget_stroke">#26382C</color>
+    <color name="widget_background">#2B2B85</color>
+    <color name="widget_stroke">#4A4AA3</color>
     <color name="widget_text">#F2F2F2</color>
-    <color name="widget_muted">#B8C6BC</color>
-    <!-- In place: white is the accent on the forest. -->
-    <color name="widget_active_text">#FFFFFF</color>
-    <color name="widget_active_bg">#14291D</color>
-    <!-- Done: the bright red the owner asked for, #FF3B30. -->
-    <color name="widget_done_text">#FF3B30</color>
-    <color name="widget_done_bg">#2E0B09</color>
+    <color name="widget_muted">#C6C6E6</color>
+    <!-- In place: a light card with ink text on indigo. -->
+    <color name="widget_active_text">#111111</color>
+    <color name="widget_active_bg">#F4F1E9</color>
+    <!-- Done: a light rose card; the deeper red stays legible on it. -->
+    <color name="widget_done_text">#D92D20</color>
+    <color name="widget_done_bg">#FCEAE8</color>
     <color name="widget_accent">#FFFFFF</color>
     <color name="widget_progress_fill">#FFFFFF</color>
-    <color name="widget_track">#2A3B30</color>
-    <color name="widget_hero_neutral">#102117</color>
-    <color name="widget_hero_neutral_stroke">#2A4033</color>
+    <color name="widget_track">#4D4DAE</color>
+    <color name="widget_hero_neutral">#23236F</color>
+    <color name="widget_hero_neutral_stroke">#4A4AA3</color>
     <color name="widget_active_stroke">#CCFFFFFF</color>
     <color name="widget_done_stroke">#5C1A13</color>
-    <color name="widget_chip_muted_bg">#1B2E22</color>
+    <color name="widget_chip_muted_bg">#353595</color>
     <!-- Missed: a muted red, never the white of in place. -->
     <color name="widget_missed_text">#C4463A</color>
     <color name="widget_missed_bar">#8B0000</color>

@@ -27,7 +27,7 @@ void main() {
     expect(segments.every((DaySegment s) => s.isLive), isFalse);
   });
 
-  test('maps green to in place and red to done per hour', () {
+  test('maps active to in place and completed to done per hour', () {
     final List<DaySegment> segments = DayMeter.forDay(
       entries: <HourEntry>[
         entry(9),

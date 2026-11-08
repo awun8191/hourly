@@ -7,24 +7,30 @@ import 'package:flutter/material.dart';
 /// mirrors these values by name. `test/core/theme/design_tokens_test.dart`
 /// fails when the two drift apart.
 ///
-/// The palette is monochrome plus one blood red, plus moss bark greens for
-/// the toggle only. White is the accent for an hour in place. Blood red
-/// means done or missed. Moss belongs to the toggle fills only.
+/// The palette is deep indigo plus one blood red, plus moss bark greens for
+/// the toggle only. White is the accent on indigo. Ink reads on the light
+/// cards. Blood red means done or missed. Moss belongs to the toggle fills
+/// only.
 abstract final class AppColors {
   // Base
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
   static const Color ink = Color(0xFF111111);
   static const Color paper = Color(0xFFFFFFFF);
-  static const Color paperRaised = Color(0xFFF4F4F4);
-  static const Color surfaceDark = Color(0xFF0C1A12);
-  static const Color surfaceDarkRaised = Color(0xFF14291D);
-  static const Color surfaceDarkSunken = Color(0xFF0F2017);
-  static const Color surfaceDarkHigh = Color(0xFF1A3124);
-  static const Color surfaceDarkHighest = Color(0xFF213B2C);
-  static const Color lineDark = Color(0xFF26382C);
+
+  /// The light card both themes share: a warm paper that lifts off indigo
+  /// and stays calm on white.
+  static const Color paperRaised = Color(0xFFF4F1E9);
+
+  /// Deep indigo full bleed surfaces, darkest first.
+  static const Color surfaceDark = Color(0xFF2B2B85);
+  static const Color surfaceDarkSunken = Color(0xFF23236F);
+  static const Color surfaceDarkRaised = Color(0xFF353595);
+  static const Color surfaceDarkHigh = Color(0xFF3F3F9E);
+  static const Color surfaceDarkHighest = Color(0xFF4D4DAE);
+  static const Color lineDark = Color(0xFF4A4AA3);
   static const Color lineLight = Color(0xFFE2E2E2);
-  static const Color mutedDark = Color(0xFFB8C6BC);
+  static const Color mutedDark = Color(0xFFC6C6E6);
   static const Color mutedLight = Color(0xFF5A5A5A);
 
   /// The red the owner settled on. Bright, with a pure hue so it never reads
@@ -60,8 +66,9 @@ abstract final class AppColors {
 
 /// Colors for the two hour states.
 ///
-/// In place is white on dark, ink on light. Done is blood red. The values are
-/// fixed rather than theme derived so the app and the widget agree.
+/// In place is a light card with ink text on either background, ticked white
+/// on the day meter. Done is blood red. The values are fixed rather than
+/// theme derived so the app and the widget agree.
 class StatusPalette {
   const StatusPalette({
     required this.active,
@@ -77,7 +84,9 @@ class StatusPalette {
     required this.completedText,
   });
 
-  /// The in-place accent: white on dark, ink on light.
+  /// The in-place accent: white, for the meter tick and the legend dot.
+  /// Card text uses [activeText] instead so it stays legible on the light
+  /// card.
   final Color active;
   final Color activeSurface;
   final Color activeText;
@@ -116,16 +125,16 @@ class StatusPalette {
 
   static const StatusPalette dark = StatusPalette(
     active: AppColors.white,
-    activeSurface: AppColors.surfaceDarkRaised,
-    activeText: AppColors.white,
+    activeSurface: AppColors.paperRaised,
+    activeText: AppColors.ink,
     switchOn: AppColors.switchOn,
     switchOff: AppColors.switchOff,
     switchKnobOn: AppColors.switchKnobOn,
     switchKnobOff: AppColors.switchKnobOff,
     switchBorderOff: AppColors.switchBorderOff,
     completed: AppColors.bloodRed,
-    completedSurface: AppColors.bloodRedSurfaceDark,
-    completedText: AppColors.bloodRedText,
+    completedSurface: AppColors.bloodRedSurfaceLight,
+    completedText: AppColors.bloodRedDeep,
   );
 
   static StatusPalette of(BuildContext context) =>
