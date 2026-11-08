@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import org.json.JSONObject
@@ -95,7 +96,7 @@ class QuickAddActivity : Activity() {
             finish()
         }
         findViewById<TextView>(R.id.quick_cancel).setOnClickListener { finish() }
-        findViewById(R.id.quick_close).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.quick_close).setOnClickListener { finish() }
         findViewById<TextView>(R.id.quick_save).setOnClickListener {
             write(date, hour, field.text.toString().trim())
             finish()
