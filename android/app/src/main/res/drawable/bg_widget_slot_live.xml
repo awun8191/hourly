@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The live hour card in the list: the app's card look with an accent border. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/widget_hero_neutral" />
+    <corners android:radius="14dp" />
+    <stroke
+        android:width="2dp"
+        android:color="@color/widget_active_stroke" />
+</shape>

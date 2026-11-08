@@ -18,12 +18,12 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Home screen widget: the live hour as a card, then a rolling window of hour
- * cards that always fills the cell and always scrolls.
+ * Home screen widget: the live hour as a card, then the whole of today as a
+ * scrolling list of hour cards.
  *
- * The widget picks its own hours from the device clock, so it stays correct
- * when the app has not run for a while. The payload carries the items; the
- * clock decides which item is live and which rows come next.
+ * The widget picks the live hour from the device clock, so it stays correct
+ * when the app has not run for a while. The payload carries today's items; the
+ * clock decides which item is live. The list resets at midnight by itself.
  */
 class HourlyWidgetProvider : HomeWidgetProvider() {
 

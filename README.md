@@ -46,12 +46,12 @@ One hero card for the live hour, then a rolling 24-hour list of hour cards.
 - The chip and the card colour carry the state: `IN PLACE` on the green card,
   `DONE` on the red card, `+ ADD` on the empty card. The live hour comes from the
   device clock, not from the payload's timestamp.
-- **A rolling 24-hour list, with a header for each day**: the hour after the
-  live one, then onward, across midnight. A `TODAY` header and rule start the
-  list. The first hour after midnight sits under `TOMORROW · SUN 1`. The header
-  comes from the device clock, so tomorrow becomes today on its own. Each card
-  carries its time and its item, or a muted `+ Add task`. The list fills the
-  cell when the widget is tall and scrolls when it is short.
+- **The whole of today, midnight to 23:00**: one header (`TODAY · FRIDAY 30`)
+  with a hairline rule, then 24 hour cards in order. Morning items stay visible
+  all day. The live hour card carries an accent border and a `NOW` tag. A past
+  hour still in place reads MISSED in red. Each card carries its time and its
+  item, or a muted `+ Add task`. The list fills the cell when the widget is
+  tall and scrolls when it is short. It resets at midnight by itself.
 - **Tap any card** and a small text field opens over the home screen, prefilled
   with that hour's item. Android widgets cannot host an `EditText`, so
   `QuickAddActivity` is a dialog-style activity with a real field. `Save` writes
@@ -86,37 +86,34 @@ through `home_widget` under `hourly_payload`:
   "slots": [
     {
       "date": "2026-10-30",
-      "hour": 22,
-      "label": "22:00",
-      "text": "Brush teeth",
-      "status": "active",
-      "tomorrow": false
-    },
-    {
-      "date": "2026-10-30",
-      "hour": 23,
-      "label": "23:00",
-      "text": "",
-      "status": "empty",
-      "tomorrow": false
-    },
-    {
-      "date": "2026-10-31",
       "hour": 0,
       "label": "00:00",
       "text": "",
-      "status": "empty",
-      "tomorrow": true
+      "status": "empty"
+    },
+    {
+      "date": "2026-10-30",
+      "hour": 9,
+      "label": "09:00",
+      "text": "Gym",
+      "status": "active"
+    },
+    {
+      "date": "2026-10-30",
+      "hour": 22,
+      "label": "22:00",
+      "text": "Brush teeth",
+      "status": "active"
     }
   ]
 }
 ```
 
-`slots` holds 26 hours from the live hour onward. Every slot carries its own
-date, so a card after midnight writes to the next day. The widget finds the live
-slot with the device clock, which keeps the hero correct when the app has not
-run for a while. The app sends today and tomorrow, so items past midnight show
-their text.
+`slots` holds all 24 hours of today, midnight to 23:00, in order. Every slot
+carries its own date, so a tap writes to the right day. The widget finds the
+live slot with the device clock, which keeps the hero correct when the app has
+not run for a while. The app sends today only. At midnight the new day arrives
+with the next sync, and the list starts over.
 
 A chip tap runs a Dart callback in a background isolate, which flips the item and
 repaints the widget. The quick add dialog writes the same store the app reads
@@ -167,8 +164,8 @@ lib/
     │   ├── models/hour_entry_mapper.dart
     │   ├── repositories/schedule_local_repository.dart
     │   └── widget/
-    │       ├── widget_payload.dart         # rolling 26 hour window
-    │       ├── widget_window.dart          # today and tomorrow for the widget
+    │       ├── widget_payload.dart         # all 24 hours of today
+    │       ├── widget_window.dart          # today only, for the widget
     │       ├── home_widget_bridge.dart     # home_widget calls
     │       └── widget_toggle_callback.dart # toggle and refresh callbacks
     └── presentation/
@@ -232,7 +229,7 @@ flutter test      # 54 tests
 |---|---|
 | `day_schedule_cubit_test.dart` | load, save, toggle, delete, day change, write failure, widget sync, progress |
 | `schedule_local_repository_test.dart` | day isolation, replace, delete, bad records, bad JSON |
-| `widget_payload_test.dart` | 26 hour window, midnight crossing, tomorrow text, empty hour |
+| `widget_payload_test.dart` | full day 00 to 23, morning items persist, empty hour |
 | `day_segments_test.dart` | 24 segments, in place vs done, live hour, out of range hours, meter label |
 | `day_header_test.dart` | segment count, colours, live ring and lift, one semantics node, empty day, dark theme |
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |

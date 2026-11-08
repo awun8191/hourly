@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One hour field in the scrollable list. Tap the card to type that hour. -->
+<!-- One hour card in the scrollable list. Tap the card to type that hour. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/slot_root"
     android:layout_width="match_parent"
@@ -38,5 +38,22 @@
             android:maxLines="1"
             android:textColor="@color/widget_text"
             android:textSize="13.5sp" />
+
+        <TextView
+            android:id="@+id/slot_now"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_widget_chip_active"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.08"
+            android:paddingStart="8dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="3dp"
+            android:textColor="@color/widget_active_text"
+            android:textSize="8.5sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

@@ -22,38 +22,43 @@ void main() {
     return (payload['slots']! as List<Object?>).cast<Map<String, Object?>>();
   }
 
-  test('the window starts at the live hour and runs across midnight', () {
-    final Map<String, Object?> payload = WidgetPayload.build(
-      now: DateTime(2026, 10, 30, 22, 34),
-      entries: <HourEntry>[
-        entry(9, 'Gym'),
-        entry(22, 'Brush teeth'),
-        entry(1, 'Sleep', dateKey: '2026-10-31'),
-      ],
+  test('the list holds the whole day, midnight to 23:00', () {
+    final List<Map<String, Object?>> slots = slotsOf(
+      WidgetPayload.build(
+        now: DateTime(2026, 10, 30, 20, 34),
+        entries: const <HourEntry>[],
+      ),
     );
 
-    final List<Map<String, Object?>> slots = slotsOf(payload);
-    expect(slots, hasLength(26));
-    expect(payload['date'], '2026-10-30');
-    expect(payload['hour'], 22);
+    expect(slots, hasLength(24));
+    expect(slots.first['hour'], 0);
+    expect(slots.first['label'], '00:00');
+    expect(slots.last['hour'], 23);
+    expect(slots.last['label'], '23:00');
+    for (final Map<String, Object?> slot in slots) {
+      expect(slot['date'], '2026-10-30');
+    }
+  });
 
-    final Map<String, Object?> live = slots.first;
-    expect(live['date'], '2026-10-30');
-    expect(live['hour'], 22);
-    expect(live['label'], '22:00');
-    expect(live['text'], 'Brush teeth');
-    expect(live['status'], 'active');
-    expect(live['tomorrow'], isFalse);
+  test('morning items still show when the day is almost over', () {
+    final List<Map<String, Object?>> slots = slotsOf(
+      WidgetPayload.build(
+        now: DateTime(2026, 10, 30, 22, 10),
+        entries: <HourEntry>[
+          entry(9, 'Gym'),
+          entry(12, 'Bakery', status: HourStatus.completed),
+        ],
+      ),
+    );
 
-    final Map<String, Object?> midnight = slots[2];
-    expect(midnight['date'], '2026-10-31');
-    expect(midnight['hour'], 0);
-    expect(midnight['tomorrow'], isTrue);
-    expect(midnight['text'], '');
+    final Map<String, Object?> morning = slots[9];
+    expect(morning['hour'], 9);
+    expect(morning['text'], 'Gym');
+    expect(morning['status'], 'active');
 
-    final Map<String, Object?> nextDay = slots[3];
-    expect(nextDay['hour'], 1);
-    expect(nextDay['text'], 'Sleep');
+    final Map<String, Object?> noon = slots[12];
+    expect(noon['text'], 'Bakery');
+    expect(noon['status'], 'completed');
   });
 
   test('an empty hour carries no text and an empty status', () {
@@ -64,20 +69,8 @@ void main() {
       ),
     );
 
-    expect(slots[1]['hour'], 10);
-    expect(slots[1]['text'], '');
-    expect(slots[1]['status'], 'empty');
-  });
-
-  test('a done hour keeps its status', () {
-    final List<Map<String, Object?>> slots = slotsOf(
-      WidgetPayload.build(
-        now: DateTime(2026, 10, 30, 12, 5),
-        entries: <HourEntry>[entry(12, 'Bakery', status: HourStatus.completed)],
-      ),
-    );
-
-    expect(slots.first['status'], 'completed');
-    expect(slots.first['text'], 'Bakery');
+    expect(slots[10]['hour'], 10);
+    expect(slots[10]['text'], '');
+    expect(slots[10]['status'], 'empty');
   });
 }
