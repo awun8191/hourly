@@ -14,7 +14,7 @@ Future<void> main() async {
   final SharedPreferences preferences = await SharedPreferences.getInstance();
   final ScheduleRepository repository = ScheduleLocalRepository(preferences);
 
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+  if (defaultTargetPlatform == TargetPlatform.android) {
     await HomeWidget.registerInteractivityCallback(handleWidgetToggle);
   }
 

@@ -1,7 +1,7 @@
 # Hourly
 
-A day planner where every hour is one block. Flutter app for Android, iOS, and
-web. The Android home screen widget is the main feature.
+A day planner where every hour is one block. A Flutter app for Android.
+The Android home screen widget is the main feature.
 
 All data stays on the device. The app makes no network call.
 
@@ -143,7 +143,6 @@ Add the widget from the Android home screen picker, under "Hourly".
 
 ```bash
 flutter build apk --debug
-flutter build web --release
 ```
 
 ## Architecture
@@ -237,7 +236,6 @@ flutter test      # 54 tests
 
 ## Limits
 
-- The widget is Android only. iOS uses the same store, but it has no widget yet.
 - There is no sync and no backup. Uninstalling the app removes the plan.
 - The widget shows the current hour only. It does not list the day.
 - Android widgets cannot host an `EditText`; the text field is a dialog activity

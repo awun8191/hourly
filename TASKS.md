@@ -15,7 +15,6 @@
 
 ## Someday
 
-- iOS widget with App Intents
 - Open the app at the tapped hour (the intent already sends the hour)
 - Notes on a block
 - Drag an item to another hour

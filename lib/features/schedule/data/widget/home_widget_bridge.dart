@@ -18,7 +18,7 @@ class HomeWidgetBridge implements WidgetBridge {
 
   @override
   Future<void> sync({required DateTime now, required List<HourEntry> entries}) async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
+    if (defaultTargetPlatform != TargetPlatform.android) {
       return;
     }
     final String payload = jsonEncode(WidgetPayload.build(now: now, entries: entries));
