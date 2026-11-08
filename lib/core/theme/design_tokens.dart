@@ -66,8 +66,8 @@ abstract final class AppColors {
 
 /// Colors for the two hour states.
 ///
-/// In place is a light card with ink text on either background, ticked white
-/// on the day meter. Done is blood red. The values are fixed rather than
+/// In place is a light card with ink text on either background, accented white
+/// on dark. Done is blood red. The values are fixed rather than
 /// theme derived so the app and the widget agree.
 class StatusPalette {
   const StatusPalette({
@@ -84,7 +84,7 @@ class StatusPalette {
     required this.completedText,
   });
 
-  /// The in-place accent: white, for the meter tick and the legend dot.
+  /// The in-place accent: white on dark.
   /// Card text uses [activeText] instead so it stays legible on the light
   /// card.
   final Color active;
@@ -104,7 +104,7 @@ class StatusPalette {
   /// Off-state track border. The on state has no border.
   final Color switchBorderOff;
 
-  /// The done red as a fill: the row bar, the meter tick.
+  /// The done red as a fill: the row bar.
   final Color completed;
   final Color completedSurface;
   final Color completedText;

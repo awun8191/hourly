@@ -31,11 +31,6 @@ The list is grouped by part of day (night, morning, afternoon, evening), and the
 live hour carries a `NOW` tag and a tinted card. Empty hours stay quiet so a
 planned day stands out.
 
-The header carries a segmented day meter: one segment per hour, 24 in all, drawn
-as four groups of six to match the sections below it. Red is done, white is in
-place, the faint track is a free hour, and the live hour carries a ring and a
-small lift. It is one semantics node; the segments themselves are decorative.
-
 ## Android widget
 
 One hero card for the live hour, then a rolling 24-hour list of hour cards.
@@ -157,7 +152,6 @@ lib/
 └── features/schedule/
     ├── domain/
     │   ├── entities/hour_entry.dart
-    │   ├── entities/day_segments.dart    # the 24 segment day meter model
     │   └── repositories/schedule_repository.dart
     ├── data/
     │   ├── models/hour_entry_mapper.dart
@@ -221,7 +215,7 @@ A day document holds at most 24 entries. Invalid JSON raises
 
 ```bash
 flutter analyze   # no issues
-flutter test      # 54 tests
+flutter test      # 45 tests
 ```
 
 | Suite | Covers |
@@ -229,8 +223,7 @@ flutter test      # 54 tests
 | `day_schedule_cubit_test.dart` | load, save, toggle, delete, day change, write failure, widget sync, progress |
 | `schedule_local_repository_test.dart` | day isolation, replace, delete, bad records, bad JSON |
 | `widget_payload_test.dart` | full day 00 to 23, morning items persist, empty hour |
-| `day_segments_test.dart` | 24 segments, in place vs done, live hour, out of range hours, meter label |
-| `day_header_test.dart` | segment count, colours, live ring and lift, one semantics node, empty day, dark theme |
+| `day_header_test.dart` | weekday and date, planned count, empty hint, dark theme |
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |
 | `design_tokens_test.dart` | the widget XML mirrors the tokens, indigo ramp, no stray green or pink |
 

@@ -9,7 +9,7 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | Token | Value | Use |
 |---|---|---|
 | `AppColors.black` | `#000000` | Text on white, dark onPrimary |
-| `AppColors.white` | `#FFFFFF` | In-place meter tick and legend dot, primary on dark |
+| `AppColors.white` | `#FFFFFF` | In-place accent, primary on dark |
 | `AppColors.ink` | `#111111` | Card titles and primary on light |
 | `AppColors.paper` | `#FFFFFF` | Light background |
 | `AppColors.paperRaised` | `#F4F1E9` | Hour card on either background, warm paper |
@@ -22,7 +22,7 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.lineLight` | `#E2E2E2` | Hairlines on light |
 | `AppColors.mutedDark` | `#D8D8EE` | Secondary text on dark |
 | `AppColors.mutedLight` | `#5A5A5A` | Secondary text on light |
-| `AppColors.bloodRed` | `#FF3B30` | Done and missed fill, meter tick |
+| `AppColors.bloodRed` | `#FF3B30` | Done and missed fill |
 | `AppColors.bloodRedText` | `#FF3B30` | Done and missed text on indigo |
 | `AppColors.bloodRedDeep` | `#D92D20` | Done text on the light cards |
 | `AppColors.bloodRedSurfaceDark` | `#2E0B09` | Error container on dark |
