@@ -18,7 +18,7 @@ The day is 24 blocks, from 00:00 to 23:00. Each block holds one item.
 White is in place on dark, ink on light. Red `#FF3B30` is done. This mapping is
 the user's choice.
 
-Every hour carries the toggle, empty hours too. The track is red when the hour is
+Every hour carries the toggle, empty hours too. The track is blue when the hour is
 off and green when the toggle is on. The knob is yellow, with a gradient, a
 shadow, and a lift. On an empty hour the toggle opens the planner. Dark mode uses
 a deep forest background.

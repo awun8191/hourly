@@ -22,7 +22,7 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.lineLight` | `#E2E2E2` | Hairlines on light |
 | `AppColors.mutedDark` | `#B8C6BC` | Secondary text on dark |
 | `AppColors.mutedLight` | `#5A5A5A` | Secondary text on light |
-| `AppColors.bloodRed` | `#FF3B30` | Done and missed fill, toggle track, meter tick |
+| `AppColors.bloodRed` | `#FF3B30` | Done and missed fill, meter tick |
 | `AppColors.bloodRedText` | `#FF3B30` | Done and missed text on black |
 | `AppColors.bloodRedDeep` | `#D92D20` | Done text and fill on paper |
 | `AppColors.bloodRedSurfaceDark` | `#2E0B09` | Done card on dark |
@@ -31,6 +31,8 @@ name. `test/core/theme/design_tokens_test.dart` fails when the two drift.
 | `AppColors.knobYellowDeep` | `#F2B705` | Toggle knob gradient end |
 | `AppColors.switchOn` | `#7DDBA8` | Toggle fill when on, dark (original emerald) |
 | `AppColors.switchOnLight` | `#1F7A4C` | Toggle fill when on, light (original emerald) |
+| `AppColors.switchOff` | `#4D9FFF` | Toggle track when off, dark (blue, never pink) |
+| `AppColors.switchOffLight` | `#2563EB` | Toggle track when off, light |
 
 Rules:
 

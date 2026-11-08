@@ -74,6 +74,11 @@ void main() {
     expect(StatusPalette.light.switchOn, AppColors.switchOnLight);
   });
 
+  test('the toggle is blue when off', () {
+    expect(StatusPalette.dark.switchOff, AppColors.switchOff);
+    expect(StatusPalette.light.switchOff, AppColors.switchOffLight);
+  });
+
   test('no accent token carries a green hue', () {
     final List<Color> accents = <Color>[
       AppColors.black,

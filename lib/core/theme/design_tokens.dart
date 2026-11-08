@@ -46,6 +46,10 @@ abstract final class AppColors {
   /// the green the switch used before the monochrome pass.
   static const Color switchOn = Color(0xFF7DDBA8);
   static const Color switchOnLight = Color(0xFF1F7A4C);
+
+  /// The toggle track when the hour is off. Blue, so it never reads pink.
+  static const Color switchOff = Color(0xFF4D9FFF);
+  static const Color switchOffLight = Color(0xFF2563EB);
 }
 
 /// Colors for the two hour states.
@@ -58,6 +62,7 @@ class StatusPalette {
     required this.activeSurface,
     required this.activeText,
     required this.switchOn,
+    required this.switchOff,
     required this.completed,
     required this.completedSurface,
     required this.completedText,
@@ -71,7 +76,10 @@ class StatusPalette {
   /// The toggle fill when the item is on.
   final Color switchOn;
 
-  /// The done red as a fill: the switch track, the row bar, the meter tick.
+  /// The toggle track when the hour is off. Blue, never pink.
+  final Color switchOff;
+
+  /// The done red as a fill: the row bar, the meter tick.
   final Color completed;
   final Color completedSurface;
   final Color completedText;
@@ -81,6 +89,7 @@ class StatusPalette {
     activeSurface: AppColors.paperRaised,
     activeText: AppColors.ink,
     switchOn: AppColors.switchOnLight,
+    switchOff: AppColors.switchOffLight,
     completed: AppColors.bloodRedDeep,
     completedSurface: AppColors.bloodRedSurfaceLight,
     completedText: AppColors.bloodRedDeep,
@@ -91,6 +100,7 @@ class StatusPalette {
     activeSurface: AppColors.surfaceDarkRaised,
     activeText: AppColors.white,
     switchOn: AppColors.switchOn,
+    switchOff: AppColors.switchOff,
     completed: AppColors.bloodRed,
     completedSurface: AppColors.bloodRedSurfaceDark,
     completedText: AppColors.bloodRedText,
