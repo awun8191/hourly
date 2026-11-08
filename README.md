@@ -33,11 +33,11 @@ planned day stands out.
 
 ## Android widget
 
-One hero card for the live hour, then a rolling 24-hour list of hour cards.
+One compact live row for the current hour, then the whole of today as cards.
 
-- The live hour is a hero card: 26sp time, a state chip, the item, and a line
-  such as `This hour ends at 19:00`. The widget repaints just after each hour
-  starts, and after every edit.
+- The live hour is one row: the time, the item, a state chip. No big type,
+  no meta line. The widget repaints just after each hour starts, and after
+  every edit.
 - The chip and the card colour carry the state: `IN PLACE` on the green card,
   `DONE` on the red card, `+ ADD` on the empty card. The live hour comes from the
   device clock, not from the payload's timestamp.

@@ -17,10 +17,7 @@
     <string name="widget_slot_add">+ Add task</string>
     <string name="widget_today">TODAY</string>
     <string name="widget_section_today">TODAY · %1$s</string>
-    <string name="widget_hour_ends_at">This hour ends at %1$s</string>
     <string name="widget_chip_add">+ ADD</string>
-    <string name="widget_meta_done">Marked done</string>
-    <string name="widget_meta_add">Tap to add an item</string>
     <string name="quick_add_title">Plan %1$s</string>
     <string name="quick_hint">What happens in this hour?</string>
     <string name="quick_save">Save</string>

@@ -97,10 +97,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_active)
                 setChip(context, views, R.string.widget_chip_in_place, R.color.widget_active_text, R.drawable.bg_widget_chip_active)
                 views.setTextViewText(R.id.hero_text, text)
-                views.setTextViewText(
-                    R.id.hero_meta,
-                    context.getString(R.string.widget_hour_ends_at, label((nowHour + 1) % 24)),
-                )
                 views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, nowKey, nowHour))
                 views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, nowKey, nowHour))
             }
@@ -109,7 +105,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_done)
                 setChip(context, views, R.string.widget_done, R.color.widget_done_text, R.drawable.bg_widget_chip_done)
                 views.setTextViewText(R.id.hero_text, text)
-                views.setTextViewText(R.id.hero_meta, context.getString(R.string.widget_meta_done))
                 views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, nowKey, nowHour))
                 views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, nowKey, nowHour))
             }
@@ -126,7 +121,6 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             R.id.hero_text,
             text.ifEmpty { context.getString(R.string.widget_hero_empty) },
         )
-        views.setTextViewText(R.id.hero_meta, context.getString(R.string.widget_meta_add))
         views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, date, hour))
         views.setOnClickPendingIntent(R.id.hero_chip, quickAddIntent(context, date, hour))
     }
