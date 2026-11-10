@@ -227,6 +227,13 @@ flutter test      # 45 tests
 | `day_screen_test.dart` | add, toggle, remove, day arrows, repaint, reload, small-screen layout, dark theme |
 | `design_tokens_test.dart` | the widget XML mirrors the tokens, indigo ramp, no stray green or pink |
 
+## Notifications
+
+At the start of each hour with an item, the phone shows the hour and the item
+(`10:00 · Gym`). Tap opens the app; Mark done flips the hour. Empty hours stay
+silent. The schedule rebuilds on every edit and survives a reboot. Exact alarms
+are used when granted, otherwise inexact.
+
 ## Limits
 
 - There is no sync and no backup. Uninstalling the app removes the plan.
