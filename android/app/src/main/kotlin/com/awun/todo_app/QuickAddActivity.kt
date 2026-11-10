@@ -137,6 +137,8 @@ class QuickAddActivity : Activity() {
         }
         editor.commit()
 
+        ReminderScheduler.rescheduleAll(this)
+
         HomeWidgetBackgroundIntent
             .getBroadcast(this, Uri.parse("hourly://refresh"))
             .send()
