@@ -6,7 +6,7 @@ export 'design_tokens.dart';
 
 /// Material 3 theme built from `design_tokens.dart`.
 ///
-/// Deep indigo behind everything, light cards for the hours, white as the
+/// Deep blue behind everything, light cards for the hours, white as the
 /// accent. Blood red is the only other hue, and it belongs to the done
 /// state and the error role.
 abstract final class AppTheme {

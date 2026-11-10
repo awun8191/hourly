@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 /// mirrors these values by name. `test/core/theme/design_tokens_test.dart`
 /// fails when the two drift apart.
 ///
-/// The palette is deep indigo plus one blood red, plus moss bark greens for
-/// the toggle only. White is the accent on indigo. Ink reads on the light
+/// The palette is deep blue plus one blood red, plus moss bark greens for
+/// the toggle only. White is the accent on deep blue. Ink reads on the light
 /// cards. Blood red means done or missed. Moss belongs to the toggle fills
 /// only.
 abstract final class AppColors {
@@ -18,19 +18,19 @@ abstract final class AppColors {
   static const Color ink = Color(0xFF111111);
   static const Color paper = Color(0xFFFFFFFF);
 
-  /// The light card both themes share: a warm paper that lifts off indigo
+  /// The light card both themes share: a warm paper that lifts off deep blue
   /// and stays calm on white.
   static const Color paperRaised = Color(0xFFF4F1E9);
 
-  /// Soft indigo full bleed surfaces, darkest first.
-  static const Color surfaceDark = Color(0xFF55559B);
-  static const Color surfaceDarkSunken = Color(0xFF484884);
-  static const Color surfaceDarkRaised = Color(0xFF6060A6);
-  static const Color surfaceDarkHigh = Color(0xFF6E6EB2);
-  static const Color surfaceDarkHighest = Color(0xFF7F7FC0);
-  static const Color lineDark = Color(0xFF7777B6);
+  /// Deep blue full bleed surfaces, darkest first.
+  static const Color surfaceDark = Color(0xFF23408F);
+  static const Color surfaceDarkSunken = Color(0xFF1B3169);
+  static const Color surfaceDarkRaised = Color(0xFF2E4CA0);
+  static const Color surfaceDarkHigh = Color(0xFF3E5EB4);
+  static const Color surfaceDarkHighest = Color(0xFF647DC4);
+  static const Color lineDark = Color(0xFF50679F);
   static const Color lineLight = Color(0xFFE2E2E2);
-  static const Color mutedDark = Color(0xFFD8D8EE);
+  static const Color mutedDark = Color(0xFFD5DDF2);
   static const Color mutedLight = Color(0xFF5A5A5A);
 
   /// The red the owner settled on. Bright, with a pure hue so it never reads
