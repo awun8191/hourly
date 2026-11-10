@@ -96,6 +96,8 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             "active" -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_active)
                 setChip(context, views, R.string.widget_chip_in_place, R.color.widget_active_text, R.drawable.bg_widget_chip_active)
+                views.setTextColor(R.id.hero_time, context.getColor(R.color.widget_active_text))
+                views.setTextColor(R.id.hero_text, context.getColor(R.color.widget_active_text))
                 views.setTextViewText(R.id.hero_text, text)
                 views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, nowKey, nowHour))
                 views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, nowKey, nowHour))
@@ -104,6 +106,8 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
             "completed" -> {
                 views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_done)
                 setChip(context, views, R.string.widget_done, R.color.widget_done_text, R.drawable.bg_widget_chip_done)
+                views.setTextColor(R.id.hero_time, context.getColor(R.color.widget_done_text))
+                views.setTextColor(R.id.hero_text, context.getColor(R.color.widget_done_text))
                 views.setTextViewText(R.id.hero_text, text)
                 views.setOnClickPendingIntent(R.id.hero_card, quickAddIntent(context, nowKey, nowHour))
                 views.setOnClickPendingIntent(R.id.hero_chip, toggleIntent(context, nowKey, nowHour))
@@ -117,6 +121,8 @@ class HourlyWidgetProvider : HomeWidgetProvider() {
     private fun bindEmpty(context: Context, views: RemoteViews, hour: Int, date: String, text: String) {
         views.setInt(R.id.hero_card, "setBackgroundResource", R.drawable.bg_widget_hero_empty)
         setChip(context, views, R.string.widget_chip_add, R.color.widget_muted, R.drawable.bg_widget_chip_muted)
+        views.setTextColor(R.id.hero_time, context.getColor(R.color.widget_text))
+        views.setTextColor(R.id.hero_text, context.getColor(R.color.widget_text))
         views.setTextViewText(
             R.id.hero_text,
             text.ifEmpty { context.getString(R.string.widget_hero_empty) },
